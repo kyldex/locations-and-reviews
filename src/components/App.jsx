@@ -2,6 +2,7 @@ import React from 'react';
 import Map from './Map.jsx';
 import Sidebar from './Sidebar.jsx';
 import * as data from '../data/restaurants.json';
+const { REACT_APP_GMAP_API_KEY } = process.env;
 
 export default class App extends React.Component {
 
@@ -9,7 +10,7 @@ export default class App extends React.Component {
         super(props);
         this.state = {
             locations: data.features,
-            // filteredLocations: restaurants du filre
+            // create filteredLocations
             userCurrentLocation: {
                 lat: 48.8534,
                 lng: 2.3488
@@ -18,7 +19,6 @@ export default class App extends React.Component {
             selectedLocation: null,
             ratingsAverage: {}
         };
-        // console.log('app') : placer des console.log dans les composants permet de vérifier quand il y a re-render
     }
 
     getRatingsAverage() {
@@ -39,7 +39,7 @@ export default class App extends React.Component {
         this.setState({ ratingsAverage: locationRatingsAverage })
     }
 
-    // fonction filtre 
+    // Create filter method
 
     // Try HTML5 geolocation
     showCurrentLocation() {
@@ -84,7 +84,7 @@ export default class App extends React.Component {
                 />
                 <div id="map">
                     <Map
-                        googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=AIzaSyCYWPcJCr24V8YBv8Bhlf4UbV7uGQC7U_8`}
+                        googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${REACT_APP_GMAP_API_KEY}`}
                         loadingElement={<div style={{ height: "100%" }} />}
                         containerElement={<div style={{ height: "100%" }} />}
                         mapElement={<div style={{ height: "100%" }} />}

@@ -1,4 +1,5 @@
 const path = require('path');
+const Dotenv = require('dotenv-webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -52,6 +53,7 @@ module.exports = {
     ]
   },
   plugins: [
+    new Dotenv(),
     new MiniCssExtractPlugin({filename: 'style.css'}),
     new OptimizeCssAssetsPlugin(),
     new HtmlWebpackPlugin({template: 'src/index.html'}),
