@@ -1,0 +1,12 @@
+.location-single img {
+    max-width: 100%;
+}
+
+.location-single-reviews {
+    margin-top: 1rem;
+}
+
+.location-single-review {
+    padding-top: 2rem;
+    text-align: center;
+}

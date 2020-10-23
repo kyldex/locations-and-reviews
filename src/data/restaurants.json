@@ -1,0 +1,105 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [2.3501649, 48.8737815]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "Bronco",
+                "storeid": "01",
+                "address": "39 Rue des Petites Écuries, 75010 Paris",
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                       "stars": 4,
+                       "comment": "Un excellent restaurant, j'y reviendrai ! Par contre il vaut mieux aimer la viande."
+                    },
+                    {
+                       "stars": 5,
+                       "comment": "Tout simplement mon restaurant préféré !"
+                    }
+                 ]
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [2.3442197, 48.8865035]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "Babalou",
+                "storeid": "02",
+                "address": "4 Rue Lamarck, 75018 Paris",
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                       "stars": 5,
+                       "comment": "Une minuscule pizzeria délicieuse cachée juste à côté du Sacré choeur !"
+                    },
+                    {
+                       "stars": 3,
+                       "comment": "J'ai trouvé ça correct, sans plus"
+                    }
+                 ]
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [2.318411, 48.847544]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "L'Alchimiste",
+                "storeid": "03",
+                "address": "76 rue de Sèvres, 75007 Paris",
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                       "stars": 5,
+                       "comment": "Des plats dont seul le propriétaire a la secret, j'y vais régulièrement !"
+                    },
+                    {
+                       "stars": 4,
+                       "comment": "Agréaglement surpris, on me l'a recommandé et je le recommanderai également."
+                    }
+                 ]
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [2.400915, 48.854786]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "Le Coin des Artistes",
+                "storeid": "04",
+                "address": "50 rue des Vignoles, 75020 Paris",
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                       "stars": 5,
+                       "comment": "Pour changer un peu à la pause dej, je ne suis jamais déçu ! Des plats du jour souvent surprenants mais toujours très bons !"
+                    },
+                    {
+                       "stars": 3,
+                       "comment": "Peut-être un peu trop original dans les plats pour moi, de l'idée mais je n'étais pas toujours convaincu."
+                    }
+                 ]
+            }
+        }
+    ]
+}
