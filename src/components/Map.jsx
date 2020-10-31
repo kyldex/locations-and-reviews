@@ -1,5 +1,7 @@
 import React from 'react';
+
 import { withScriptjs, withGoogleMap, GoogleMap, Marker, InfoWindow } from 'react-google-maps';
+
 import '../styles/Map.css';
 
 const Map = withScriptjs(withGoogleMap((props) => {
@@ -31,8 +33,7 @@ const Map = withScriptjs(withGoogleMap((props) => {
                             onCloseClick={() => props.onClick(null)}
                         >
                             <div>
-                                {/* Remplacer les h2 par une div.title */}
-                                <h2>{props.selectedLocation.properties.name}</h2>
+                                <div className="infowindow-title">{props.selectedLocation.properties.name}</div>
                                 <p>{props.selectedLocation.properties.hours}</p>
                                 <p>{props.selectedLocation.properties.address}</p>
                                 <p>{props.selectedLocation.properties.phone}</p>

@@ -1,27 +1,37 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import LocationCard from './LocationCard.jsx';
 import LocationSingle from './LocationSingle.jsx';
+import Filter from './Filter.jsx';
+
 import '../styles/Sidebar.css';
 
-const Sidebar = (props) => (
+const Sidebar = ({ locations, ratingsAverage, selectedLocation }) => (
 
     <div id="sidebar">
 
-        {props.selectedLocation ? (
-            <LocationSingle selectedLocation={props.selectedLocation}/>
+        {selectedLocation ? (
+            <LocationSingle selectedLocation={selectedLocation}/>
         ) : (
             <div className="location-cards">
-                {props.locations.map((location) => (
+                <Filter />
+                {locations.map((location) => (
                     <LocationCard
                         key={location.properties.storeid}
                         location={location}
-                        ratingsAverage={props.ratingsAverage}
+                        ratingsAverage={ratingsAverage}
                     />
                 ))}
             </div>
         )}
     </div>
-
 );
+
+Sidebar.propTypes = {
+    locations: PropTypes.array,
+    ratingsAverage: PropTypes.object,
+    selectedLocation: PropTypes.object
+}
 
 export default Sidebar;

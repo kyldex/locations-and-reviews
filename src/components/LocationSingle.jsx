@@ -1,18 +1,33 @@
 import React from 'react';
-import '../styles/LocationSingle.css'
+import PropTypes from 'prop-types';
+const { REACT_APP_GMAP_API_KEY } = process.env;
 
-const LocationSingle = (props) => (
-    <div className="location-single">
-        <img src="/src/assets/img/placeholder.jpg" />
-        <div className="location-single-reviews">
-            {props.selectedLocation.properties.ratings.map((rating) => (
-                <div className="location-single-review">
-                    <p>{`${rating.stars}/5`}</p>
-                    <p>{rating.comment}</p>
-                </div>
-            ))}
+import '../styles/LocationSingle.css';
+
+const LocationSingle = ({ selectedLocation }) => {
+
+    const lat = selectedLocation.geometry.coordinates[1];
+    const lng = selectedLocation.geometry.coordinates[0];
+    const imgURL = `https://maps.googleapis.com/maps/api/streetview?size=600x400&location=${lat},${lng}&key=${REACT_APP_GMAP_API_KEY}`;
+
+    return (
+        <div className="location-single">
+            <img src={imgURL} />
+            <h2>{selectedLocation.properties.name}</h2>
+            <div className="location-single-reviews">
+                {selectedLocation.properties.ratings.map((rating) => (
+                    <div className="location-single-review">
+                        <p>{`${rating.stars}/5`}</p>
+                        <p>{rating.comment}</p>
+                    </div>
+                ))}
+            </div>
         </div>
-    </div>
-);
+    );
+};
+
+LocationSingle.propTypes = {
+    selectedLocation: PropTypes.object.isRequired
+}
 
 export default LocationSingle;

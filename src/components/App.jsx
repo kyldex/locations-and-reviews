@@ -1,8 +1,11 @@
 import React from 'react';
-import Map from './Map.jsx';
-import Sidebar from './Sidebar.jsx';
 import * as data from '../data/restaurants.json';
 const { REACT_APP_GMAP_API_KEY } = process.env;
+
+import Map from './Map.jsx';
+import Sidebar from './Sidebar.jsx';
+
+import '../styles/App.css';
 
 export default class App extends React.Component {
 
@@ -22,7 +25,7 @@ export default class App extends React.Component {
     }
 
     getRatingsAverage() {
-        const locationRatingsAverage = {};
+        const locationsRatingsAverage = {};
 
         this.state.locations.forEach((location) => {
 
@@ -33,10 +36,10 @@ export default class App extends React.Component {
                 ratingsTotal += rating.stars;
             })
 
-            locationRatingsAverage[locationId] = ratingsTotal / 2;
+            locationsRatingsAverage[locationId] = ratingsTotal / 2;
         })
 
-        this.setState({ ratingsAverage: locationRatingsAverage })
+        this.setState({ ratingsAverage: locationsRatingsAverage })
     }
 
     // Create filter method
@@ -77,10 +80,10 @@ export default class App extends React.Component {
 
         return (
             <div className="container">
-                <Sidebar 
+                <Sidebar
                     locations={this.state.locations}
-                    selectedLocation={this.state.selectedLocation}
                     ratingsAverage={this.state.ratingsAverage}
+                    selectedLocation={this.state.selectedLocation}
                 />
                 <div id="map">
                     <Map
@@ -88,11 +91,11 @@ export default class App extends React.Component {
                         loadingElement={<div style={{ height: "100%" }} />}
                         containerElement={<div style={{ height: "100%" }} />}
                         mapElement={<div style={{ height: "100%" }} />}
-                        locations={this.state.locations}
                         currentLocation={this.state.userCurrentLocation}
                         isMarkerShown={this.state.isMarkerShown}
-                        selectedLocation={this.state.selectedLocation}
+                        locations={this.state.locations}
                         onClick={(location) => this.handleMarkerClick(location)}
+                        selectedLocation={this.state.selectedLocation}
                     />
                 </div>
             </div>

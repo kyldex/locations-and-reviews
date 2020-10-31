@@ -2,6 +2,13 @@
     max-width: 100%;
 }
 
+.location-single h2 {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
 .location-single-reviews {
     margin-top: 1rem;
 }
