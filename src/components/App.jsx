@@ -13,7 +13,7 @@ export default class App extends React.Component {
         super(props);
         this.state = {
             locations: data.features,
-            // create filteredLocations
+            // create filteredLocations: [{}, {}...],
             userCurrentLocation: {
                 lat: 48.8534,
                 lng: 2.3488
