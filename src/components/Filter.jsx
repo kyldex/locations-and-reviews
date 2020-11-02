@@ -11,6 +11,7 @@ class Filter extends React.Component {
             maxValue: 5
         };
         this.handleChange = this.handleChange.bind(this);
+        this.handleButtonClick = this.handleButtonClick.bind(this);
     }
 
     handleChange(e) {
@@ -22,10 +23,23 @@ class Filter extends React.Component {
             // Stick to first number, ignore later digits
             .slice(0, 1)
 
-        if (e.target.classList.contains('filter-input-min')) {
+        if (e.target.id === 'filter-input-min') {
             this.setState({ minValue: parseInt(value) });
-        } else if (e.target.classList.contains('filter-input-max')) {
+        } else if (e.target.id === 'filter-input-max') {
             this.setState({ maxValue: parseInt(value) });
+        }
+    }
+
+    handleButtonClick(e) {
+        if (e.target.classList.contains('button-min-up') && this.state.minValue < 5) {
+            this.setState((prevState) => ({ minValue: prevState.minValue + 1 }));
+            console.log('hello');
+        } else if (e.target.classList.contains('button-min-down') && this.state.minValue > 0) {
+            this.setState((prevState) => ({ minValue: prevState.minValue - 1 }));
+        } else if (e.target.classList.contains('button-max-up') && this.state.maxValue < 5) {
+            this.setState((prevState) => ({ maxValue: prevState.maxValue + 1 }));
+        } else if (e.target.classList.contains('button-max-down') && this.state.maxValue > 0) {
+            this.setState((prevState) => ({ maxValue: prevState.maxValue - 1 }));
         }
     }
 
@@ -43,30 +57,48 @@ class Filter extends React.Component {
                     </div>
                 </div>
                 <div className="filter-selector-inputs">
-                    <label htmlFor="filter-input-min"> 
+                    <label htmlFor="filter-input-min">Min</label>
+                    <div className="filter-selector-input-1">
                         <input
                             type="number"
                             name="filter-input-min"
                             value={this.state.minValue}
                             onChange={this.handleChange}
-                            className="filter-input-min"
+                            id="filter-input-min"
                             min="0"
                             max="5"
                             step="1"
                         />
-                    </label>
-                    <label htmlFor="filter-input-max">
+                        <div className="filter-buttons">
+                            <div className="button">
+                                <img src="/src/assets/img/chevron-up.svg" className="button-min-up" onClick={this.handleButtonClick} alt="chevron-up" />
+                            </div>
+                            <div className="button">
+                                <img src="/src/assets/img/chevron-down.svg" className="button-min-down" onClick={this.handleButtonClick} alt="chevron-down" />
+                            </div>
+                        </div>
+                    </div>
+                    <label htmlFor="filter-input-max">Max</label>
+                    <div className="filter-selector-input-2">
                         <input
                             type="number"
                             name="filter-input-max"
                             value={this.state.maxValue}
                             onChange={this.handleChange}
-                            className="filter-input-max"
+                            id="filter-input-max"
                             min="0"
                             max="5"
                             step="1"
                         />
-                    </label>
+                        <div className="filter-buttons">
+                            <div className="button">
+                                <img src="/src/assets/img/chevron-up.svg" className="button-max-up" onClick={this.handleButtonClick} alt="chevron-up" />
+                            </div>
+                            <div className="button">
+                                <img src="/src/assets/img/chevron-down.svg" className="button-max-down" onClick={this.handleButtonClick} alt="chevron-down" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         );

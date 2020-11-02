@@ -4,10 +4,13 @@
 export default function makeResizable(divClass) {
     const resizable = document.querySelector(divClass);
     const resizers = document.querySelectorAll(divClass + ' .resizer');
-    const minimumSize = 20;
+
+    const originalResizableWidth = parseFloat(getComputedStyle(resizable, null).getPropertyValue('width'));
+    const minimumSize = Math.floor(originalResizableWidth / 5);
+
     const minMouseX = resizable.getBoundingClientRect().left;
     const maxMouseX = resizable.getBoundingClientRect().right;
-    let originalResizableWidth;
+    let newResizableWidth;
     let originalResizableLeft;
     let originalMouseX;
 
@@ -16,7 +19,7 @@ export default function makeResizable(divClass) {
 
         currentResizer.addEventListener('mousedown', function(e) {
             e.preventDefault();
-            originalResizableWidth = parseFloat(getComputedStyle(resizable, null).getPropertyValue('width'));
+            newResizableWidth = parseFloat(getComputedStyle(resizable, null).getPropertyValue('width'));
             originalResizableLeft = parseFloat(getComputedStyle(resizable, null).getPropertyValue('left'));
             originalMouseX = e.pageX;
     
@@ -25,7 +28,7 @@ export default function makeResizable(divClass) {
 
             function resize(e) {
                 if (currentResizer.classList.contains('left')) {
-                    const width = originalResizableWidth - (e.pageX - originalMouseX);
+                    const width = newResizableWidth - (e.pageX - originalMouseX);
 
                     if (width > minimumSize && e.pageX >= minMouseX) {
                         resizable.style.width = width + 'px';
@@ -34,7 +37,7 @@ export default function makeResizable(divClass) {
                     }
 
                 } else if (currentResizer.classList.contains('right')) {
-                    const width = originalResizableWidth + (e.pageX - originalMouseX);
+                    const width = newResizableWidth + (e.pageX - originalMouseX);
 
                     if (width > minimumSize && e.pageX <= maxMouseX) {
                         resizable.style.width = width + 'px';
