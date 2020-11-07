@@ -73,6 +73,7 @@ class Filter extends React.Component {
             originalResizableWidth,
             resizableLeft,
             resizableRight,
+            halfResizerWidth,
             oneStarWidth
         } = this.state.resizableValues;
 
@@ -83,21 +84,32 @@ class Filter extends React.Component {
 
             if (parseInt(value) || parseInt(value) === 0) {
 
-                if (value <= maxValue) {
+                if (value < maxValue) {
                     newResizableLeft = value * oneStarWidth;
                     newResizableWidth = originalResizableWidth - (newResizableLeft + resizableRight);
-                    resizable.style.width = newResizableWidth + 'px';
                     resizable.style.left = newResizableLeft + 'px';
+                    resizable.style.width = newResizableWidth + 'px';
+                    newResizableRight = resizableRight;
+
+                    newMinValue = parseInt(value);
+                    newMaxValue = maxValue;
+
+                // Resizers are at the same position
+                } else if (value === maxValue) {
+                    newResizableLeft = value * oneStarWidth - halfResizerWidth;
+                    newResizableWidth = halfResizerWidth;
+                    resizable.style.left = newResizableLeft + 'px';
+                    resizable.style.width = halfResizerWidth + 'px';
                     newResizableRight = resizableRight;
 
                     newMinValue = parseInt(value);
                     newMaxValue = maxValue;
 
                 } else {
-                    newResizableWidth = resizableWidth + resizableLeft;
-                    resizable.style.width = newResizableWidth + 'px';
-                    resizable.style.left = '0px';
                     newResizableLeft = 0;
+                    newResizableWidth = resizableWidth + resizableLeft;
+                    resizable.style.left = '0px';
+                    resizable.style.width = newResizableWidth + 'px';
                     newResizableRight = resizableRight;
 
                     newMinValue = 0;
@@ -118,21 +130,30 @@ class Filter extends React.Component {
 
             if (parseInt(value) || parseInt(value) === 0) {
 
-                if (value >= minValue) {
-                    newResizableRight = oneStarWidth * 5 - value * oneStarWidth;
+                if (value > minValue) {
+                    newResizableRight = originalResizableWidth - value * oneStarWidth;
                     newResizableWidth = originalResizableWidth - (resizableLeft + newResizableRight);
                     resizable.style.width = newResizableWidth + 'px';
-                    resizable.style.right = newResizableRight + 'px';
+                    newResizableLeft = resizableLeft;
+
+                    newMinValue = minValue;
+                    newMaxValue = parseInt(value);
+
+                // Resizers are at the same position
+                } else if (value === minValue) {
+                    newResizableRight = originalResizableWidth - value * oneStarWidth + halfResizerWidth;
+                    newResizableWidth = halfResizerWidth;
+                    resizable.style.width = halfResizerWidth + 'px';
                     newResizableLeft = resizableLeft;
 
                     newMinValue = minValue;
                     newMaxValue = parseInt(value);
 
                 } else {
-                    newResizableWidth = resizableWidth + resizableRight;
-                    resizable.style.width = newResizableWidth + 'px';
                     newResizableLeft = resizableLeft;
                     newResizableRight = resizableRight;
+                    newResizableWidth = resizableWidth + resizableRight;
+                    resizable.style.width = newResizableWidth + 'px';
 
                     newMinValue = minValue;
                     newMaxValue = 5;
@@ -180,27 +201,25 @@ class Filter extends React.Component {
 
         if (e.target.classList.contains('button-min-up') && this.state.minValue < 5) {
             const newMinValue = this.state.minValue + 1;
-            const thisFilterComponent = this;
 
-            newFilterValues = thisFilterComponent.handleInput(newMinValue, 'filter-input-min');
+            if (newMinValue <= this.state.maxValue) {
+                newFilterValues = this.handleInput(newMinValue, 'filter-input-min');
+            }
 
         } else if (e.target.classList.contains('button-min-down') && this.state.minValue > 0) {
             const newMinValue = this.state.minValue - 1;
-            const thisFilterComponent = this;
-
-            newFilterValues = thisFilterComponent.handleInput(newMinValue, 'filter-input-min');
+            newFilterValues = this.handleInput(newMinValue, 'filter-input-min');
 
         } else if (e.target.classList.contains('button-max-up') && this.state.maxValue < 5) {
             const newMaxValue = this.state.maxValue + 1;
-            const thisFilterComponent = this;
-
-            newFilterValues = thisFilterComponent.handleInput(newMaxValue, 'filter-input-max');
+            newFilterValues = this.handleInput(newMaxValue, 'filter-input-max');
 
         } else if (e.target.classList.contains('button-max-down') && this.state.maxValue > 0) {
             const newMaxValue = this.state.maxValue - 1;
-            const thisFilterComponent = this;
 
-            newFilterValues = thisFilterComponent.handleInput(newMaxValue, 'filter-input-max');
+            if (newMaxValue >= this.state.minValue) {
+                newFilterValues = this.handleInput(newMaxValue, 'filter-input-max');
+            }
         }
 
         if (newFilterValues) {
@@ -396,6 +415,7 @@ class Filter extends React.Component {
                 } else if (newResizableRight >= fourStarsWidth && newResizableRight < originalResizableWidth - halfResizerWidth) {
                     newResizableWidth += (newResizableRight - fourStarsWidth);
                     resizable.style.width = newResizableWidth + 'px';
+
                 } else {
                     newResizableWidth = halfResizerWidth;
                     resizable.style.width = halfResizerWidth + 'px';

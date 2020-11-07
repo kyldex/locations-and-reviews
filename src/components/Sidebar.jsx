@@ -16,13 +16,15 @@ const Sidebar = ({ locations, ratingsAverage, selectedLocation }) => (
         ) : (
             <div className="location-cards">
                 <Filter />
-                {locations.map((location) => (
+                {locations ? locations.map((location) => (
                     <LocationCard
                         key={location.properties.storeid}
                         location={location}
                         ratingsAverage={ratingsAverage}
                     />
-                ))}
+                )) : (
+                    <div>Waiting for locations</div>
+                )}
             </div>
         )}
     </div>

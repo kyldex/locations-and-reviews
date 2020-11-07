@@ -12,8 +12,8 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            locations: data.features,
-            // create filteredLocations: [{}, {}...],
+            locations: null,
+            filteredLocations: null,
             userCurrentLocation: {
                 lat: 48.8534,
                 lng: 2.3488
@@ -27,7 +27,7 @@ export default class App extends React.Component {
     getRatingsAverage() {
         const locationsRatingsAverage = {};
 
-        this.state.locations.forEach((location) => {
+        data.features.forEach((location) => {
 
             const locationId = location.properties.storeid;
             let ratingsTotal = 0;
@@ -42,9 +42,6 @@ export default class App extends React.Component {
         this.setState({ ratingsAverage: locationsRatingsAverage })
     }
 
-    // Create filter method
-
-    // Try HTML5 geolocation
     showCurrentLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -62,26 +59,37 @@ export default class App extends React.Component {
           (error) => console.log(error);
         }
     }
+
+    handleFilterLocations(minRating, maxRating) {
+
+        // Récupérer le rating minimum de moyenne et le rating maximum de moyenne
+        // Récupérer les id dans le ratingsAverage objet des locations qui ont au moins le minRating et max le maxRating
+        // Récupérer dans this.state.locations les location.properties.storeid correspondantes
+        // Mettre à jour this.state.filteredLocations avec ces locations correspondantes
+        // Re-render des composants
+    }
     
     handleMarkerClick(location) {
         this.setState({ selectedLocation: location });
     }
 
-    // Deprecated ?
-    componentWillMount() {
-        this.getRatingsAverage();
-    }
-
     componentDidMount() {
+        // Fetch data
+        this.setState({
+            locations: data.features,
+            filteredLocations: data.features
+        });
+        this.getRatingsAverage();
+
+        // Try HTML5 geolocation
         this.showCurrentLocation();
     }
 
     render() {
-
         return (
             <div className="container">
                 <Sidebar
-                    locations={this.state.locations}
+                    locations={this.state.filteredLocations}
                     ratingsAverage={this.state.ratingsAverage}
                     selectedLocation={this.state.selectedLocation}
                 />
@@ -93,7 +101,7 @@ export default class App extends React.Component {
                         mapElement={<div style={{ height: "100%" }} />}
                         currentLocation={this.state.userCurrentLocation}
                         isMarkerShown={this.state.isMarkerShown}
-                        locations={this.state.locations}
+                        locations={this.state.filteredLocations}
                         onClick={(location) => this.handleMarkerClick(location)}
                         selectedLocation={this.state.selectedLocation}
                     />

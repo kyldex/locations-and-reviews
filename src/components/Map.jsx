@@ -19,7 +19,7 @@ const Map = withScriptjs(withGoogleMap((props) => {
                 />
             )}
 
-            {props.locations.map((location) => (
+            {props.locations ? props.locations.map((location) => (
                 <Marker
                     key={location.properties.storeid}
                     position={{
@@ -41,7 +41,9 @@ const Map = withScriptjs(withGoogleMap((props) => {
                         </InfoWindow>
                     )}
                 </Marker>
-            ))}
+            )) : (
+                <div>Waiting for map</div>
+            )}
         </GoogleMap>
     );
 }));
