@@ -6,6 +6,12 @@ import '../styles/Map.css';
 
 const Map = withScriptjs(withGoogleMap((props) => {
 
+    // const InfoWindowPosition = (
+    //     <InfoWindow>
+    //         <div>Vous êtes ici</div>
+    //     </InfoWindow>
+    // );
+
     return (
         <GoogleMap
             defaultZoom={12}
@@ -15,7 +21,7 @@ const Map = withScriptjs(withGoogleMap((props) => {
             {props.isMarkerShown && (
                 <Marker
                     position={{ lat: props.currentLocation.lat, lng: props.currentLocation.lng }}
-                    // créer onMarkerClick={this.handleMarkerClick} cf. doc step 5
+                    // onClick={func}
                 />
             )}
 

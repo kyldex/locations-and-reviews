@@ -9,7 +9,7 @@
             "type": "Feature",
             "properties": {
                 "name": "Bronco",
-                "storeid": "01",
+                "storeid": "1",
                 "address": "39 Rue des Petites Écuries, 75010 Paris",
                 "phone": "+33 6 00 00 00 00",
                 "category": "restaurant",
@@ -34,7 +34,7 @@
             "type": "Feature",
             "properties": {
                 "name": "Babalou",
-                "storeid": "02",
+                "storeid": "2",
                 "address": "4 Rue Lamarck, 75018 Paris",
                 "phone": "+33 6 00 00 00 00",
                 "category": "restaurant",
@@ -59,7 +59,7 @@
             "type": "Feature",
             "properties": {
                 "name": "L'Alchimiste",
-                "storeid": "03",
+                "storeid": "3",
                 "address": "76 rue de Sèvres, 75007 Paris",
                 "phone": "+33 6 00 00 00 00",
                 "category": "restaurant",
@@ -84,7 +84,7 @@
             "type": "Feature",
             "properties": {
                 "name": "Le Coin des Artistes",
-                "storeid": "04",
+                "storeid": "4",
                 "address": "50 rue des Vignoles, 75020 Paris",
                 "phone": "+33 6 00 00 00 00",
                 "category": "restaurant",

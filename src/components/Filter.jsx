@@ -6,8 +6,8 @@ class Filter extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            minValue: 0,
-            maxValue: 5,
+            minValue: this.props.minRatingAverage,
+            maxValue: this.props.maxRatingAverage,
             resizableValues: {
                 resizable: null,
                 resizableWidth: null,
@@ -182,10 +182,10 @@ class Filter extends React.Component {
 
         const newFilterValues = this.handleInput(value, input);
 
+        this.props.onChangeFilterInputs(newFilterValues.newMinValue, newFilterValues.newMaxValue);
+
         this.setState((prevState) => (
             {
-                minValue: newFilterValues.newMinValue,
-                maxValue: newFilterValues.newMaxValue,
                 resizableValues: {
                     ...prevState.resizableValues,
                     resizableWidth: newFilterValues.newResizableWidth,
@@ -223,10 +223,10 @@ class Filter extends React.Component {
         }
 
         if (newFilterValues) {
+            this.props.onChangeFilterInputs(newFilterValues.newMinValue, newFilterValues.newMaxValue);
+
             this.setState((prevState) => (
                 {
-                    minValue: newFilterValues.newMinValue,
-                    maxValue: newFilterValues.newMaxValue,
                     resizableValues: {
                         ...prevState.resizableValues,
                         resizableWidth: newFilterValues.newResizableWidth,
@@ -334,10 +334,10 @@ class Filter extends React.Component {
 
             currentResizableWidth = parseFloat(getComputedStyle(resizable, null).getPropertyValue('width'));
 
+            thisFilterComponent.props.onChangeFilterInputs(newMinValue, newMaxValue);
+            
             thisFilterComponent.setState((prevState) => (
                 {
-                    minValue: newMinValue,
-                    maxValue: newMaxValue,
                     resizableValues: {
                         ...prevState.resizableValues,
                         resizableWidth: currentResizableWidth,
@@ -441,6 +441,13 @@ class Filter extends React.Component {
 
     componentDidMount() {
         this.makeResizable();
+    }
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        return {
+         minValue: nextProps.minRatingAverage,
+         maxValue: nextProps.maxRatingAverage
+        };
     }
 
     render() {

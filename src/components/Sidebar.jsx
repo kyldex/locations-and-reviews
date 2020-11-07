@@ -7,7 +7,7 @@ import Filter from './Filter.jsx';
 
 import '../styles/Sidebar.css';
 
-const Sidebar = ({ locations, ratingsAverage, selectedLocation }) => (
+const Sidebar = ({ locations, minRatingAverage, maxRatingAverage, onChangeFilterInputs, ratingsAverage, selectedLocation }) => (
 
     <div id="sidebar">
 
@@ -15,7 +15,11 @@ const Sidebar = ({ locations, ratingsAverage, selectedLocation }) => (
             <LocationSingle selectedLocation={selectedLocation}/>
         ) : (
             <div className="location-cards">
-                <Filter />
+                <Filter
+                    minRatingAverage={minRatingAverage}
+                    maxRatingAverage={maxRatingAverage}
+                    onChangeFilterInputs={(newMinValue, newMaxValue) => onChangeFilterInputs(newMinValue, newMaxValue)}
+                />
                 {locations ? locations.map((location) => (
                     <LocationCard
                         key={location.properties.storeid}

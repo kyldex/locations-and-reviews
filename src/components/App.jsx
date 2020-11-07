@@ -14,21 +14,33 @@ export default class App extends React.Component {
         this.state = {
             locations: null,
             filteredLocations: null,
+            ratingsAverage: {},
+            minRatingAverage: 0,
+            maxRatingAverage: 5,
+            selectedLocation: null,
             userCurrentLocation: {
                 lat: 48.8534,
                 lng: 2.3488
             },
-            isMarkerShown: false,
-            selectedLocation: null,
-            ratingsAverage: {}
+            isMarkerShown: false
         };
     }
 
-    getRatingsAverage() {
+    initLocations() {
+        // Fetch data
+        const locations = data.features;
+
+        this.setState({
+            locations: locations,
+            filteredLocations: locations,
+            ratingsAverage: this.getRatingsAverage(locations)
+        });
+    }
+
+    getRatingsAverage(locations) {
         const locationsRatingsAverage = {};
 
-        data.features.forEach((location) => {
-
+        locations.forEach((location) => {
             const locationId = location.properties.storeid;
             let ratingsTotal = 0;
 
@@ -39,7 +51,7 @@ export default class App extends React.Component {
             locationsRatingsAverage[locationId] = ratingsTotal / 2;
         })
 
-        this.setState({ ratingsAverage: locationsRatingsAverage })
+        return locationsRatingsAverage;
     }
 
     showCurrentLocation() {
@@ -60,13 +72,31 @@ export default class App extends React.Component {
         }
     }
 
-    handleFilterLocations(minRating, maxRating) {
+    handleChangeFilterInputs(newMinRating, newMaxRating) {
+        const ratingsAverage = this.state.ratingsAverage;
+        const filteredIds = [];
+        const locations = this.state.locations;
+        const filteredLocations = [];
 
-        // Récupérer le rating minimum de moyenne et le rating maximum de moyenne
-        // Récupérer les id dans le ratingsAverage objet des locations qui ont au moins le minRating et max le maxRating
-        // Récupérer dans this.state.locations les location.properties.storeid correspondantes
-        // Mettre à jour this.state.filteredLocations avec ces locations correspondantes
-        // Re-render des composants
+        for (const storeId in ratingsAverage) {
+            if (ratingsAverage[storeId] >= newMinRating && ratingsAverage[storeId] <= newMaxRating) {
+                filteredIds.push(parseInt(storeId));
+            }
+        }
+
+        filteredIds.forEach((storeId) => {
+            locations.forEach((location) => {
+                if (parseInt(location.properties.storeid) === storeId) {
+                    filteredLocations.push(location);
+                }
+            });
+        });
+
+        this.setState({
+            filteredLocations: filteredLocations,
+            minRatingAverage: newMinRating,
+            maxRatingAverage: newMaxRating,
+        });
     }
     
     handleMarkerClick(location) {
@@ -74,13 +104,7 @@ export default class App extends React.Component {
     }
 
     componentDidMount() {
-        // Fetch data
-        this.setState({
-            locations: data.features,
-            filteredLocations: data.features
-        });
-        this.getRatingsAverage();
-
+        this.initLocations();
         // Try HTML5 geolocation
         this.showCurrentLocation();
     }
@@ -91,6 +115,9 @@ export default class App extends React.Component {
                 <Sidebar
                     locations={this.state.filteredLocations}
                     ratingsAverage={this.state.ratingsAverage}
+                    minRatingAverage={this.state.minRatingAverage}
+                    maxRatingAverage={this.state.maxRatingAverage}
+                    onChangeFilterInputs={(newMinValue, newMaxValue) => this.handleChangeFilterInputs(newMinValue, newMaxValue)}
                     selectedLocation={this.state.selectedLocation}
                 />
                 <div id="map">
