@@ -11,8 +11,10 @@ class Filter extends React.Component {
             resizableValues: {
                 resizable: null,
                 resizableWidth: null,
+                originalResizableWidth: null,
                 resizableLeft: null,
                 resizableRight: null,
+                halfResizerWidth: null,
                 minMouseX: null,
                 maxMouseX: null,
                 oneStarWidth: null,
@@ -21,36 +23,199 @@ class Filter extends React.Component {
                 fourStarsWidth: null
             }
         };
-        this.handleChange = this.handleChange.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
         this.handleButtonClick = this.handleButtonClick.bind(this);
         this.handleMouseDown = this.handleMouseDown.bind(this);
     }
 
-    handleChange(e) {
-        let value = e.target.value
-            // Remove all non-digits
-            .replace(/\D+/, '')
-            // Remove digits > 5
-            .replace(/[6-9]+/, '')
-            // Stick to first number, ignore later digits
-            .slice(0, 1)
+    makeResizable() {
+        const resizable = document.querySelector('.resizable');
+        const originalResizableWidth = parseFloat(getComputedStyle(resizable, null).getPropertyValue('width'));
+        const resizableWidth = originalResizableWidth;
 
-        if (e.target.id === 'filter-input-min') {
-            this.setState({ minValue: parseInt(value) });
-        } else if (e.target.id === 'filter-input-max') {
-            this.setState({ maxValue: parseInt(value) });
+        const resizableLeft = 0;
+        const resizableRight = 0;
+
+        const resizer = document.querySelector('.resizer');
+        const halfResizerWidth = Math.floor(parseFloat(getComputedStyle(resizer, null).getPropertyValue('width')) / 2); 
+
+        const minMouseX = resizable.getBoundingClientRect().left;
+        const maxMouseX = resizable.getBoundingClientRect().right;
+
+        const oneStarWidth = Math.floor(originalResizableWidth / 5);
+        const twoStarsWidth = Math.floor(originalResizableWidth * (2 / 5));
+        const threeStarsWidth = Math.floor(originalResizableWidth * (3 / 5));
+        const fourStarsWidth = Math.floor(originalResizableWidth * (4 / 5));
+
+        this.setState({
+            resizableValues: {
+                resizable,
+                resizableWidth,
+                originalResizableWidth,
+                resizableLeft,
+                resizableRight,
+                halfResizerWidth,
+                minMouseX,
+                maxMouseX,
+                oneStarWidth,
+                twoStarsWidth,
+                threeStarsWidth,
+                fourStarsWidth
+            }
+        });
+    }
+
+    handleInput(value, input) {
+        const { minValue, maxValue } = this.state;
+        const {
+            resizable,
+            resizableWidth,
+            originalResizableWidth,
+            resizableLeft,
+            resizableRight,
+            oneStarWidth
+        } = this.state.resizableValues;
+
+        let newMinValue, newMaxValue, newResizableWidth, newResizableLeft, newResizableRight;
+
+        // Minimum input
+        if (input === 'filter-input-min') {
+
+            if (parseInt(value) || parseInt(value) === 0) {
+
+                if (value <= maxValue) {
+                    newResizableLeft = value * oneStarWidth;
+                    newResizableWidth = originalResizableWidth - (newResizableLeft + resizableRight);
+                    resizable.style.width = newResizableWidth + 'px';
+                    resizable.style.left = newResizableLeft + 'px';
+                    newResizableRight = resizableRight;
+
+                    newMinValue = parseInt(value);
+                    newMaxValue = maxValue;
+
+                } else {
+                    newResizableWidth = resizableWidth + resizableLeft;
+                    resizable.style.width = newResizableWidth + 'px';
+                    resizable.style.left = '0px';
+                    newResizableLeft = 0;
+                    newResizableRight = resizableRight;
+
+                    newMinValue = 0;
+                    newMaxValue = maxValue;
+                }
+
+            } else {
+                newResizableWidth = resizableWidth;
+                newResizableLeft = resizableLeft;
+                newResizableRight = resizableRight;
+
+                newMinValue =  '';
+                newMaxValue = maxValue;
+            }
+
+        // Maximum input
+        } else if (input === 'filter-input-max') {
+
+            if (parseInt(value) || parseInt(value) === 0) {
+
+                if (value >= minValue) {
+                    newResizableRight = oneStarWidth * 5 - value * oneStarWidth;
+                    newResizableWidth = originalResizableWidth - (resizableLeft + newResizableRight);
+                    resizable.style.width = newResizableWidth + 'px';
+                    resizable.style.right = newResizableRight + 'px';
+                    newResizableLeft = resizableLeft;
+
+                    newMinValue = minValue;
+                    newMaxValue = parseInt(value);
+
+                } else {
+                    newResizableWidth = resizableWidth + resizableRight;
+                    resizable.style.width = newResizableWidth + 'px';
+                    newResizableLeft = resizableLeft;
+                    newResizableRight = resizableRight;
+
+                    newMinValue = minValue;
+                    newMaxValue = 5;
+                }
+
+            } else {
+                newResizableWidth = resizableWidth;
+                newResizableLeft = resizableLeft;
+                newResizableRight = resizableRight;
+
+                newMinValue = minValue;
+                newMaxValue = '';
+            }
         }
+
+        return {newMinValue, newMaxValue, newResizableWidth, newResizableLeft, newResizableRight};
+    }
+
+    handleInputChange(e) {
+        const value = e.target.value
+            // Only numbers between 0 and 5
+            .replace(/[^0-5]/g, '')
+            // Stick to first number, ignore later digits
+            .slice(0, 1);
+        const input = e.target.id;
+
+        const newFilterValues = this.handleInput(value, input);
+
+        this.setState((prevState) => (
+            {
+                minValue: newFilterValues.newMinValue,
+                maxValue: newFilterValues.newMaxValue,
+                resizableValues: {
+                    ...prevState.resizableValues,
+                    resizableWidth: newFilterValues.newResizableWidth,
+                    resizableLeft: newFilterValues.newResizableLeft,
+                    resizableRight: newFilterValues.newResizableRight
+                }
+            }
+        ));
     }
 
     handleButtonClick(e) {
+        let newFilterValues;
+
         if (e.target.classList.contains('button-min-up') && this.state.minValue < 5) {
-            this.setState((prevState) => ({ minValue: prevState.minValue + 1 }));
+            const newMinValue = this.state.minValue + 1;
+            const thisFilterComponent = this;
+
+            newFilterValues = thisFilterComponent.handleInput(newMinValue, 'filter-input-min');
+
         } else if (e.target.classList.contains('button-min-down') && this.state.minValue > 0) {
-            this.setState((prevState) => ({ minValue: prevState.minValue - 1 }));
+            const newMinValue = this.state.minValue - 1;
+            const thisFilterComponent = this;
+
+            newFilterValues = thisFilterComponent.handleInput(newMinValue, 'filter-input-min');
+
         } else if (e.target.classList.contains('button-max-up') && this.state.maxValue < 5) {
-            this.setState((prevState) => ({ maxValue: prevState.maxValue + 1 }));
+            const newMaxValue = this.state.maxValue + 1;
+            const thisFilterComponent = this;
+
+            newFilterValues = thisFilterComponent.handleInput(newMaxValue, 'filter-input-max');
+
         } else if (e.target.classList.contains('button-max-down') && this.state.maxValue > 0) {
-            this.setState((prevState) => ({ maxValue: prevState.maxValue - 1 }));
+            const newMaxValue = this.state.maxValue - 1;
+            const thisFilterComponent = this;
+
+            newFilterValues = thisFilterComponent.handleInput(newMaxValue, 'filter-input-max');
+        }
+
+        if (newFilterValues) {
+            this.setState((prevState) => (
+                {
+                    minValue: newFilterValues.newMinValue,
+                    maxValue: newFilterValues.newMaxValue,
+                    resizableValues: {
+                        ...prevState.resizableValues,
+                        resizableWidth: newFilterValues.newResizableWidth,
+                        resizableLeft: newFilterValues.newResizableLeft,
+                        resizableRight: newFilterValues.newResizableRight
+                    }
+                }
+            ));
         }
     }
 
@@ -58,16 +223,19 @@ class Filter extends React.Component {
     // Refer to this article by Hung Nguyen
     // https://medium.com/the-z/making-a-resizable-div-in-js-is-not-easy-as-you-think-bda19a1bc53d
     handleMouseDown(e) {
-        e.preventDefault();
+        // e.preventDefault();
         const currentResizer = e.target;
         let originalMouseX = e.pageX;
         const thisFilterComponent = this;
 
+        const { minValue, maxValue } = this.state;
         const {
             resizable,
             resizableWidth,
+            originalResizableWidth,
             resizableLeft,
             resizableRight,
+            halfResizerWidth,
             minMouseX,
             maxMouseX,
             oneStarWidth,
@@ -80,52 +248,85 @@ class Filter extends React.Component {
         window.addEventListener('mouseup', stopResize);
 
         function resize(e) {
+            let newMinValue = minValue;
+            let newMaxValue = maxValue;
+            let currentResizableWidth = resizableWidth;
+            let currentResizableLeft = resizableLeft;
+            let currentResizableRight = resizableRight;
 
             // Moving left resizer
             if (currentResizer.classList.contains('left')) {
-                const width = resizableWidth - (e.pageX - originalMouseX);
+                currentResizableWidth = resizableWidth - (e.pageX - originalMouseX);
 
-                if (width >= oneStarWidth && e.pageX >= minMouseX) {
-
-                    resizable.style.width = width + 'px';
+                if (currentResizableWidth > 0 && e.pageX >= minMouseX) {
+                    resizable.style.width = currentResizableWidth + 'px';
                     // Evolves the opposite way to width
                     resizable.style.left = resizableLeft + (e.pageX - originalMouseX) + 'px';
-                    const currentResizableLeft = parseFloat(getComputedStyle(resizable, null).getPropertyValue('left'));
+                    currentResizableLeft = parseFloat(getComputedStyle(resizable, null).getPropertyValue('left'));
 
                     if (currentResizableLeft < oneStarWidth) {
-                        thisFilterComponent.setState({ minValue: 0 });
+                        newMinValue = 0;
                     } else if (currentResizableLeft >= oneStarWidth && currentResizableLeft < twoStarsWidth) {
-                        thisFilterComponent.setState({ minValue: 1 });
+                        newMinValue = 1;
                     } else if (currentResizableLeft >= twoStarsWidth && currentResizableLeft < threeStarsWidth) {
-                        thisFilterComponent.setState({ minValue: 2 });
+                        newMinValue = 2;
                     } else if (currentResizableLeft >= threeStarsWidth && currentResizableLeft < fourStarsWidth) {
-                        thisFilterComponent.setState({ minValue: 3 });
+                        newMinValue = 3;
                     } else {
-                        thisFilterComponent.setState({ minValue: 4 });
+                        newMinValue = 4;
                     }
+
+                // Resizers are at the same position
+                } else if (currentResizableWidth <= 0) {
+                    newMinValue = maxValue;
+
+                } else if (currentResizableWidth > originalResizableWidth) {
+                    newMinValue = 0;
                 }
 
             // Moving right resizer
             } else if (currentResizer.classList.contains('right')) {
-                const width = resizableWidth + (e.pageX - originalMouseX);
+                currentResizableWidth = resizableWidth + (e.pageX - originalMouseX);
 
-                if (width >= oneStarWidth && e.pageX <= maxMouseX) {
-                    resizable.style.width = width + 'px';
-                    const currentResizableRight = parseFloat(getComputedStyle(resizable, null).getPropertyValue('right'));
+                if (currentResizableWidth > 0 && e.pageX <= maxMouseX) {
+                    resizable.style.width = currentResizableWidth + 'px';
+                    currentResizableRight = parseFloat(getComputedStyle(resizable, null).getPropertyValue('right'));
 
                     if (currentResizableRight < oneStarWidth) {
-                        thisFilterComponent.setState({ maxValue: 5 });
+                        newMaxValue = 5;
                     } else if (currentResizableRight >= oneStarWidth && currentResizableRight < twoStarsWidth) {
-                        thisFilterComponent.setState({ maxValue: 4 });
+                        newMaxValue = 4;
                     } else if (currentResizableRight >= twoStarsWidth && currentResizableRight < threeStarsWidth) {
-                        thisFilterComponent.setState({ maxValue: 3 });
+                        newMaxValue = 3;
                     } else if (currentResizableRight >= threeStarsWidth && currentResizableRight < fourStarsWidth) {
-                        thisFilterComponent.setState({ maxValue: 2 });
+                        newMaxValue = 2;
                     } else {
-                        thisFilterComponent.setState({ maxValue: 1 });
+                        newMaxValue = 1;
                     }
+
+                // Resizers are at the same position
+                } else if (currentResizableWidth <= 0) {
+                    newMaxValue = minValue;
+
+                } else if (currentResizableWidth > originalResizableWidth) {
+                    newMaxValue = 5;
                 }
             }
+
+            currentResizableWidth = parseFloat(getComputedStyle(resizable, null).getPropertyValue('width'));
+
+            thisFilterComponent.setState((prevState) => (
+                {
+                    minValue: newMinValue,
+                    maxValue: newMaxValue,
+                    resizableValues: {
+                        ...prevState.resizableValues,
+                        resizableWidth: currentResizableWidth,
+                        resizableLeft: currentResizableLeft,
+                        resizableRight: currentResizableRight
+                    }
+                }
+            ));
         }
 
         function stopResize() {
@@ -160,22 +361,18 @@ class Filter extends React.Component {
                     newResizableLeft = threeStarsWidth;
                     resizable.style.left = newResizableLeft + 'px';
 
-                } else {
+                } else if (newResizableLeft >= fourStarsWidth && newResizableLeft < originalResizableWidth - halfResizerWidth) {
                     newResizableWidth += (newResizableLeft - fourStarsWidth);
                     resizable.style.width = newResizableWidth + 'px';
                     newResizableLeft = fourStarsWidth;
                     resizable.style.left = newResizableLeft + 'px';
-                }
 
-                thisFilterComponent.setState((prevState) => (
-                    {
-                        resizableValues: {
-                            ...prevState.resizableValues,
-                            resizableWidth: newResizableWidth,
-                            resizableLeft: newResizableLeft
-                        }
-                    }
-                ));
+                } else {
+                    newResizableWidth = halfResizerWidth;
+                    resizable.style.width = halfResizerWidth + 'px';
+                    newResizableLeft = originalResizableWidth - halfResizerWidth;
+                    resizable.style.left = newResizableLeft + 'px';
+                }
             }
 
             if (newResizableRight !== resizableRight) {
@@ -196,55 +393,30 @@ class Filter extends React.Component {
                     newResizableWidth += (newResizableRight - threeStarsWidth);
                     resizable.style.width = newResizableWidth + 'px';
 
-                } else {
+                } else if (newResizableRight >= fourStarsWidth && newResizableRight < originalResizableWidth - halfResizerWidth) {
                     newResizableWidth += (newResizableRight - fourStarsWidth);
                     resizable.style.width = newResizableWidth + 'px';
+                } else {
+                    newResizableWidth = halfResizerWidth;
+                    resizable.style.width = halfResizerWidth + 'px';
                 }
 
                 newResizableRight = parseFloat(getComputedStyle(resizable, null).getPropertyValue('right'));
-                thisFilterComponent.setState((prevState) => (
-                    {
-                        resizableValues: {
-                            ...prevState.resizableValues,
-                            resizableWidth: newResizableWidth,
-                            resizableRight: newResizableRight
-                        }
+            }
+
+            thisFilterComponent.setState((prevState) => (
+                {
+                    resizableValues: {
+                        ...prevState.resizableValues,
+                        resizableWidth: newResizableWidth,
+                        resizableLeft: newResizableLeft,
+                        resizableRight: newResizableRight
                     }
-                ));
-            }
+                }
+            ));
+
+            window.removeEventListener('mouseup', stopResize);
         }
-    }
-
-    makeResizable() {
-        const resizable = document.querySelector('.resizable');
-        const originalResizableWidth = parseFloat(getComputedStyle(resizable, null).getPropertyValue('width'));
-        const resizableWidth = originalResizableWidth;
-
-        const resizableLeft = 0;
-        const resizableRight = 0;
-
-        const minMouseX = resizable.getBoundingClientRect().left;
-        const maxMouseX = resizable.getBoundingClientRect().right;
-
-        const oneStarWidth = Math.floor(originalResizableWidth / 5);
-        const twoStarsWidth = Math.floor(originalResizableWidth * (2 / 5));
-        const threeStarsWidth = Math.floor(originalResizableWidth * (3 / 5));
-        const fourStarsWidth = Math.floor(originalResizableWidth * (4 / 5));
-
-        this.setState({
-            resizableValues: {
-                resizable,
-                resizableWidth,
-                resizableLeft,
-                resizableRight,
-                minMouseX,
-                maxMouseX,
-                oneStarWidth,
-                twoStarsWidth,
-                threeStarsWidth,
-                fourStarsWidth
-            }
-        });
     }
 
     componentDidMount() {
@@ -254,94 +426,96 @@ class Filter extends React.Component {
     render() {
         return (
             <div className="filter">
-                <div className="filter-title">Trier par notes</div>
+                <form action="">
+                    <div className="filter-title">Trier par notes</div>
 
-                <div className="filter-labels">
-                    <label htmlFor="filter-input-min">Min</label>
-                    <label htmlFor="filter-input-max">Max</label>
-                </div>
-
-                <div className="filter-selectors">
-                    <div className="filter-selector-input">
-                        <div className="filter-selector-input-1">
-                            <input
-                                type="number"
-                                name="filter-input-min"
-                                value={this.state.minValue}
-                                onChange={this.handleChange}
-                                id="filter-input-min"
-                                min="0"
-                                max="5"
-                                step="1"
-                            />
-                            <div className="filter-buttons">
-                                <div className="button">
-                                    <img src="/src/assets/img/chevron-up.svg"
-                                        className="button-min-up"
-                                        onClick={this.handleButtonClick}
-                                        alt="chevron-up"
-                                    />
-                                </div>
-                                <div className="button">
-                                    <img
-                                        src="/src/assets/img/chevron-down.svg"
-                                        className="button-min-down"
-                                        onClick={this.handleButtonClick}
-                                        alt="chevron-down"
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                    <div className="filter-labels">
+                        <label htmlFor="filter-input-min">Min</label>
+                        <label htmlFor="filter-input-max">Max</label>
                     </div>
 
-                    <div className="filter-selector-line">
-                        <div className="filter-selector-line-inner">
-                            <div className="resizable">
-                                <div
-                                    className="resizer left"
-                                    onMouseDown={this.handleMouseDown}
+                    <div className="filter-selectors">
+                        <div className="filter-selector-input">
+                            <div className="filter-selector-input-1">
+                                <input
+                                    type="number"
+                                    name="filter-input-min"
+                                    value={this.state.minValue}
+                                    onChange={this.handleInputChange}
+                                    id="filter-input-min"
+                                    min="0"
+                                    max="5"
+                                    step="1"
                                 />
-                                <div
-                                    className="resizer right"
-                                    onMouseDown={this.handleMouseDown}
-                                />
+                                <div className="filter-buttons">
+                                    <div className="button">
+                                        <img src="/src/assets/img/chevron-up.svg"
+                                            className="button-min-up"
+                                            onClick={this.handleButtonClick}
+                                            alt="chevron-up"
+                                        />
+                                    </div>
+                                    <div className="button">
+                                        <img
+                                            src="/src/assets/img/chevron-down.svg"
+                                            className="button-min-down"
+                                            onClick={this.handleButtonClick}
+                                            alt="chevron-down"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div className="filter-selector-input">
-                        <div className="filter-selector-input-2">
-                            <input
-                                type="number"
-                                name="filter-input-max"
-                                value={this.state.maxValue}
-                                onChange={this.handleChange}
-                                id="filter-input-max"
-                                min="0"
-                                max="5"
-                                step="1"
-                            />
-                            <div className="filter-buttons">
-                                <div className="button">
-                                    <img
-                                        src="/src/assets/img/chevron-up.svg"
-                                        className="button-max-up"
-                                        onClick={this.handleButtonClick}
-                                        alt="chevron-up"
+                        <div className="filter-selector-line">
+                            <div className="filter-selector-line-inner">
+                                <div className="resizable">
+                                    <div
+                                        className="resizer left"
+                                        onMouseDown={this.handleMouseDown}
                                     />
-                                </div>
-                                <div className="button">
-                                    <img
-                                        src="/src/assets/img/chevron-down.svg"
-                                        className="button-max-down"
-                                        onClick={this.handleButtonClick}
-                                        alt="chevron-down"
+                                    <div
+                                        className="resizer right"
+                                        onMouseDown={this.handleMouseDown}
                                     />
                                 </div>
                             </div>
                         </div>
+
+                        <div className="filter-selector-input">
+                            <div className="filter-selector-input-2">
+                                <input
+                                    type="number"
+                                    name="filter-input-max"
+                                    value={this.state.maxValue}
+                                    onChange={this.handleInputChange}
+                                    id="filter-input-max"
+                                    min="0"
+                                    max="5"
+                                    step="1"
+                                />
+                                <div className="filter-buttons">
+                                    <div className="button">
+                                        <img
+                                            src="/src/assets/img/chevron-up.svg"
+                                            className="button-max-up"
+                                            onClick={this.handleButtonClick}
+                                            alt="chevron-up"
+                                        />
+                                    </div>
+                                    <div className="button">
+                                        <img
+                                            src="/src/assets/img/chevron-down.svg"
+                                            className="button-max-down"
+                                            onClick={this.handleButtonClick}
+                                            alt="chevron-down"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         );
     }
