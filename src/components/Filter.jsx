@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import '../styles/Filter.css';
 
@@ -141,6 +142,7 @@ class Filter extends React.Component {
 
                 // Resizers are at the same position
                 } else if (value === minValue) {
+                    console.log('hello');
                     newResizableRight = originalResizableWidth - value * oneStarWidth + halfResizerWidth;
                     newResizableWidth = halfResizerWidth;
                     resizable.style.width = halfResizerWidth + 'px';
@@ -445,8 +447,8 @@ class Filter extends React.Component {
 
     static getDerivedStateFromProps(nextProps, prevState) {
         return {
-         minValue: nextProps.minRatingAverage,
-         maxValue: nextProps.maxRatingAverage
+            minValue: nextProps.minRatingAverage,
+            maxValue: nextProps.maxRatingAverage
         };
     }
 
@@ -546,6 +548,19 @@ class Filter extends React.Component {
             </div>
         );
     }
+}
+
+Filter.propTypes = {
+    // String type when filter input is empty
+    minRatingAverage: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ]).isRequired,
+    maxRatingAverage: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ]).isRequired,
+    onChangeFilterInputs: PropTypes.func.isRequired
 }
 
 export default Filter;

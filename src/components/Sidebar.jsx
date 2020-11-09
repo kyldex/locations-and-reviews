@@ -36,6 +36,16 @@ const Sidebar = ({ locations, minRatingAverage, maxRatingAverage, onChangeFilter
 
 Sidebar.propTypes = {
     locations: PropTypes.array,
+    // String type when filter input is empty
+    minRatingAverage: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ]).isRequired,
+    maxRatingAverage: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+      ]).isRequired,
+    onChangeFilterInputs: PropTypes.func.isRequired,
     ratingsAverage: PropTypes.object,
     selectedLocation: PropTypes.object
 }

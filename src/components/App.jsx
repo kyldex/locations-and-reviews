@@ -1,6 +1,5 @@
 import React from 'react';
 import * as data from '../data/restaurants.json';
-const { REACT_APP_GMAP_API_KEY } = process.env;
 
 import Map from './Map.jsx';
 import Sidebar from './Sidebar.jsx';
@@ -122,10 +121,6 @@ export default class App extends React.Component {
                 />
                 <div id="map">
                     <Map
-                        googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${REACT_APP_GMAP_API_KEY}`}
-                        loadingElement={<div style={{ height: "100%" }} />}
-                        containerElement={<div style={{ height: "100%" }} />}
-                        mapElement={<div style={{ height: "100%" }} />}
                         currentLocation={this.state.userCurrentLocation}
                         isMarkerShown={this.state.isMarkerShown}
                         locations={this.state.filteredLocations}
