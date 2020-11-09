@@ -7,10 +7,9 @@ import Filter from './Filter.jsx';
 
 import '../styles/Sidebar.css';
 
-const Sidebar = ({ locations, minRatingAverage, maxRatingAverage, onChangeFilterInputs, ratingsAverage, selectedLocation }) => (
+const Sidebar = ({handleLocationCardClick, handleLocationCardHover, locations, minRatingAverage, maxRatingAverage, onChangeFilterInputs, ratingsAverage, selectedLocation }) => (
 
     <div id="sidebar">
-
         {selectedLocation ? (
             <LocationSingle selectedLocation={selectedLocation}/>
         ) : (
@@ -25,6 +24,8 @@ const Sidebar = ({ locations, minRatingAverage, maxRatingAverage, onChangeFilter
                         key={location.properties.storeid}
                         location={location}
                         ratingsAverage={ratingsAverage}
+                        handleLocationCardClick={(location) => handleLocationCardClick(location)}
+                        handleLocationCardHover={(location) => handleLocationCardHover(location)}
                     />
                 )) : (
                     <div>Waiting for locations</div>
@@ -35,6 +36,8 @@ const Sidebar = ({ locations, minRatingAverage, maxRatingAverage, onChangeFilter
 );
 
 Sidebar.propTypes = {
+    handleLocationCardClick: PropTypes.func.isRequired,
+    handleLocationCardHover: PropTypes.func.isRequired,
     locations: PropTypes.array,
     // String type when filter input is empty
     minRatingAverage: PropTypes.oneOfType([

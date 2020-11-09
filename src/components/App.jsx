@@ -15,7 +15,8 @@ export default class App extends React.Component {
             ratingsAverage: {},
             minRatingAverage: 0,
             maxRatingAverage: 5,
-            selectedLocation: null
+            selectedLocation: null,
+            hoveredLocation: null
         };
     }
 
@@ -78,9 +79,19 @@ export default class App extends React.Component {
         this.setState({ selectedLocation: location });
     }
 
+    handleLocationCardClick(location) {
+        this.setState({
+            selectedLocation: location,
+            hoveredLocation: null
+        });
+    }
+
+    handleLocationCardHover(location) {
+        this.setState({ hoveredLocation: location });
+    }
+
     componentDidMount() {
         this.initLocations();
-        // Try HTML5 geolocation
     }
 
     render() {
@@ -93,12 +104,15 @@ export default class App extends React.Component {
                     maxRatingAverage={this.state.maxRatingAverage}
                     onChangeFilterInputs={(newMinValue, newMaxValue) => this.handleChangeFilterInputs(newMinValue, newMaxValue)}
                     selectedLocation={this.state.selectedLocation}
+                    handleLocationCardClick={(location) => this.handleLocationCardClick(location)}
+                    handleLocationCardHover={(location) => this.handleLocationCardHover(location)}
                 />
                 <div id="map">
                     <Map
                         locations={this.state.filteredLocations}
-                        onClick={(location) => this.handleMarkerClick(location)}
+                        handleMarkerClick={(location) => this.handleMarkerClick(location)}
                         selectedLocation={this.state.selectedLocation}
+                        hoveredLocation={this.state.hoveredLocation}
                     />
                 </div>
             </div>

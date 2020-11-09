@@ -107,12 +107,12 @@ class Map extends React.Component {
                                 lat: location.geometry.coordinates[1],
                                 lng: location.geometry.coordinates[0]
                             }}
-                            onClick={() => this.props.onClick(location)}
-                            animation={this.props.selectedLocation && this.props.selectedLocation.properties.storeid === location.properties.storeid ? 1 : null}
+                            onClick={() => this.props.handleMarkerClick(location)}
+                            animation={this.props.hoveredLocation && this.props.hoveredLocation.properties.storeid === location.properties.storeid ? 1 : null}
                         >
                             {this.props.selectedLocation && this.props.selectedLocation.properties.storeid === location.properties.storeid && (
                                 <InfoWindow
-                                    onCloseClick={() => this.props.onClick(null)}
+                                    onCloseClick={() => this.props.handleMarkerClick(null)}
                                 >
                                     <div>
                                         <div className="infowindow-title">{this.props.selectedLocation.properties.name}</div>
@@ -134,8 +134,9 @@ class Map extends React.Component {
 
 Map.propTypes = {
     locations: PropTypes.array,
-    onClick: PropTypes.func.isRequired,
-    selectedLocation: PropTypes.object
+    handleMarkerClick: PropTypes.func.isRequired,
+    selectedLocation: PropTypes.object,
+    hoveredLocation: PropTypes.object
 }
 
 export default Map;
