@@ -7,7 +7,6 @@ import Sidebar from './Sidebar.jsx';
 import '../styles/App.css';
 
 export default class App extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -16,12 +15,7 @@ export default class App extends React.Component {
             ratingsAverage: {},
             minRatingAverage: 0,
             maxRatingAverage: 5,
-            selectedLocation: null,
-            userCurrentLocation: {
-                lat: 48.8534,
-                lng: 2.3488
-            },
-            isMarkerShown: false
+            selectedLocation: null
         };
     }
 
@@ -51,24 +45,6 @@ export default class App extends React.Component {
         })
 
         return locationsRatingsAverage;
-    }
-
-    showCurrentLocation() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    this.setState(() => ({
-                        userCurrentLocation: {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude
-                        },
-                        isMarkerShown: true
-                    }));
-                }
-            );
-        } else {
-          (error) => console.log(error);
-        }
     }
 
     handleChangeFilterInputs(newMinRating, newMaxRating) {
@@ -105,7 +81,6 @@ export default class App extends React.Component {
     componentDidMount() {
         this.initLocations();
         // Try HTML5 geolocation
-        this.showCurrentLocation();
     }
 
     render() {
@@ -121,8 +96,6 @@ export default class App extends React.Component {
                 />
                 <div id="map">
                     <Map
-                        currentLocation={this.state.userCurrentLocation}
-                        isMarkerShown={this.state.isMarkerShown}
                         locations={this.state.filteredLocations}
                         onClick={(location) => this.handleMarkerClick(location)}
                         selectedLocation={this.state.selectedLocation}

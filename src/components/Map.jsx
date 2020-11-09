@@ -4,10 +4,11 @@ import PropTypes from 'prop-types';
 import { GoogleMap, InfoWindow, LoadScript, Marker } from '@react-google-maps/api';
 
 import '../styles/Map.css';
+import { mapStyles } from '../map-styles';
 
 const { REACT_APP_GMAP_API_KEY } = process.env;
 const libraries = ['places'];
-const stylesArray = [];
+const stylesArray = mapStyles;
 
 class Map extends React.Component {
     constructor(props) {
@@ -15,12 +16,31 @@ class Map extends React.Component {
         this.state = {
             locations: this.props.locations,
             center: {
-                lat: this.props.currentLocation.lat,
-                lng: this.props.currentLocation.lng
+                lat: 48.8534,
+                lng: 2.3488
             },
+            isUSerMarkerShown: false,
             infoWindowUserPos: true
         }
         this.handleClickMarkerUserPos = this.handleClickMarkerUserPos.bind(this);
+    }
+
+    showCurrentLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    this.setState(() => ({
+                        center: {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        },
+                        isUserMarkerShown: true
+                    }));
+                }
+            );
+        } else {
+          (error) => console.log(error);
+        }
     }
 
     handleClickMarkerUserPos() {
@@ -33,15 +53,17 @@ class Map extends React.Component {
 
     static getDerivedStateFromProps(nextProps, prevState) {
         return {
-            locations: nextProps.locations,
-            center: {
-                lat: nextProps.currentLocation.lat,
-                lng: nextProps.currentLocation.lng
-            }
+            locations: nextProps.locations
         };
     }
 
+    componentDidMount() {
+        // Try HTML5 geolocation
+        this.showCurrentLocation();
+    }
+
     render() {
+        console.log('render map');
         return (
             <LoadScript
                 googleMapsApiKey={REACT_APP_GMAP_API_KEY}
@@ -56,11 +78,12 @@ class Map extends React.Component {
                         lat: this.state.center.lat,
                         lng: this.state.center.lng
                     }}
-                    styles={stylesArray}
+                    options={{styles: stylesArray}}
                     zoom={12}
                 >
-                    {this.props.isMarkerShown && (
+                    {this.state.isUserMarkerShown && (
                         <Marker
+                            icon="/src/assets/img/user-location.svg"
                             position={{ lat: this.state.center.lat, lng: this.state.center.lng }}
                             onClick={this.handleClickMarkerUserPos}
                         >
@@ -78,12 +101,14 @@ class Map extends React.Component {
                     
                     {this.state.locations ? this.state.locations.map((location) => (
                         <Marker
+                            icon="/src/assets/img/restaurant.svg"
                             key={location.properties.storeid}
                             position={{
                                 lat: location.geometry.coordinates[1],
                                 lng: location.geometry.coordinates[0]
                             }}
                             onClick={() => this.props.onClick(location)}
+                            animation={this.props.selectedLocation && this.props.selectedLocation.properties.storeid === location.properties.storeid ? 1 : null}
                         >
                             {this.props.selectedLocation && this.props.selectedLocation.properties.storeid === location.properties.storeid && (
                                 <InfoWindow
@@ -108,8 +133,6 @@ class Map extends React.Component {
 }
 
 Map.propTypes = {
-    currentLocation: PropTypes.object.isRequired,
-    isMarkerShown: PropTypes.bool.isRequired,
     locations: PropTypes.array,
     onClick: PropTypes.func.isRequired,
     selectedLocation: PropTypes.object
