@@ -1,7 +1,14 @@
 .location-card {
     padding: 1.2rem 1.5rem 2rem;
     width: 100%;
+    background-color: #fff;
     border-bottom: solid 1px #b4b2b2;
+    transition: background-color 200ms ease-in;
+}
+
+.location-card:hover {
+    background-color: #e4e4e4;
+    cursor: pointer;
 }
 
 .location-card h2 {

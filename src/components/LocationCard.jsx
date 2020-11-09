@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import '../styles/LocationCard.css';
 
 const LocationCard = ({ location, ratingsAverage }) => {
-
     const storeId = location.properties.storeid;
     const average = ratingsAverage[storeId];
 

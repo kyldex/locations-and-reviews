@@ -7,6 +7,7 @@ import '../styles/Map.css';
 
 const { REACT_APP_GMAP_API_KEY } = process.env;
 const libraries = ['places'];
+const stylesArray = [];
 
 class Map extends React.Component {
     constructor(props) {
@@ -55,6 +56,7 @@ class Map extends React.Component {
                         lat: this.state.center.lat,
                         lng: this.state.center.lng
                     }}
+                    styles={stylesArray}
                     zoom={12}
                 >
                     {this.props.isMarkerShown && (

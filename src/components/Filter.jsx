@@ -84,6 +84,7 @@ class Filter extends React.Component {
         if (input === 'filter-input-min') {
 
             if (parseInt(value) || parseInt(value) === 0) {
+                value = parseInt(value);
 
                 if (value < maxValue) {
                     newResizableLeft = value * oneStarWidth;
@@ -92,7 +93,7 @@ class Filter extends React.Component {
                     resizable.style.width = newResizableWidth + 'px';
                     newResizableRight = resizableRight;
 
-                    newMinValue = parseInt(value);
+                    newMinValue = value;
                     newMaxValue = maxValue;
 
                 // Resizers are at the same position
@@ -103,7 +104,7 @@ class Filter extends React.Component {
                     resizable.style.width = halfResizerWidth + 'px';
                     newResizableRight = resizableRight;
 
-                    newMinValue = parseInt(value);
+                    newMinValue = value;
                     newMaxValue = maxValue;
 
                 } else {
@@ -130,6 +131,7 @@ class Filter extends React.Component {
         } else if (input === 'filter-input-max') {
 
             if (parseInt(value) || parseInt(value) === 0) {
+                value = parseInt(value);
 
                 if (value > minValue) {
                     newResizableRight = originalResizableWidth - value * oneStarWidth;
@@ -138,18 +140,17 @@ class Filter extends React.Component {
                     newResizableLeft = resizableLeft;
 
                     newMinValue = minValue;
-                    newMaxValue = parseInt(value);
+                    newMaxValue = value;
 
                 // Resizers are at the same position
                 } else if (value === minValue) {
-                    console.log('hello');
                     newResizableRight = originalResizableWidth - value * oneStarWidth + halfResizerWidth;
                     newResizableWidth = halfResizerWidth;
                     resizable.style.width = halfResizerWidth + 'px';
                     newResizableLeft = resizableLeft;
 
                     newMinValue = minValue;
-                    newMaxValue = parseInt(value);
+                    newMaxValue = value;
 
                 } else {
                     newResizableLeft = resizableLeft;
