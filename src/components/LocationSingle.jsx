@@ -5,7 +5,7 @@ import '../styles/LocationSingle.css';
 
 const { REACT_APP_GMAP_API_KEY } = process.env;
 
-const LocationSingle = ({ selectedLocation }) => {
+const LocationSingle = ({ handleReturnToLocationsList, selectedLocation }) => {
     const lat = selectedLocation.geometry.coordinates[1];
     const lng = selectedLocation.geometry.coordinates[0];
     const imgURL = `https://maps.googleapis.com/maps/api/streetview?size=600x400&location=${lat},${lng}&key=${REACT_APP_GMAP_API_KEY}`;
@@ -13,6 +13,7 @@ const LocationSingle = ({ selectedLocation }) => {
     return (
         <div className="location-single">
             <img src={imgURL} />
+            <p onClick={(handleReturnToLocationsList)}>Retour à la liste</p>
             <h2>{selectedLocation.properties.name}</h2>
             <div className="location-single-reviews">
                 {selectedLocation.properties.ratings.map((rating) => (
@@ -27,6 +28,7 @@ const LocationSingle = ({ selectedLocation }) => {
 };
 
 LocationSingle.propTypes = {
+    handleReturnToLocationsList: PropTypes.func.isRequired,
     selectedLocation: PropTypes.object.isRequired
 }
 

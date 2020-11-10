@@ -14,14 +14,20 @@ class Map extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            locations: this.props.locations,
             center: {
                 lat: 48.8534,
                 lng: 2.3488
             },
-            isUSerMarkerShown: false,
+            userMarkerPos: {
+                lat: null,
+                lng: null
+            },
+            isUserMarkerShown: false,
             infoWindowUserPos: true
         }
+        this.mapRef = React.createRef();
+        this.handleLoad = this.handleLoad.bind(this);
+        this.handleCenter = this.handleCenter.bind(this);
         this.handleClickMarkerUserPos = this.handleClickMarkerUserPos.bind(this);
     }
 
@@ -34,6 +40,10 @@ class Map extends React.Component {
                             lat: position.coords.latitude,
                             lng: position.coords.longitude
                         },
+                        userMarkerPos: {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude   
+                        },
                         isUserMarkerShown: true
                     }));
                 }
@@ -43,18 +53,25 @@ class Map extends React.Component {
         }
     }
 
+    handleLoad(map) {
+        this.mapRef.current = map;
+    }
+
+    handleCenter() {
+        if (!this.mapRef.current) {
+            return;
+        }
+
+        const newPos = this.mapRef.current.getCenter().toJSON();
+        this.setState({ center: newPos});
+    }
+
     handleClickMarkerUserPos() {
         if (this.state.infoWindowUserPos === true) {
             this.setState({ infoWindowUserPos: false })
         } else {
             this.setState({ infoWindowUserPos: true }) 
         }
-    }
-
-    static getDerivedStateFromProps(nextProps, prevState) {
-        return {
-            locations: nextProps.locations
-        };
     }
 
     componentDidMount() {
@@ -70,6 +87,9 @@ class Map extends React.Component {
                 libraries={libraries}
             >
                 <GoogleMap
+                    ref={this.mapRef}
+                    onLoad={this.handleLoad}
+                    onDragEnd={this.handleCenter}
                     mapContainerStyle={{
                         width: "100%",
                         height: "100%"
@@ -84,7 +104,7 @@ class Map extends React.Component {
                     {this.state.isUserMarkerShown && (
                         <Marker
                             icon="/src/assets/img/user-location.svg"
-                            position={{ lat: this.state.center.lat, lng: this.state.center.lng }}
+                            position={{ lat: this.state.userMarkerPos.lat, lng: this.state.userMarkerPos.lng }}
                             onClick={this.handleClickMarkerUserPos}
                         >
                             {this.state.infoWindowUserPos && (
@@ -99,7 +119,7 @@ class Map extends React.Component {
                         </Marker>
                     )}
                     
-                    {this.state.locations ? this.state.locations.map((location) => (
+                    {this.props.locations ? this.props.locations.map((location) => (
                         <Marker
                             icon="/src/assets/img/restaurant.svg"
                             key={location.properties.storeid}

@@ -18,6 +18,7 @@ export default class App extends React.Component {
             selectedLocation: null,
             hoveredLocation: null
         };
+        this.handleReturnToLocationsList = this.handleReturnToLocationsList.bind(this);
     }
 
     initLocations() {
@@ -87,7 +88,12 @@ export default class App extends React.Component {
     }
 
     handleLocationCardHover(location) {
+        console.log('Location card mouseOver')
         this.setState({ hoveredLocation: location });
+    }
+
+    handleReturnToLocationsList() {
+        this.setState({ selectedLocation: null });
     }
 
     componentDidMount() {
@@ -106,6 +112,7 @@ export default class App extends React.Component {
                     selectedLocation={this.state.selectedLocation}
                     handleLocationCardClick={(location) => this.handleLocationCardClick(location)}
                     handleLocationCardHover={(location) => this.handleLocationCardHover(location)}
+                    handleReturnToLocationsList={this.handleReturnToLocationsList}
                 />
                 <div id="map">
                     <Map

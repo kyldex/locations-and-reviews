@@ -32,10 +32,10 @@ class Filter extends React.Component {
     makeResizable() {
         const resizable = document.querySelector('.resizable');
         const originalResizableWidth = parseFloat(getComputedStyle(resizable, null).getPropertyValue('width'));
-        const resizableWidth = originalResizableWidth;
+        let resizableWidth = originalResizableWidth;
 
-        const resizableLeft = 0;
-        const resizableRight = 0;
+        let resizableLeft = 0;
+        let resizableRight = 0;
 
         const resizer = document.querySelector('.resizer');
         const halfResizerWidth = Math.floor(parseFloat(getComputedStyle(resizer, null).getPropertyValue('width')) / 2); 
@@ -47,6 +47,21 @@ class Filter extends React.Component {
         const twoStarsWidth = Math.floor(originalResizableWidth * (2 / 5));
         const threeStarsWidth = Math.floor(originalResizableWidth * (3 / 5));
         const fourStarsWidth = Math.floor(originalResizableWidth * (4 / 5));
+
+        // // If input values have been changed before returning to filter display
+        // if (this.state.minValue !== 0) {
+        //     const newFilterValues = this.handleInput(this.state.minValue, 'filter-input-min');
+        //     resizableWidth = newFilterValues.newResizableWidth;
+        //     resizableLeft = newFilterValues.newResizableLeft;
+        //     resizableRight = newFilterValues.newResizableRight;
+        // }
+
+        // if (this.state.maxValue !== 5) {
+        //     const newFilterValues = this.handleInput(this.state.maxValue, 'filter-input-max');
+        //     resizableWidth = newFilterValues.newResizableWidth;
+        //     resizableLeft = newFilterValues.newResizableLeft;
+        //     resizableRight = newFilterValues.newResizableRight;
+        // }
 
         this.setState({
             resizableValues: {

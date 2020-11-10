@@ -7,11 +7,14 @@ import Filter from './Filter.jsx';
 
 import '../styles/Sidebar.css';
 
-const Sidebar = ({handleLocationCardClick, handleLocationCardHover, locations, minRatingAverage, maxRatingAverage, onChangeFilterInputs, ratingsAverage, selectedLocation }) => (
+const Sidebar = ({handleLocationCardClick, handleLocationCardHover, handleReturnToLocationsList, locations, minRatingAverage, maxRatingAverage, onChangeFilterInputs, ratingsAverage, selectedLocation }) => (
 
     <div id="sidebar">
         {selectedLocation ? (
-            <LocationSingle selectedLocation={selectedLocation}/>
+            <LocationSingle
+                selectedLocation={selectedLocation}
+                handleReturnToLocationsList={handleReturnToLocationsList}
+            />
         ) : (
             <div className="location-cards">
                 <Filter
@@ -38,6 +41,7 @@ const Sidebar = ({handleLocationCardClick, handleLocationCardHover, locations, m
 Sidebar.propTypes = {
     handleLocationCardClick: PropTypes.func.isRequired,
     handleLocationCardHover: PropTypes.func.isRequired,
+    handleReturnToLocationsList: PropTypes.func.isRequired,
     locations: PropTypes.array,
     // String type when filter input is empty
     minRatingAverage: PropTypes.oneOfType([
