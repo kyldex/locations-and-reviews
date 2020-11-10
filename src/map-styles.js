@@ -71,22 +71,10 @@ export const mapStyles =
     },
     {
         "featureType": "road",
-        "elementType": "all",
-        "stylers": [
-            {
-                "visibility": "on"
-            },
-            {
-                "color": "#ffffff"
-            }
-        ]
-    },
-    {
-        "featureType": "road",
         "elementType": "labels",
         "stylers": [
             {
-                "visibility": "off"
+                "color": "#939393"
             }
         ]
     },
@@ -140,22 +128,25 @@ export const mapStyles =
     },
     {
         "featureType": "road.arterial",
-        "elementType": "all",
+        "elementType": "labels.text",
         "stylers": [
             {
-                "visibility": "simplified"
+                "visibility": "on"
             },
             {
-                "color": "#ffffff"
+                "weight": 0.9
             }
         ]
     },
     {
-        "featureType": "road.arterial",
-        "elementType": "labels",
+        "featureType": "road.local",
+        "elementType": "labels.text",
         "stylers": [
             {
-                "visibility": "off"
+                "visibility": "on"
+            },
+            {
+                "weight": 0.9
             }
         ]
     },

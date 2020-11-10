@@ -436,13 +436,6 @@ class Filter extends React.Component {
         this.makeResizable();
     }
 
-    // static getDerivedStateFromProps(nextProps, prevState) {
-    //     return {
-    //         minValue: nextProps.minRatingAverage,
-    //         maxValue: nextProps.maxRatingAverage
-    //     };
-    // }
-
     render() {
         return (
             <div className="filter">

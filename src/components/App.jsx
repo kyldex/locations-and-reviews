@@ -88,7 +88,6 @@ export default class App extends React.Component {
     }
 
     handleLocationCardHover(location) {
-        console.log('Location card mouseOver')
         this.setState({ hoveredLocation: location });
     }
 
