@@ -7,22 +7,18 @@ class Filter extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            minValue: this.props.minRatingAverage,
-            maxValue: this.props.maxRatingAverage,
-            resizableValues: {
-                resizable: null,
-                resizableWidth: null,
-                originalResizableWidth: null,
-                resizableLeft: null,
-                resizableRight: null,
-                halfResizerWidth: null,
-                minMouseX: null,
-                maxMouseX: null,
-                oneStarWidth: null,
-                twoStarsWidth: null,
-                threeStarsWidth: null,
-                fourStarsWidth: null
-            }
+            resizable: null,
+            resizableWidth: null,
+            originalResizableWidth: null,
+            resizableLeft: null,
+            resizableRight: null,
+            halfResizerWidth: null,
+            minMouseX: null,
+            maxMouseX: null,
+            oneStarWidth: null,
+            twoStarsWidth: null,
+            threeStarsWidth: null,
+            fourStarsWidth: null
         };
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleButtonClick = this.handleButtonClick.bind(this);
@@ -48,41 +44,40 @@ class Filter extends React.Component {
         const threeStarsWidth = Math.floor(originalResizableWidth * (3 / 5));
         const fourStarsWidth = Math.floor(originalResizableWidth * (4 / 5));
 
+        // Passer certaines constantes dans les props ?
         // // If input values have been changed before returning to filter display
-        // if (this.state.minValue !== 0) {
-        //     const newFilterValues = this.handleInput(this.state.minValue, 'filter-input-min');
+        // if (this.props.minRatingAverage !== 0) {
+        //     const newFilterValues = this.handleInput(this.props.minRatingAverage, 'filter-input-min');
         //     resizableWidth = newFilterValues.newResizableWidth;
         //     resizableLeft = newFilterValues.newResizableLeft;
         //     resizableRight = newFilterValues.newResizableRight;
         // }
 
-        // if (this.state.maxValue !== 5) {
-        //     const newFilterValues = this.handleInput(this.state.maxValue, 'filter-input-max');
+        // if (this.props.maxRatingAverage !== 5) {
+        //     const newFilterValues = this.handleInput(this.props.maxRatingAverage, 'filter-input-max');
         //     resizableWidth = newFilterValues.newResizableWidth;
         //     resizableLeft = newFilterValues.newResizableLeft;
         //     resizableRight = newFilterValues.newResizableRight;
         // }
 
         this.setState({
-            resizableValues: {
-                resizable,
-                resizableWidth,
-                originalResizableWidth,
-                resizableLeft,
-                resizableRight,
-                halfResizerWidth,
-                minMouseX,
-                maxMouseX,
-                oneStarWidth,
-                twoStarsWidth,
-                threeStarsWidth,
-                fourStarsWidth
-            }
+            resizable,
+            resizableWidth,
+            originalResizableWidth,
+            resizableLeft,
+            resizableRight,
+            halfResizerWidth,
+            minMouseX,
+            maxMouseX,
+            oneStarWidth,
+            twoStarsWidth,
+            threeStarsWidth,
+            fourStarsWidth
         });
     }
 
     handleInput(value, input) {
-        const { minValue, maxValue } = this.state;
+        const { minRatingAverage, maxRatingAverage } = this.props;
         const {
             resizable,
             resizableWidth,
@@ -91,7 +86,7 @@ class Filter extends React.Component {
             resizableRight,
             halfResizerWidth,
             oneStarWidth
-        } = this.state.resizableValues;
+        } = this.state;
 
         let newMinValue, newMaxValue, newResizableWidth, newResizableLeft, newResizableRight;
 
@@ -101,7 +96,7 @@ class Filter extends React.Component {
             if (parseInt(value) || parseInt(value) === 0) {
                 value = parseInt(value);
 
-                if (value < maxValue) {
+                if (value < maxRatingAverage) {
                     newResizableLeft = value * oneStarWidth;
                     newResizableWidth = originalResizableWidth - (newResizableLeft + resizableRight);
                     resizable.style.left = newResizableLeft + 'px';
@@ -109,10 +104,10 @@ class Filter extends React.Component {
                     newResizableRight = resizableRight;
 
                     newMinValue = value;
-                    newMaxValue = maxValue;
+                    newMaxValue = maxRatingAverage;
 
                 // Resizers are at the same position
-                } else if (value === maxValue) {
+                } else if (value === maxRatingAverage) {
                     newResizableLeft = value * oneStarWidth - halfResizerWidth;
                     newResizableWidth = halfResizerWidth;
                     resizable.style.left = newResizableLeft + 'px';
@@ -120,7 +115,7 @@ class Filter extends React.Component {
                     newResizableRight = resizableRight;
 
                     newMinValue = value;
-                    newMaxValue = maxValue;
+                    newMaxValue = maxRatingAverage;
 
                 } else {
                     newResizableLeft = 0;
@@ -130,7 +125,7 @@ class Filter extends React.Component {
                     newResizableRight = resizableRight;
 
                     newMinValue = 0;
-                    newMaxValue = maxValue;
+                    newMaxValue = maxRatingAverage;
                 }
 
             } else {
@@ -139,7 +134,7 @@ class Filter extends React.Component {
                 newResizableRight = resizableRight;
 
                 newMinValue =  '';
-                newMaxValue = maxValue;
+                newMaxValue = maxRatingAverage;
             }
 
         // Maximum input
@@ -148,23 +143,23 @@ class Filter extends React.Component {
             if (parseInt(value) || parseInt(value) === 0) {
                 value = parseInt(value);
 
-                if (value > minValue) {
+                if (value > minRatingAverage) {
                     newResizableRight = originalResizableWidth - value * oneStarWidth;
                     newResizableWidth = originalResizableWidth - (resizableLeft + newResizableRight);
                     resizable.style.width = newResizableWidth + 'px';
                     newResizableLeft = resizableLeft;
 
-                    newMinValue = minValue;
+                    newMinValue = minRatingAverage;
                     newMaxValue = value;
 
                 // Resizers are at the same position
-                } else if (value === minValue) {
+                } else if (value === minRatingAverage) {
                     newResizableRight = originalResizableWidth - value * oneStarWidth + halfResizerWidth;
                     newResizableWidth = halfResizerWidth;
                     resizable.style.width = halfResizerWidth + 'px';
                     newResizableLeft = resizableLeft;
 
-                    newMinValue = minValue;
+                    newMinValue = minRatingAverage;
                     newMaxValue = value;
 
                 } else {
@@ -173,7 +168,7 @@ class Filter extends React.Component {
                     newResizableWidth = resizableWidth + resizableRight;
                     resizable.style.width = newResizableWidth + 'px';
 
-                    newMinValue = minValue;
+                    newMinValue = minRatingAverage;
                     newMaxValue = 5;
                 }
 
@@ -182,7 +177,7 @@ class Filter extends React.Component {
                 newResizableLeft = resizableLeft;
                 newResizableRight = resizableRight;
 
-                newMinValue = minValue;
+                newMinValue = minRatingAverage;
                 newMaxValue = '';
             }
         }
@@ -202,40 +197,35 @@ class Filter extends React.Component {
 
         this.props.onChangeFilterInputs(newFilterValues.newMinValue, newFilterValues.newMaxValue);
 
-        this.setState((prevState) => (
-            {
-                resizableValues: {
-                    ...prevState.resizableValues,
-                    resizableWidth: newFilterValues.newResizableWidth,
-                    resizableLeft: newFilterValues.newResizableLeft,
-                    resizableRight: newFilterValues.newResizableRight
-                }
-            }
-        ));
+        this.setState({
+            resizableWidth: newFilterValues.newResizableWidth,
+            resizableLeft: newFilterValues.newResizableLeft,
+            resizableRight: newFilterValues.newResizableRight
+        });
     }
 
     handleButtonClick(e) {
         let newFilterValues;
 
-        if (e.target.classList.contains('button-min-up') && this.state.minValue < 5) {
-            const newMinValue = this.state.minValue + 1;
+        if (e.target.classList.contains('button-min-up') && this.props.minRatingAverage < 5) {
+            const newMinValue = this.props.minRatingAverage + 1;
 
-            if (newMinValue <= this.state.maxValue) {
+            if (newMinValue <= this.props.maxRatingAverage) {
                 newFilterValues = this.handleInput(newMinValue, 'filter-input-min');
             }
 
-        } else if (e.target.classList.contains('button-min-down') && this.state.minValue > 0) {
-            const newMinValue = this.state.minValue - 1;
+        } else if (e.target.classList.contains('button-min-down') && this.props.minRatingAverage > 0) {
+            const newMinValue = this.props.minRatingAverage - 1;
             newFilterValues = this.handleInput(newMinValue, 'filter-input-min');
 
-        } else if (e.target.classList.contains('button-max-up') && this.state.maxValue < 5) {
-            const newMaxValue = this.state.maxValue + 1;
+        } else if (e.target.classList.contains('button-max-up') && this.props.maxRatingAverage < 5) {
+            const newMaxValue = this.props.maxRatingAverage + 1;
             newFilterValues = this.handleInput(newMaxValue, 'filter-input-max');
 
-        } else if (e.target.classList.contains('button-max-down') && this.state.maxValue > 0) {
-            const newMaxValue = this.state.maxValue - 1;
+        } else if (e.target.classList.contains('button-max-down') && this.props.maxRatingAverage > 0) {
+            const newMaxValue = this.props.maxRatingAverage - 1;
 
-            if (newMaxValue >= this.state.minValue) {
+            if (newMaxValue >= this.props.minRatingAverage) {
                 newFilterValues = this.handleInput(newMaxValue, 'filter-input-max');
             }
         }
@@ -243,16 +233,11 @@ class Filter extends React.Component {
         if (newFilterValues) {
             this.props.onChangeFilterInputs(newFilterValues.newMinValue, newFilterValues.newMaxValue);
 
-            this.setState((prevState) => (
-                {
-                    resizableValues: {
-                        ...prevState.resizableValues,
-                        resizableWidth: newFilterValues.newResizableWidth,
-                        resizableLeft: newFilterValues.newResizableLeft,
-                        resizableRight: newFilterValues.newResizableRight
-                    }
-                }
-            ));
+            this.setState({
+                resizableWidth: newFilterValues.newResizableWidth,
+                resizableLeft: newFilterValues.newResizableLeft,
+                resizableRight: newFilterValues.newResizableRight
+            });
         }
     }
 
@@ -265,7 +250,7 @@ class Filter extends React.Component {
         let originalMouseX = e.pageX;
         const thisFilterComponent = this;
 
-        const { minValue, maxValue } = this.state;
+        const { minRatingAverage, maxRatingAverage } = this.props;
         const {
             resizable,
             resizableWidth,
@@ -279,14 +264,14 @@ class Filter extends React.Component {
             twoStarsWidth,
             threeStarsWidth,
             fourStarsWidth
-        } = this.state.resizableValues;
+        } = this.state;
 
         window.addEventListener('mousemove', resize);
         window.addEventListener('mouseup', stopResize);
 
         function resize(e) {
-            let newMinValue = minValue;
-            let newMaxValue = maxValue;
+            let newMinValue = minRatingAverage;
+            let newMaxValue = maxRatingAverage;
             let currentResizableWidth = resizableWidth;
             let currentResizableLeft = resizableLeft;
             let currentResizableRight = resizableRight;
@@ -315,7 +300,7 @@ class Filter extends React.Component {
 
                 // Resizers are at the same position
                 } else if (currentResizableWidth <= 0) {
-                    newMinValue = maxValue;
+                    newMinValue = maxRatingAverage;
 
                 } else if (currentResizableWidth > originalResizableWidth) {
                     newMinValue = 0;
@@ -343,7 +328,7 @@ class Filter extends React.Component {
 
                 // Resizers are at the same position
                 } else if (currentResizableWidth <= 0) {
-                    newMaxValue = minValue;
+                    newMaxValue = minRatingAverage;
 
                 } else if (currentResizableWidth > originalResizableWidth) {
                     newMaxValue = 5;
@@ -354,16 +339,11 @@ class Filter extends React.Component {
 
             thisFilterComponent.props.onChangeFilterInputs(newMinValue, newMaxValue);
             
-            thisFilterComponent.setState((prevState) => (
-                {
-                    resizableValues: {
-                        ...prevState.resizableValues,
-                        resizableWidth: currentResizableWidth,
-                        resizableLeft: currentResizableLeft,
-                        resizableRight: currentResizableRight
-                    }
-                }
-            ));
+            thisFilterComponent.setState({
+                resizableWidth: currentResizableWidth,
+                resizableLeft: currentResizableLeft,
+                resizableRight: currentResizableRight
+            });
         }
 
         function stopResize() {
@@ -442,16 +422,11 @@ class Filter extends React.Component {
                 newResizableRight = parseFloat(getComputedStyle(resizable, null).getPropertyValue('right'));
             }
 
-            thisFilterComponent.setState((prevState) => (
-                {
-                    resizableValues: {
-                        ...prevState.resizableValues,
-                        resizableWidth: newResizableWidth,
-                        resizableLeft: newResizableLeft,
-                        resizableRight: newResizableRight
-                    }
-                }
-            ));
+            thisFilterComponent.setState({
+                resizableWidth: newResizableWidth,
+                resizableLeft: newResizableLeft,
+                resizableRight: newResizableRight
+            });
 
             window.removeEventListener('mouseup', stopResize);
         }
@@ -461,12 +436,12 @@ class Filter extends React.Component {
         this.makeResizable();
     }
 
-    static getDerivedStateFromProps(nextProps, prevState) {
-        return {
-            minValue: nextProps.minRatingAverage,
-            maxValue: nextProps.maxRatingAverage
-        };
-    }
+    // static getDerivedStateFromProps(nextProps, prevState) {
+    //     return {
+    //         minValue: nextProps.minRatingAverage,
+    //         maxValue: nextProps.maxRatingAverage
+    //     };
+    // }
 
     render() {
         return (
@@ -485,7 +460,7 @@ class Filter extends React.Component {
                                 <input
                                     type="number"
                                     name="filter-input-min"
-                                    value={this.state.minValue}
+                                    value={this.props.minRatingAverage}
                                     onChange={this.handleInputChange}
                                     id="filter-input-min"
                                     min="0"
@@ -532,7 +507,7 @@ class Filter extends React.Component {
                                 <input
                                     type="number"
                                     name="filter-input-max"
-                                    value={this.state.maxValue}
+                                    value={this.props.maxRatingAverage}
                                     onChange={this.handleInputChange}
                                     id="filter-input-max"
                                     min="0"
