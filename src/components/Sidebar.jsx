@@ -7,8 +7,19 @@ import Filter from './Filter.jsx';
 
 import '../styles/Sidebar.css';
 
-const Sidebar = ({handleLocationCardClick, handleLocationCardHover, handleReturnToLocationsList, locations, minRatingAverage, maxRatingAverage, onChangeFilterInputs, ratingsAverage, selectedLocation }) => (
-
+const Sidebar = (
+    {
+        displayedLocations,
+        handleLocationCardClick,
+        handleLocationCardHover,
+        handleReturnToLocationsList,
+        minRatingAverage,
+        maxRatingAverage,
+        handleChangeFilterInputs,
+        ratingsAverage,
+        selectedLocation
+    }
+    ) => (
     <div id="sidebar">
         {selectedLocation ? (
             <LocationSingle
@@ -20,9 +31,9 @@ const Sidebar = ({handleLocationCardClick, handleLocationCardHover, handleReturn
                 <Filter
                     minRatingAverage={minRatingAverage}
                     maxRatingAverage={maxRatingAverage}
-                    onChangeFilterInputs={(newMinValue, newMaxValue) => onChangeFilterInputs(newMinValue, newMaxValue)}
+                    handleChangeFilterInputs={(newMinValue, newMaxValue) => handleChangeFilterInputs(newMinValue, newMaxValue)}
                 />
-                {locations ? locations.map((location) => (
+                {displayedLocations ? displayedLocations.map((location) => (
                     <LocationCard
                         key={location.properties.storeid}
                         location={location}
@@ -39,10 +50,10 @@ const Sidebar = ({handleLocationCardClick, handleLocationCardHover, handleReturn
 );
 
 Sidebar.propTypes = {
+    displayedLocations: PropTypes.array,
     handleLocationCardClick: PropTypes.func.isRequired,
     handleLocationCardHover: PropTypes.func.isRequired,
     handleReturnToLocationsList: PropTypes.func.isRequired,
-    locations: PropTypes.array,
     // String type when filter input is empty
     minRatingAverage: PropTypes.oneOfType([
         PropTypes.string,
@@ -52,7 +63,7 @@ Sidebar.propTypes = {
         PropTypes.string,
         PropTypes.number
       ]).isRequired,
-    onChangeFilterInputs: PropTypes.func.isRequired,
+      handleChangeFilterInputs: PropTypes.func.isRequired,
     ratingsAverage: PropTypes.object,
     selectedLocation: PropTypes.object
 }

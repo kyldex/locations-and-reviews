@@ -10,12 +10,16 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            locations: null,
-            filteredLocations: null,
+            allLocations: null,
+            displayedLocations: null,
+            filteredLocationsByAverage: null,
+            locationsInMapBounds: null,
             ratingsAverage: {},
             minRatingAverage: 0,
             maxRatingAverage: 5,
+            // On location card click or on map marker click
             selectedLocation: null,
+            // On location card hover
             hoveredLocation: null
         };
         this.handleReturnToLocationsList = this.handleReturnToLocationsList.bind(this);
@@ -26,8 +30,8 @@ export default class App extends React.Component {
         const locations = data.features;
 
         this.setState({
-            locations: locations,
-            filteredLocations: locations,
+            allLocations: locations,
+            displayedLocations: locations,
             ratingsAverage: this.getRatingsAverage(locations)
         });
     }
@@ -49,11 +53,35 @@ export default class App extends React.Component {
         return locationsRatingsAverage;
     }
 
+    handleLocationsInMapBounds(locations) {
+        const { filteredLocationsByAverage } = this.state;
+        const newDisplayedLocations = [];
+
+        if (filteredLocationsByAverage !== null) {
+            locations.forEach((location1) => {
+                filteredLocationsByAverage.forEach((location2) => {
+                    if (location1.properties.storeid === location2.properties.storeid) {
+                        newDisplayedLocations.push(location1);
+                    }
+                });
+            });
+        } else {
+            newDisplayedLocations.push(...locations);
+        }
+
+        this.setState({
+            displayedLocations: newDisplayedLocations,
+            locationsInMapBounds: locations
+        });
+
+    }
+
     handleChangeFilterInputs(newMinRating, newMaxRating) {
-        const ratingsAverage = this.state.ratingsAverage;
+        const { allLocations, displayedLocations, locationsInMapBounds, ratingsAverage } = this.state;
+
         const filteredIds = [];
-        const locations = this.state.locations;
         const filteredLocations = [];
+        const newDisplayedLocations = [];
 
         for (const storeId in ratingsAverage) {
             if (ratingsAverage[storeId] >= newMinRating && ratingsAverage[storeId] <= newMaxRating) {
@@ -61,23 +89,45 @@ export default class App extends React.Component {
             }
         }
 
-        filteredIds.forEach((storeId) => {
-            locations.forEach((location) => {
-                if (parseInt(location.properties.storeid) === storeId) {
-                    filteredLocations.push(location);
-                }
+        if (allLocations !== null) {
+            filteredIds.forEach((storeId) => {
+                allLocations.forEach((location) => {
+                    if (parseInt(location.properties.storeid) === storeId) {
+                        filteredLocations.push(location);
+                    }
+                });
             });
-        });
+        }
+
+        if (locationsInMapBounds !== null) {
+            filteredLocations.forEach((location1) => {
+                locationsInMapBounds.forEach((location2) => {
+                    if (location1.properties.storeid === location2.properties.storeid) {
+                        newDisplayedLocations.push(location1);
+                    }
+                });
+            });
+        } else {
+            newDisplayedLocations.push(...filteredLocations);
+        }
 
         this.setState({
-            filteredLocations: filteredLocations,
+            displayedLocations: newDisplayedLocations,
+            filteredLocationsByAverage: filteredLocations,
             minRatingAverage: newMinRating,
             maxRatingAverage: newMaxRating,
         });
+
     }
     
-    handleMarkerClick(location) {
-        this.setState({ selectedLocation: location });
+    handleMapMarkerClick(location) {
+        if (location === null) {
+            this.setState({ selectedLocation: null });
+        } else if (this.state.selectedLocation === null || location.properties.storeid !== this.state.selectedLocation.storeid) {
+            this.setState({ selectedLocation: location });
+        } else {
+            this.setState({ selectedLocation: null });
+        }
     }
 
     handleLocationCardClick(location) {
@@ -103,20 +153,22 @@ export default class App extends React.Component {
         return (
             <div className="container">
                 <Sidebar
-                    locations={this.state.filteredLocations}
+                    displayedLocations={this.state.displayedLocations}
                     ratingsAverage={this.state.ratingsAverage}
                     minRatingAverage={this.state.minRatingAverage}
                     maxRatingAverage={this.state.maxRatingAverage}
-                    onChangeFilterInputs={(newMinValue, newMaxValue) => this.handleChangeFilterInputs(newMinValue, newMaxValue)}
                     selectedLocation={this.state.selectedLocation}
+                    handleChangeFilterInputs={(newMinValue, newMaxValue) => this.handleChangeFilterInputs(newMinValue, newMaxValue)}
                     handleLocationCardClick={(location) => this.handleLocationCardClick(location)}
                     handleLocationCardHover={(location) => this.handleLocationCardHover(location)}
                     handleReturnToLocationsList={this.handleReturnToLocationsList}
                 />
                 <div id="map">
                     <Map
-                        locations={this.state.filteredLocations}
-                        handleMarkerClick={(location) => this.handleMarkerClick(location)}
+                        allLocations={this.state.allLocations}
+                        displayedLocations={this.state.displayedLocations}
+                        handleLocationsInMapBounds={(locations) => this.handleLocationsInMapBounds(locations)}
+                        handleMapMarkerClick={(location) => this.handleMapMarkerClick(location)}
                         selectedLocation={this.state.selectedLocation}
                         hoveredLocation={this.state.hoveredLocation}
                     />

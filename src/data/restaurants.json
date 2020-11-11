@@ -25,7 +25,7 @@
                         "stars": 5,
                         "comment": "Tout simplement mon restaurant préféré !"
                     }
-                 ]
+                ]
             }
         },
         {
@@ -52,7 +52,7 @@
                         "stars": 3,
                         "comment": "J'ai trouvé ça correct, sans plus"
                     }
-                 ]
+                ]
             }
         },
         {
@@ -79,7 +79,7 @@
                         "stars": 4,
                         "comment": "Agréaglement surpris, on me l'a recommandé et je le recommanderai également."
                     }
-                 ]
+                ]
             }
         },
         {
@@ -106,7 +106,88 @@
                         "stars": 3,
                         "comment": "Peut-être un peu trop original dans les plats pour moi, de l'idée mais je n'étais pas toujours convaincu."
                     }
-                 ]
+                ]
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [2.296981, 48.845904]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "La Véraison",
+                "storeid": "5",
+                "address": "64 rue de la Croix Nivert, 75015 Paris",
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                        "ratingId": "9",
+                        "stars": 5,
+                        "comment": "Excellente adresse dans le 15ème. Un lieu très joli. Du choix dans le menu, des produits frais, très bien cuisinés. Une carte des vins variée, avec une belle sélection. Allez-y c'est vraiment top, et bon rapport qualité/prix."
+                    },
+                    {
+                        "ratingId": "10",
+                        "stars": 4,
+                        "comment": "Cuisine française de qualité. Un bon choix de vins. Les plats sont délicieux. Le personnel est très accueillant et de bon conseil. Je recommande"
+                    }
+                ]
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [2.291192, 48.841879]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "Les Trois Garçons",
+                "storeid": "6",
+                "address": "165 rue de Javel, 75015 Paris",
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                        "ratingId": "11",
+                        "stars": 3,
+                        "comment": "Brasserie sympa pour prendre un verre. Le service y a été rapide, efficace et très poli. La salle intérieure est agréable et au décor typique bien que l'odeur de cigarette issue de la terrasse ne nous épargne pas. Les verres sont un peu chers pour le quartier, mais ça reste correct dans le contexte parisien"
+                    },
+                    {
+                        "ratingId": "12",
+                        "stars": 4,
+                        "comment": "Pas mal, service sympa et qualité très correcte. La terrasse par beau temps est top avec des enfants."
+                    }
+                ]
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [2.305080, 48.834728]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "Le Mal Accueillant",
+                "storeid": "7",
+                "address": "27 rue Brancion, 75015 Paris",
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                        "ratingId": "13",
+                        "stars": 1,
+                        "comment": "Non mais quel accueil !! Je n'en reviens toujours pas ! Je n'y remettrai plus les pieds."
+                    },
+                    {
+                        "ratingId": "14",
+                        "stars": 2,
+                        "comment": "Je me souviendrai longtemps de ce patron aussi méprisable avec ses clients ainsi qu'avec ses employées..."
+                    }
+                ]
             }
         }
     ]

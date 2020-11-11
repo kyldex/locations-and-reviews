@@ -7,8 +7,8 @@ import '../styles/Map.css';
 import { mapStyles } from '../map-styles';
 
 const { REACT_APP_GMAP_API_KEY } = process.env;
-const libraries = ['places'];
-const stylesArray = mapStyles;
+const LIBRARIES = ['places'];
+const STYLES_ARRAY = mapStyles;
 
 class Map extends React.Component {
     constructor(props) {
@@ -27,7 +27,7 @@ class Map extends React.Component {
         }
         this.mapRef = React.createRef();
         this.handleLoad = this.handleLoad.bind(this);
-        this.handleCenter = this.handleCenter.bind(this);
+        this.handleDragEndAndZoomChanged = this.handleDragEndAndZoomChanged.bind(this);
         this.handleClickMarkerUserPos = this.handleClickMarkerUserPos.bind(this);
     }
 
@@ -57,13 +57,35 @@ class Map extends React.Component {
         this.mapRef.current = map;
     }
 
-    handleCenter() {
+    getMapCenter() {
+       return this.mapRef.current.getCenter().toJSON();
+    }
+
+    getLocationsInMapBounds() {
+        const locationsInMapBounds = [];
+
+        this.props.allLocations.forEach((location) => {
+            if (this.mapRef.current.getBounds().contains({lat: location.geometry.coordinates[1], lng: location.geometry.coordinates[0]})) {
+                locationsInMapBounds.push(location);
+            }
+        });
+
+        return locationsInMapBounds;
+    }
+
+    handleDragEndAndZoomChanged() {
         if (!this.mapRef.current) {
             return;
         }
 
-        const newPos = this.mapRef.current.getCenter().toJSON();
-        this.setState({ center: newPos});
+        const newPos = this.getMapCenter();
+        const locationsInMapBounds = this.getLocationsInMapBounds();
+
+        this.setState({
+            center: newPos
+        });
+
+        this.props.handleLocationsInMapBounds(locationsInMapBounds);
     }
 
     handleClickMarkerUserPos() {
@@ -78,28 +100,29 @@ class Map extends React.Component {
         // Try HTML5 geolocation
         this.showCurrentLocation();
     }
-
+    
     render() {
         console.log('render map');
         return (
             <LoadScript
                 googleMapsApiKey={REACT_APP_GMAP_API_KEY}
-                libraries={libraries}
+                libraries={LIBRARIES}
             >
                 <GoogleMap
-                    ref={this.mapRef}
-                    onLoad={this.handleLoad}
-                    onDragEnd={this.handleCenter}
-                    mapContainerStyle={{
-                        width: "100%",
-                        height: "100%"
-                    }}
                     center={{
                         lat: this.state.center.lat,
                         lng: this.state.center.lng
                     }}
-                    options={{styles: stylesArray}}
-                    zoom={12}
+                    mapContainerStyle={{
+                        width: "100%",
+                        height: "100%"
+                    }}
+                    onDragEnd={this.handleDragEndAndZoomChanged}
+                    onLoad={this.handleLoad}
+                    onZoomChanged={this.handleDragEndAndZoomChanged}
+                    options={{styles: STYLES_ARRAY}}
+                    ref={this.mapRef}
+                    zoom={this.state.isUserMarkerShown ? 14 : 12}
                 >
                     {this.state.isUserMarkerShown && (
                         <Marker
@@ -119,7 +142,7 @@ class Map extends React.Component {
                         </Marker>
                     )}
                     
-                    {this.props.locations ? this.props.locations.map((location) => (
+                    {this.props.displayedLocations ? this.props.displayedLocations.map((location) => (
                         <Marker
                             icon="/src/assets/img/restaurant.svg"
                             key={location.properties.storeid}
@@ -127,12 +150,12 @@ class Map extends React.Component {
                                 lat: location.geometry.coordinates[1],
                                 lng: location.geometry.coordinates[0]
                             }}
-                            onClick={() => this.props.handleMarkerClick(location)}
+                            onClick={() => this.props.handleMapMarkerClick(location)}
                             animation={this.props.hoveredLocation && this.props.hoveredLocation.properties.storeid === location.properties.storeid ? 1 : null}
                         >
                             {this.props.selectedLocation && this.props.selectedLocation.properties.storeid === location.properties.storeid && (
                                 <InfoWindow
-                                    onCloseClick={() => this.props.handleMarkerClick(null)}
+                                    onCloseClick={() => this.props.handleMapMarkerClick(null)}
                                 >
                                     <div>
                                         <div className="infowindow-title">{this.props.selectedLocation.properties.name}</div>
@@ -153,8 +176,10 @@ class Map extends React.Component {
 }
 
 Map.propTypes = {
-    locations: PropTypes.array,
-    handleMarkerClick: PropTypes.func.isRequired,
+    allLocations: PropTypes.array,
+    displayedLocations: PropTypes.array,
+    handleLocationsInMapBounds: PropTypes.func.isRequired,
+    handleMapMarkerClick: PropTypes.func.isRequired,
     selectedLocation: PropTypes.object,
     hoveredLocation: PropTypes.object
 }

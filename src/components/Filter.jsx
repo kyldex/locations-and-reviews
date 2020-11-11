@@ -195,7 +195,7 @@ class Filter extends React.Component {
 
         const newFilterValues = this.handleInput(value, input);
 
-        this.props.onChangeFilterInputs(newFilterValues.newMinValue, newFilterValues.newMaxValue);
+        this.props.handleChangeFilterInputs(newFilterValues.newMinValue, newFilterValues.newMaxValue);
 
         this.setState({
             resizableWidth: newFilterValues.newResizableWidth,
@@ -231,7 +231,7 @@ class Filter extends React.Component {
         }
 
         if (newFilterValues) {
-            this.props.onChangeFilterInputs(newFilterValues.newMinValue, newFilterValues.newMaxValue);
+            this.props.handleChangeFilterInputs(newFilterValues.newMinValue, newFilterValues.newMaxValue);
 
             this.setState({
                 resizableWidth: newFilterValues.newResizableWidth,
@@ -337,7 +337,7 @@ class Filter extends React.Component {
 
             currentResizableWidth = parseFloat(getComputedStyle(resizable, null).getPropertyValue('width'));
 
-            thisFilterComponent.props.onChangeFilterInputs(newMinValue, newMaxValue);
+            thisFilterComponent.props.handleChangeFilterInputs(newMinValue, newMaxValue);
             
             thisFilterComponent.setState({
                 resizableWidth: currentResizableWidth,
@@ -544,7 +544,7 @@ Filter.propTypes = {
         PropTypes.string,
         PropTypes.number
       ]).isRequired,
-    onChangeFilterInputs: PropTypes.func.isRequired
+      handleChangeFilterInputs: PropTypes.func.isRequired
 }
 
 export default Filter;
