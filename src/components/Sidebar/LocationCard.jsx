@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import '../styles/LocationCard.css';
+import './LocationCard.css';
 
 const LocationCard = ({ handleLocationCardClick, handleLocationCardHover, location, ratingsAverage }) => {
     const storeId = location.properties.storeid;

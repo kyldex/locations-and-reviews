@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 
 import { GoogleMap, InfoWindow, LoadScript, Marker } from '@react-google-maps/api';
 
-import '../styles/Map.css';
-import { mapStyles } from '../map-styles';
+import './Map.css';
+import { mapStyles } from '../../map-styles';
 
 const { REACT_APP_GMAP_API_KEY } = process.env;
 const LIBRARIES = ['places'];

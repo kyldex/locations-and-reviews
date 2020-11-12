@@ -1,10 +1,10 @@
 import React from 'react';
 import * as data from '../data/restaurants.json';
 
-import Map from './Map.jsx';
-import Sidebar from './Sidebar.jsx';
+import Map from './Map/Map.jsx';
+import Sidebar from './Sidebar/Sidebar.jsx';
 
-import '../styles/App.css';
+import './App.css';
 
 export default class App extends React.Component {
     constructor(props) {

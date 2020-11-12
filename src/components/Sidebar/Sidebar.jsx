@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import LocationCard from './LocationCard.jsx';
-import LocationSingle from './LocationSingle.jsx';
+import LocationSingle from './LocationSingle/LocationSingle.jsx';
 import Filter from './Filter.jsx';
 
-import '../styles/Sidebar.css';
+import './Sidebar.css';
 
 const Sidebar = (
     {
