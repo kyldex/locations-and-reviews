@@ -2,3 +2,9 @@
     width: 30%;
     height: 100vh;
 }
+
+.location-cards {
+    max-height: 500px;
+    overflow: auto;
+    border-bottom: solid 1px #b4b2b2;
+}

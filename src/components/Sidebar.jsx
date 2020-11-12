@@ -15,6 +15,8 @@ const Sidebar = (
         handleReturnToLocationsList,
         minRatingAverage,
         maxRatingAverage,
+        currentMinRatingAverage,
+        currentMaxRatingAverage,
         handleChangeFilterInputs,
         ratingsAverage,
         selectedLocation
@@ -23,28 +25,36 @@ const Sidebar = (
     <div id="sidebar">
         {selectedLocation ? (
             <LocationSingle
-                selectedLocation={selectedLocation}
+                minRatingAverage={minRatingAverage}
+                maxRatingAverage={maxRatingAverage}
+                currentMinRatingAverage={currentMinRatingAverage}
+                currentMaxRatingAverage={currentMaxRatingAverage}
                 handleReturnToLocationsList={handleReturnToLocationsList}
+                selectedLocation={selectedLocation}
             />
         ) : (
-            <div className="location-cards">
+            <>
                 <Filter
-                    minRatingAverage={minRatingAverage}
-                    maxRatingAverage={maxRatingAverage}
-                    handleChangeFilterInputs={(newMinValue, newMaxValue) => handleChangeFilterInputs(newMinValue, newMaxValue)}
+                minRatingAverage={minRatingAverage}
+                maxRatingAverage={maxRatingAverage}
+                currentMinRatingAverage={currentMinRatingAverage}
+                currentMaxRatingAverage={currentMaxRatingAverage}
+                handleChangeFilterInputs={(newMinValue, newMaxValue) => handleChangeFilterInputs(newMinValue, newMaxValue)}
                 />
-                {displayedLocations ? displayedLocations.map((location) => (
-                    <LocationCard
-                        key={location.properties.storeid}
-                        location={location}
-                        ratingsAverage={ratingsAverage}
-                        handleLocationCardClick={(location) => handleLocationCardClick(location)}
-                        handleLocationCardHover={(location) => handleLocationCardHover(location)}
-                    />
-                )) : (
-                    <div>Waiting for locations</div>
-                )}
-            </div>
+                <div className="location-cards">
+                    {displayedLocations ? displayedLocations.map((location) => (
+                        <LocationCard
+                            key={location.properties.storeid}
+                            location={location}
+                            ratingsAverage={ratingsAverage}
+                            handleLocationCardClick={(location) => handleLocationCardClick(location)}
+                            handleLocationCardHover={(location) => handleLocationCardHover(location)}
+                        />
+                    )) : (
+                        <div>Waiting for locations</div>
+                    )}
+                </div>
+            </>
         )}
     </div>
 );
@@ -58,12 +68,20 @@ Sidebar.propTypes = {
     minRatingAverage: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.number
-      ]).isRequired,
+    ]).isRequired,
     maxRatingAverage: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.number
-      ]).isRequired,
-      handleChangeFilterInputs: PropTypes.func.isRequired,
+    ]).isRequired,
+    currentMinRatingAverage: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+    ]).isRequired,
+    currentMaxRatingAverage: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number
+    ]).isRequired,
+    handleChangeFilterInputs: PropTypes.func.isRequired,
     ratingsAverage: PropTypes.object,
     selectedLocation: PropTypes.object
 }

@@ -5,7 +5,7 @@ import '../styles/LocationSingle.css';
 
 const { REACT_APP_GMAP_API_KEY } = process.env;
 
-const LocationSingle = ({ handleReturnToLocationsList, selectedLocation }) => {
+const LocationSingle = ({ handleReturnToLocationsList, maxRatingAverage, selectedLocation }) => {
     const lat = selectedLocation.geometry.coordinates[1];
     const lng = selectedLocation.geometry.coordinates[0];
     const imgURL = `https://maps.googleapis.com/maps/api/streetview?size=600x400&location=${lat},${lng}&key=${REACT_APP_GMAP_API_KEY}`;
@@ -18,7 +18,7 @@ const LocationSingle = ({ handleReturnToLocationsList, selectedLocation }) => {
             <div className="location-single-reviews">
                 {selectedLocation.properties.ratings.map((rating) => (
                     <div className="location-single-review" key={rating.ratingId}>
-                        <p>{`${rating.stars}/5`}</p>
+                        <p>{`${rating.stars}/${maxRatingAverage}`}</p>
                         <p>{rating.comment}</p>
                     </div>
                 ))}

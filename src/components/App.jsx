@@ -17,6 +17,8 @@ export default class App extends React.Component {
             ratingsAverage: {},
             minRatingAverage: 0,
             maxRatingAverage: 5,
+            currentMinRatingAverage: 0,
+            currentMaxRatingAverage: 5,
             // On location card click or on map marker click
             selectedLocation: null,
             // On location card hover
@@ -77,53 +79,61 @@ export default class App extends React.Component {
     }
 
     handleChangeFilterInputs(newMinRating, newMaxRating) {
-        const { allLocations, displayedLocations, locationsInMapBounds, ratingsAverage } = this.state;
+        const { allLocations, locationsInMapBounds, ratingsAverage } = this.state;
 
         const filteredIds = [];
         const filteredLocations = [];
         const newDisplayedLocations = [];
 
-        for (const storeId in ratingsAverage) {
-            if (ratingsAverage[storeId] >= newMinRating && ratingsAverage[storeId] <= newMaxRating) {
-                filteredIds.push(parseInt(storeId));
-            }
-        }
-
-        if (allLocations !== null) {
-            filteredIds.forEach((storeId) => {
-                allLocations.forEach((location) => {
-                    if (parseInt(location.properties.storeid) === storeId) {
-                        filteredLocations.push(location);
-                    }
-                });
+        if (newMinRating === '' || newMaxRating === '') {
+            this.setState({
+                currentMinRatingAverage: newMinRating,
+                currentMaxRatingAverage: newMaxRating,
             });
-        }
 
-        if (locationsInMapBounds !== null) {
-            filteredLocations.forEach((location1) => {
-                locationsInMapBounds.forEach((location2) => {
-                    if (location1.properties.storeid === location2.properties.storeid) {
-                        newDisplayedLocations.push(location1);
-                    }
-                });
-            });
         } else {
-            newDisplayedLocations.push(...filteredLocations);
+            for (const storeId in ratingsAverage) {
+                if (ratingsAverage[storeId] >= newMinRating && ratingsAverage[storeId] <= newMaxRating) {
+                    filteredIds.push(parseInt(storeId));
+                }
+            }
+
+            if (allLocations !== null) {
+                filteredIds.forEach((storeId) => {
+                    allLocations.forEach((location) => {
+                        if (parseInt(location.properties.storeid) === storeId) {
+                            filteredLocations.push(location);
+                        }
+                    });
+                });
+            }
+
+            if (locationsInMapBounds !== null) {
+                filteredLocations.forEach((location1) => {
+                    locationsInMapBounds.forEach((location2) => {
+                        if (location1.properties.storeid === location2.properties.storeid) {
+                            newDisplayedLocations.push(location1);
+                        }
+                    });
+                });
+            } else {
+                newDisplayedLocations.push(...filteredLocations);
+            }
+
+            this.setState({
+                displayedLocations: newDisplayedLocations,
+                filteredLocationsByAverage: filteredLocations,
+                currentMinRatingAverage: newMinRating,
+                currentMaxRatingAverage: newMaxRating,
+            });
+
         }
-
-        this.setState({
-            displayedLocations: newDisplayedLocations,
-            filteredLocationsByAverage: filteredLocations,
-            minRatingAverage: newMinRating,
-            maxRatingAverage: newMaxRating,
-        });
-
     }
     
     handleMapMarkerClick(location) {
         if (location === null) {
             this.setState({ selectedLocation: null });
-        } else if (this.state.selectedLocation === null || location.properties.storeid !== this.state.selectedLocation.storeid) {
+        } else if (this.state.selectedLocation === null || location.properties.storeid !== this.state.selectedLocation.properties.storeid) {
             this.setState({ selectedLocation: location });
         } else {
             this.setState({ selectedLocation: null });
@@ -157,6 +167,8 @@ export default class App extends React.Component {
                     ratingsAverage={this.state.ratingsAverage}
                     minRatingAverage={this.state.minRatingAverage}
                     maxRatingAverage={this.state.maxRatingAverage}
+                    currentMinRatingAverage={this.state.currentMinRatingAverage}
+                    currentMaxRatingAverage={this.state.currentMaxRatingAverage}
                     selectedLocation={this.state.selectedLocation}
                     handleChangeFilterInputs={(newMinValue, newMaxValue) => this.handleChangeFilterInputs(newMinValue, newMaxValue)}
                     handleLocationCardClick={(location) => this.handleLocationCardClick(location)}
