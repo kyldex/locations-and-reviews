@@ -22,7 +22,11 @@ export default class App extends React.Component {
             // On location card click or on map marker click
             selectedLocation: null,
             // On location card hover
-            hoveredLocation: null
+            hoveredLocation: null,
+            // Data added by user
+            addedLocations: null,
+            addedRatings: [],
+            displayLocationForm: false
         };
         this.handleReturnToLocationsList = this.handleReturnToLocationsList.bind(this);
     }
@@ -155,6 +159,19 @@ export default class App extends React.Component {
         this.setState({ selectedLocation: null });
     }
 
+    handleSubmitNewRating(newRating) {
+        const lastLocationIndex = this.state.allLocations.length - 1;
+        const lastRatingIndex = this.state.allLocations[lastLocationIndex].properties.ratings.length - 1;
+        const lastRatingId = this.state.allLocations[lastLocationIndex].properties.ratings[lastRatingIndex].ratingId
+        const newRatingId = parseInt(lastRatingId) + 1;
+        newRating['ratingId'] = newRatingId.toString();
+
+        const addedRatings = this.state.addedRatings;
+        const newAddedRatings = [...addedRatings, newRating]
+
+        this.setState({ addedRatings: newAddedRatings });
+    }
+
     componentDidMount() {
         this.initLocations();
     }
@@ -163,17 +180,19 @@ export default class App extends React.Component {
         return (
             <div className="container">
                 <Sidebar
+                    addedRatings={this.state.addedRatings}
                     displayedLocations={this.state.displayedLocations}
-                    ratingsAverage={this.state.ratingsAverage}
-                    minRatingAverage={this.state.minRatingAverage}
-                    maxRatingAverage={this.state.maxRatingAverage}
-                    currentMinRatingAverage={this.state.currentMinRatingAverage}
-                    currentMaxRatingAverage={this.state.currentMaxRatingAverage}
-                    selectedLocation={this.state.selectedLocation}
                     handleChangeFilterInputs={(newMinValue, newMaxValue) => this.handleChangeFilterInputs(newMinValue, newMaxValue)}
                     handleLocationCardClick={(location) => this.handleLocationCardClick(location)}
                     handleLocationCardHover={(location) => this.handleLocationCardHover(location)}
                     handleReturnToLocationsList={this.handleReturnToLocationsList}
+                    handleSubmitNewRating={(newRating) => this.handleSubmitNewRating(newRating)}
+                    minRatingAverage={this.state.minRatingAverage}
+                    maxRatingAverage={this.state.maxRatingAverage}
+                    currentMinRatingAverage={this.state.currentMinRatingAverage}
+                    currentMaxRatingAverage={this.state.currentMaxRatingAverage}
+                    ratingsAverage={this.state.ratingsAverage}
+                    selectedLocation={this.state.selectedLocation}
                 />
                 <div id="map">
                     <Map

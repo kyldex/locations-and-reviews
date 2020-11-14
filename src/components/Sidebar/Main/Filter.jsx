@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import RatingInput from '../../common/RatingInput.jsx';
+
 import './Filter.css';
 
 class Filter extends React.Component {
@@ -21,7 +23,6 @@ class Filter extends React.Component {
             fourStarsWidth: null
         };
         this.handleInputBlur = this.handleInputBlur.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
         this.handleButtonClick = this.handleButtonClick.bind(this);
         this.handleMouseDown = this.handleMouseDown.bind(this);
     }
@@ -479,38 +480,15 @@ class Filter extends React.Component {
                     </div>
 
                     <div className="filter-selectors">
-                        <div className="filter-selector-input">
-                            <div className="filter-selector-input-1">
-                                <input
-                                    type="number"
-                                    name="filter-input-min"
-                                    value={this.props.currentMinRatingAverage}
-                                    onBlur={this.handleInputBlur}
-                                    onChange={this.handleInputChange}
-                                    id="filter-input-min"
-                                    min="0"
-                                    max="5"
-                                    step="1"
-                                />
-                                <div className="filter-buttons">
-                                    <div className="button">
-                                        <img src="/src/assets/img/chevron-up.svg"
-                                            className="button-min-up"
-                                            onClick={this.handleButtonClick}
-                                            alt="chevron-up"
-                                        />
-                                    </div>
-                                    <div className="button">
-                                        <img
-                                            src="/src/assets/img/chevron-down.svg"
-                                            className="button-min-down"
-                                            onClick={this.handleButtonClick}
-                                            alt="chevron-down"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <RatingInput
+                            inputName="filter-input-min"
+                            inputValue={this.props.currentMinRatingAverage}
+                            buttonUpName="button-min-up"
+                            buttonDownName="button-min-down"
+                            handleInputBlur={this.handleInputBlur}
+                            handleInputChange={(e) => this.handleInputChange(e)}
+                            handleButtonClick={this.handleButtonClick}
+                        />
 
                         <div className="filter-selector-line">
                             <div className="filter-selector-line-inner">
@@ -527,39 +505,15 @@ class Filter extends React.Component {
                             </div>
                         </div>
 
-                        <div className="filter-selector-input">
-                            <div className="filter-selector-input-2">
-                                <input
-                                    type="number"
-                                    name="filter-input-max"
-                                    value={this.props.currentMaxRatingAverage}
-                                    onBlur={this.handleInputBlur}
-                                    onChange={this.handleInputChange}
-                                    id="filter-input-max"
-                                    min="0"
-                                    max="5"
-                                    step="1"
-                                />
-                                <div className="filter-buttons">
-                                    <div className="button">
-                                        <img
-                                            src="/src/assets/img/chevron-up.svg"
-                                            className="button-max-up"
-                                            onClick={this.handleButtonClick}
-                                            alt="chevron-up"
-                                        />
-                                    </div>
-                                    <div className="button">
-                                        <img
-                                            src="/src/assets/img/chevron-down.svg"
-                                            className="button-max-down"
-                                            onClick={this.handleButtonClick}
-                                            alt="chevron-down"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <RatingInput
+                            inputName="filter-input-max"
+                            inputValue={this.props.currentMaxRatingAverage}
+                            buttonUpName="button-max-up"
+                            buttonDownName="button-max-down"
+                            handleInputBlur={this.handleInputBlur}
+                            handleInputChange={(e) => this.handleInputChange(e)}
+                            handleButtonClick={this.handleButtonClick}
+                        />
                     </div>
                 </form>
             </div>
@@ -568,15 +522,9 @@ class Filter extends React.Component {
 }
 
 Filter.propTypes = {
+    minRatingAverage: PropTypes.number.isRequired,
+    maxRatingAverage: PropTypes.number.isRequired,
     // String type when filter input is empty
-    minRatingAverage: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number
-    ]).isRequired,
-    maxRatingAverage: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number
-    ]).isRequired,
     currentMinRatingAverage: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.number

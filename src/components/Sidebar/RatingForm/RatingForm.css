@@ -1,0 +1,39 @@
+.rating-form {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.rating-form h2 {
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.rating-form-content {
+    display: flex;
+    justify-content: center;
+}
+
+.rating-form-content-inner {
+    display: flex;
+    flex-direction: column;
+}
+
+.rating-input-block {
+    display: flex;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.rating-input-block label {
+    margin-right: 5px;
+}
+
+.rating-form textarea {
+    margin-top: 1rem;
+}
+
+.rating-form button {
+    margin-top: 1rem;
+    text-align: center;
+}
