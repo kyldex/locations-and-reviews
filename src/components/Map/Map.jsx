@@ -102,7 +102,6 @@ class Map extends React.Component {
     }
     
     render() {
-        console.log('render map');
         return (
             <LoadScript
                 googleMapsApiKey={REACT_APP_GMAP_API_KEY}

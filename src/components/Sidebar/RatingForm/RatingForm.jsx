@@ -14,7 +14,7 @@ class RatingForm extends React.Component {
         };
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTextAreaChange = this.handleTextAreaChange.bind(this);
-        this.handlebuttonClick = this.handleButtonClick.bind(this);
+        this.handleButtonClick = this.handleButtonClick.bind(this);
     }
 
     handleSubmit(e) {
@@ -45,8 +45,21 @@ class RatingForm extends React.Component {
         this.setState({ ratingComment: value });
     }
 
-    handleButtonClick() {
-        console.log('here')
+    handleButtonClick(e) {
+        const { minRatingAverage, maxRatingAverage } = this.props;
+
+        if (e.target.classList.contains('button-up') && parseInt(this.state.ratingStars) < maxRatingAverage) {
+            this.setState((prevState) => ({ ratingStars: prevState.ratingStars + 1 }));
+
+        } else if (e.target.classList.contains('button-up') && this.state.ratingStars === '') {
+            this.setState({ ratingStars: 5 });
+
+        } else if (e.target.classList.contains('button-down') && parseInt(this.state.ratingStars) > minRatingAverage) {
+            this.setState((prevState) => ({ ratingStars: prevState.ratingStars - 1 }));
+            
+        } else if (e.target.classList.contains('button-down') && this.state.ratingStars === '') {
+            this.setState({ ratingStars: 5 });
+        }
     }
 
     render() {

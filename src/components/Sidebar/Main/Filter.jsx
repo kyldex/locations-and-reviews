@@ -23,8 +23,8 @@ class Filter extends React.Component {
             fourStarsWidth: null
         };
         this.handleInputBlur = this.handleInputBlur.bind(this);
-        this.handleButtonClick = this.handleButtonClick.bind(this);
         this.handleMouseDown = this.handleMouseDown.bind(this);
+        this.handleButtonClick = this.handleButtonClick.bind(this);
     }
 
     makeResizable() {
@@ -236,7 +236,7 @@ class Filter extends React.Component {
     }
 
     handleButtonClick(e) {
-        const {minRatingAverage, maxRatingAverage, currentMinRatingAverage, currentMaxRatingAverage} = this.props;
+        const { minRatingAverage, maxRatingAverage, currentMinRatingAverage, currentMaxRatingAverage } = this.props;
         let newFilterValues;
 
         if (e.target.classList.contains('button-min-up') && currentMinRatingAverage < maxRatingAverage) {
@@ -277,7 +277,6 @@ class Filter extends React.Component {
     // Refer to this article by Hung Nguyen
     // https://medium.com/the-z/making-a-resizable-div-in-js-is-not-easy-as-you-think-bda19a1bc53d
     handleMouseDown(e) {
-        // e.preventDefault();
         const currentResizer = e.target;
         let originalMouseX = e.pageX;
         const thisFilterComponent = this;
