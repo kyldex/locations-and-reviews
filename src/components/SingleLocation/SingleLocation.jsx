@@ -13,7 +13,7 @@ const SingleLocation = ({ addedRatings, handleButtonClick, handleReturnToLocatio
     return (
         <div className="single-location">
             <img src={imgURL} />
-            <p onClick={(handleReturnToLocationsList)}>Retour à la liste</p>
+            <button className="back-to-filter" onClick={(handleReturnToLocationsList)}>Retour à la liste</button>
             <h2>{selectedLocation.properties.name}</h2>
             <div className="add-rating">
                 <button type="button">

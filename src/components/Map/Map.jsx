@@ -179,8 +179,8 @@ Map.propTypes = {
     displayedLocations: PropTypes.array,
     handleLocationsInMapBounds: PropTypes.func.isRequired,
     handleMapMarkerClick: PropTypes.func.isRequired,
-    selectedLocation: PropTypes.object,
-    hoveredLocation: PropTypes.object
+    hoveredLocation: PropTypes.object,
+    selectedLocation: PropTypes.object
 }
 
 export default Map;

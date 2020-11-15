@@ -2,7 +2,9 @@ import React from 'react';
 import * as data from '../data/restaurants.json';
 
 import Map from './Map/Map.jsx';
-import Sidebar from './Sidebar/Sidebar.jsx';
+import Filter from './Filter/Filter.jsx';
+import SingleLocation from './SingleLocation/SingleLocation.jsx';
+import RatingForm from './RatingForm/RatingForm.jsx';
 
 import './App.css';
 
@@ -21,31 +23,39 @@ export default class App extends React.Component {
             currentMaxRatingAverage: 5,
             // On location card click or on map marker click
             selectedLocation: null,
+            // Change sidebar display
+            displayFilterInSidebar: true,
+            displaySingleLocationInSidebar: false,
+            displayLocationFormInSidebar: false,
+            displayRatingFormInSidebar: false,
             // On location card hover
             hoveredLocation: null,
             // Data added by user
-            addedLocations: null,
-            addedRatings: [],
-            displayLocationForm: false
+            addedLocations: [],
+            addedRatings: []
         };
         this.handleReturnToLocationsList = this.handleReturnToLocationsList.bind(this);
+        this.handleDisplayRatingForm = this.handleDisplayRatingForm.bind(this);
+        this.handleCloseRatingForm = this.handleCloseRatingForm.bind(this)
     }
 
+    // Init
     initLocations() {
         // Fetch data
-        const locations = data.features;
+        const allLocations = data.features;
 
         this.setState({
-            allLocations: locations,
-            displayedLocations: locations,
-            ratingsAverage: this.getRatingsAverage(locations)
+            allLocations: allLocations,
+            displayedLocations: allLocations,
+            ratingsAverage: this.getRatingsAverage(allLocations)
         });
     }
 
-    getRatingsAverage(locations) {
+    // Init
+    getRatingsAverage(allLocations) {
         const locationsRatingsAverage = {};
 
-        locations.forEach((location) => {
+        allLocations.forEach((location) => {
             const locationId = location.properties.storeid;
             let ratingsTotal = 0;
 
@@ -59,6 +69,7 @@ export default class App extends React.Component {
         return locationsRatingsAverage;
     }
 
+    // Map
     handleLocationsInMapBounds(locations) {
         const { filteredLocationsByAverage } = this.state;
         const newDisplayedLocations = [];
@@ -82,6 +93,48 @@ export default class App extends React.Component {
 
     }
 
+    // Map
+    handleMapMarkerClick(location) {
+        if (location === null) {
+            if (this.state.displaySingleLocationInSidebar) {
+                this.setState({
+                    displayFilterInSidebar: true,
+                    displaySingleLocationInSidebar: false,
+                    selectedLocation: null
+                });
+            } else {
+                this.setState({ selectedLocation: null });
+            }
+
+        } else if (this.state.selectedLocation === null) {
+            if (this.state.displayFilterInSidebar) {
+                this.setState({
+                    displayFilterInSidebar: false,
+                    displaySingleLocationInSidebar: true,
+                    selectedLocation: location
+                });
+            } else {
+                this.setState({ selectedLocation: location });
+            }
+
+        } else if (location.properties.storeid !== this.state.selectedLocation.properties.storeid) {
+            this.setState({ selectedLocation: location });
+        
+        // Same marker has been clicked again
+        } else {
+            if (this.state.displaySingleLocationInSidebar) {
+                this.setState({
+                    displayFilterInSidebar: true,
+                    displaySingleLocationInSidebar: false,
+                    selectedLocation: null
+                });
+            } else {
+                this.setState({ selectedLocation: null });
+            }
+        }
+    }
+
+    // Filter
     handleChangeFilterInputs(newMinRating, newMaxRating) {
         const { allLocations, locationsInMapBounds, ratingsAverage } = this.state;
 
@@ -130,35 +183,42 @@ export default class App extends React.Component {
                 currentMinRatingAverage: newMinRating,
                 currentMaxRatingAverage: newMaxRating,
             });
-
-        }
-    }
-    
-    handleMapMarkerClick(location) {
-        if (location === null) {
-            this.setState({ selectedLocation: null });
-        } else if (this.state.selectedLocation === null || location.properties.storeid !== this.state.selectedLocation.properties.storeid) {
-            this.setState({ selectedLocation: location });
-        } else {
-            this.setState({ selectedLocation: null });
         }
     }
 
+    // Filter
     handleLocationCardClick(location) {
         this.setState({
-            selectedLocation: location,
-            hoveredLocation: null
+            displayFilterInSidebar: false,
+            displaySingleLocationInSidebar: true,
+            hoveredLocation: null,
+            selectedLocation: location
         });
     }
 
+    // Filter
     handleLocationCardHover(location) {
         this.setState({ hoveredLocation: location });
     }
 
+    // SingleLocation : back to filter display
     handleReturnToLocationsList() {
-        this.setState({ selectedLocation: null });
+        this.setState({
+            displayFilterInSidebar: true,
+            displaySingleLocationInSidebar: false,
+            selectedLocation: null
+        });
     }
 
+    // SingleLocation
+    handleDisplayRatingForm() {
+        this.setState({
+            displaySingleLocationInSidebar: false,
+            displayRatingFormInSidebar: true
+        })
+    }
+
+    // RatingForm
     handleSubmitNewRating(newRating) {
         const lastLocationIndex = this.state.allLocations.length - 1;
         const lastRatingIndex = this.state.allLocations[lastLocationIndex].properties.ratings.length - 1;
@@ -172,6 +232,14 @@ export default class App extends React.Component {
         this.setState({ addedRatings: newAddedRatings });
     }
 
+    // RatingForm: after closing new rating thank you message
+    handleCloseRatingForm() {
+        this.setState({
+            displaySingleLocationInSidebar: true,
+            displayRatingFormInSidebar: false
+        })
+    }
+
     componentDidMount() {
         this.initLocations();
     }
@@ -179,21 +247,44 @@ export default class App extends React.Component {
     render() {
         return (
             <div className="container">
-                <Sidebar
-                    addedRatings={this.state.addedRatings}
-                    displayedLocations={this.state.displayedLocations}
-                    handleChangeFilterInputs={(newMinValue, newMaxValue) => this.handleChangeFilterInputs(newMinValue, newMaxValue)}
-                    handleLocationCardClick={(location) => this.handleLocationCardClick(location)}
-                    handleLocationCardHover={(location) => this.handleLocationCardHover(location)}
-                    handleReturnToLocationsList={this.handleReturnToLocationsList}
-                    handleSubmitNewRating={(newRating) => this.handleSubmitNewRating(newRating)}
-                    minRatingAverage={this.state.minRatingAverage}
-                    maxRatingAverage={this.state.maxRatingAverage}
-                    currentMinRatingAverage={this.state.currentMinRatingAverage}
-                    currentMaxRatingAverage={this.state.currentMaxRatingAverage}
-                    ratingsAverage={this.state.ratingsAverage}
-                    selectedLocation={this.state.selectedLocation}
-                />
+                <div id="sidebar">
+                    {this.state.displayFilterInSidebar && (
+                        <Filter
+                            currentMinRatingAverage={this.state.currentMinRatingAverage}
+                            currentMaxRatingAverage={this.state.currentMaxRatingAverage}
+                            displayedLocations={this.state.displayedLocations}
+                            handleChangeFilterInputs={(newMinValue, newMaxValue) => this.handleChangeFilterInputs(newMinValue, newMaxValue)}
+                            handleLocationCardClick={(location) => this.handleLocationCardClick(location)}
+                            handleLocationCardHover={(location) => this.handleLocationCardHover(location)}
+                            minRatingAverage={this.state.minRatingAverage}
+                            maxRatingAverage={this.state.maxRatingAverage}
+                            ratingsAverage={this.state.ratingsAverage}
+                        />
+                    )}
+
+                    {this.state.displaySingleLocationInSidebar && (
+                        <SingleLocation
+                            addedRatings={this.state.addedRatings}
+                            handleButtonClick={this.handleDisplayRatingForm}
+                            handleReturnToLocationsList={this.handleReturnToLocationsList}
+                            maxRatingAverage={this.state.maxRatingAverage}
+                            currentMinRatingAverage={this.state.currentMinRatingAverage}
+                            currentMaxRatingAverage={this.state.currentMaxRatingAverage}
+                            selectedLocation={this.state.selectedLocation}
+                        />
+                    )}
+
+                    {this.state.displayRatingFormInSidebar && (
+                        <RatingForm
+                            handleSubmitNewRating={(newRating) => this.handleSubmitNewRating(newRating)}
+                            handleCloseRatingForm={this.handleCloseRatingForm}
+                            minRatingAverage={this.state.minRatingAverage}
+                            maxRatingAverage={this.state.maxRatingAverage}
+                            selectedLocation={this.state.selectedLocation}
+                        />
+                    )}
+                </div>
+
                 <div id="map">
                     <Map
                         allLocations={this.state.allLocations}

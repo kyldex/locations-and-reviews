@@ -1,5 +1,10 @@
 .single-location img {
     max-width: 100%;
+    max-height: 400px;
+}
+
+.single-location button.back-to-filter {
+    cursor: pointer;
 }
 
 .single-location h2 {
@@ -9,13 +14,13 @@
     font-weight: 700;
 }
 
-.add-rating {
+.single-location .add-rating {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.add-rating button img {
+.single-location .add-rating button img {
     width: 25px;
     height: 25px;
     cursor: pointer;

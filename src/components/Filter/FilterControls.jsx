@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import RatingInput from '../../common/RatingInput.jsx';
+import RatingInput from '../common/RatingInput.jsx';
 
-import './Filter.css';
+import './FilterControls.css';
 
-class Filter extends React.Component {
+class FilterControls extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -520,7 +520,7 @@ class Filter extends React.Component {
     }
 }
 
-Filter.propTypes = {
+FilterControls.propTypes = {
     minRatingAverage: PropTypes.number.isRequired,
     maxRatingAverage: PropTypes.number.isRequired,
     // String type when filter input is empty
@@ -535,4 +535,4 @@ Filter.propTypes = {
     handleChangeFilterInputs: PropTypes.func.isRequired
 }
 
-export default Filter;
+export default FilterControls;
