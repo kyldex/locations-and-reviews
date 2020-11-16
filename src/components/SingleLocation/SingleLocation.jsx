@@ -51,6 +51,6 @@ SingleLocation.propTypes = {
     handleReturnToLocationsList: PropTypes.func.isRequired,
     maxRatingAverage: PropTypes.number.isRequired,
     selectedLocation: PropTypes.object.isRequired
-}
+};
 
 export default SingleLocation;

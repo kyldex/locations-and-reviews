@@ -77,16 +77,16 @@ class RatingForm extends React.Component {
                 {this.state.displayForm ? (
                     <div className="rating-form-inner">
                         <form action="" onSubmit={this.handleSubmit}>
-                        <h2>
-                            Ajoutez un avis sur le restaurant<br />
-                            {locationName}
-                        </h2>
+                            <h2>
+                                Ajoutez un avis sur le restaurant<br />
+                                {locationName}
+                            </h2>
                             <div className="rating-form-content">
                                 <div className="rating-form-content-inner">
                                     <div className="rating-input-block">
-                                        <label htmlFor="rating">Votre note /5 :</label>
+                                        <label htmlFor="rating-stars">Votre note /5 :</label>
                                         <RatingInput
-                                            inputName="ratingStars"
+                                            inputName="rating-stars"
                                             inputValue={this.state.ratingStars}
                                             buttonUpName="button-up"
                                             buttonDownName="button-down"
@@ -95,9 +95,9 @@ class RatingForm extends React.Component {
                                         />
                                     </div>
                                     <textarea
-                                        name="ratingComment"
+                                        name="rating-comment"
                                         value={this.state.ratingComment}
-                                        id="ratingComment"
+                                        id="rating-comment"
                                         onChange={this.handleTextAreaChange}
                                         placeholder="Rédigez votre commentaire ici"
                                         rows="10"
@@ -125,6 +125,6 @@ RatingForm.propTypes = {
     minRatingAverage: PropTypes.number.isRequired,
     maxRatingAverage: PropTypes.number.isRequired,
     selectedLocation: PropTypes.object
-}
+};
 
 export default RatingForm;

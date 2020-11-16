@@ -53,6 +53,6 @@ RatingInput.propTypes = {
     handleButtonClick: PropTypes.func.isRequired,
     handleInputBlur: PropTypes.func,
     handleInputChange: PropTypes.func.isRequired,
-}
+};
 
 export default RatingInput;

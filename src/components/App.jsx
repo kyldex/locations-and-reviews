@@ -5,6 +5,7 @@ import Map from './Map/Map.jsx';
 import Filter from './Filter/Filter.jsx';
 import SingleLocation from './SingleLocation/SingleLocation.jsx';
 import RatingForm from './RatingForm/RatingForm.jsx';
+import LocationForm from './LocationForm/LocationForm.jsx';
 
 import './App.css';
 
@@ -26,13 +27,13 @@ export default class App extends React.Component {
             // Change sidebar display
             displayFilterInSidebar: true,
             displaySingleLocationInSidebar: false,
-            displayLocationFormInSidebar: false,
             displayRatingFormInSidebar: false,
+            displayLocationFormInSidebar: false,
             // On location card hover
             hoveredLocation: null,
             // Data added by user
-            addedLocations: [],
-            addedRatings: []
+            addedRatings: null,
+            addedLocations: null
         };
         this.handleReturnToLocationsList = this.handleReturnToLocationsList.bind(this);
         this.handleDisplayRatingForm = this.handleDisplayRatingForm.bind(this);
@@ -220,16 +221,26 @@ export default class App extends React.Component {
 
     // RatingForm
     handleSubmitNewRating(newRating) {
-        const lastLocationIndex = this.state.allLocations.length - 1;
-        const lastRatingIndex = this.state.allLocations[lastLocationIndex].properties.ratings.length - 1;
-        const lastRatingId = this.state.allLocations[lastLocationIndex].properties.ratings[lastRatingIndex].ratingId
-        const newRatingId = parseInt(lastRatingId) + 1;
-        newRating['ratingId'] = newRatingId.toString();
+        if (this.state.addedRatings === null) {
+            const lastLocationIndex = this.state.allLocations.length - 1;
+            const lastRatingIndex = this.state.allLocations[lastLocationIndex].properties.ratings.length - 1;
+            const lastRatingId = this.state.allLocations[lastLocationIndex].properties.ratings[lastRatingIndex].ratingId
+            const newRatingId = parseInt(lastRatingId) + 1;
+            newRating['ratingId'] = newRatingId.toString();
+            const addedRatings = [newRating];
 
-        const addedRatings = this.state.addedRatings;
-        const newAddedRatings = [...addedRatings, newRating]
+            this.setState({ addedRatings: addedRatings });
 
-        this.setState({ addedRatings: newAddedRatings });
+        } else {
+            const addedRatings = this.state.addedRatings;
+            const lastRatingIndex = addedRatings.length - 1;
+            const lastRatingId = addedRatings[lastRatingIndex].ratingId;
+            const newRatingId = parseInt(lastRatingId) + 1;
+            newRating['ratingId'] = newRatingId.toString();
+            const newAddedRatings = [...addedRatings, newRating]
+    
+            this.setState({ addedRatings: newAddedRatings });
+        }
     }
 
     // RatingForm: after closing new rating thank you message
@@ -283,6 +294,11 @@ export default class App extends React.Component {
                             selectedLocation={this.state.selectedLocation}
                         />
                     )}
+
+                    {this.state.displayLocationFormInSidebar && (
+                        <LocationForm />
+                    )}
+
                 </div>
 
                 <div id="map">
