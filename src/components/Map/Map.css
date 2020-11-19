@@ -1,4 +1,13 @@
-.infowindow-title {
+.infowindow-displayed-locations .title {
     font-weight: 400;
     font-size: 1.5rem;
+}
+
+.infowindow-geocoding-location {
+    text-align: center;
+}
+
+.infowindow-geocoding-location .title {
+    font-weight: 400;
+    font-size: 1.3rem;
 }

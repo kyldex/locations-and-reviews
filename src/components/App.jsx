@@ -24,6 +24,8 @@ export default class App extends React.Component {
             currentMaxRatingAverage: 5,
             // On location card click or on map marker click
             selectedLocation: null,
+            // Double click on map
+            geocodingLocation : null,
             // Change sidebar display
             displayFilterInSidebar: true,
             displaySingleLocationInSidebar: false,
@@ -37,7 +39,9 @@ export default class App extends React.Component {
         };
         this.handleReturnToLocationsList = this.handleReturnToLocationsList.bind(this);
         this.handleDisplayRatingForm = this.handleDisplayRatingForm.bind(this);
-        this.handleCloseRatingForm = this.handleCloseRatingForm.bind(this)
+        this.handleCloseRatingForm = this.handleCloseRatingForm.bind(this);
+        this.handleDisplayLocationForm = this.handleDisplayLocationForm.bind(this);
+        this.handleCloseLocationForm = this.handleCloseLocationForm.bind(this);
     }
 
     // Init
@@ -91,7 +95,6 @@ export default class App extends React.Component {
             displayedLocations: newDisplayedLocations,
             locationsInMapBounds: locations
         });
-
     }
 
     // Map
@@ -107,6 +110,7 @@ export default class App extends React.Component {
                 this.setState({ selectedLocation: null });
             }
 
+        // Marker has been clicked
         } else if (this.state.selectedLocation === null) {
             if (this.state.displayFilterInSidebar) {
                 this.setState({
@@ -114,10 +118,18 @@ export default class App extends React.Component {
                     displaySingleLocationInSidebar: true,
                     selectedLocation: location
                 });
+            } else if (this.state.displayLocationFormInSidebar) {
+                this.setState({
+                    displayLocationFormInSidebar: false,
+                    displaySingleLocationInSidebar: true,
+                    geocodingLocation : null,
+                    selectedLocation: location
+                });
             } else {
                 this.setState({ selectedLocation: location });
             }
 
+        // A marker was selected before selecting a new one
         } else if (location.properties.storeid !== this.state.selectedLocation.properties.storeid) {
             this.setState({ selectedLocation: location });
         
@@ -132,6 +144,25 @@ export default class App extends React.Component {
             } else {
                 this.setState({ selectedLocation: null });
             }
+        }
+    }
+
+    // Map
+    handleMapDoubleClick(reverseGeocodingData) {
+        if (reverseGeocodingData === null) {
+            this.handleDisplayLocationForm(null);
+
+        } else {
+            const geocodingLocationStreet = reverseGeocodingData.address_components[0].long_name + ' ' + reverseGeocodingData.address_components[1].long_name;
+            const geocodingLocationCity = reverseGeocodingData.address_components[6].long_name + ' ' + reverseGeocodingData.address_components[2].long_name;
+            const geocodingLocationCoords = reverseGeocodingData.geometry.location;
+            const geocodingLocation = {
+                street: geocodingLocationStreet,
+                city: geocodingLocationCity,
+                coords: geocodingLocationCoords
+            };
+
+            this.handleDisplayLocationForm(geocodingLocation);
         }
     }
 
@@ -248,7 +279,40 @@ export default class App extends React.Component {
         this.setState({
             displaySingleLocationInSidebar: true,
             displayRatingFormInSidebar: false
-        })
+        });
+    }
+
+    // LocationForm
+    handleSubmitNewLocation(newLocation) {
+        console.log(newLocation);
+    }
+
+    // LocationForm
+    handleDisplayLocationForm(geocodingLocation) {
+        if (geocodingLocation === null) {
+            this.setState({
+                geocodingLocation: null,
+                displayFilterInSidebar: true,
+                displayLocationFormInSidebar: false,
+            });
+
+        } else {
+            this.setState({
+                geocodingLocation: geocodingLocation,
+                displayFilterInSidebar: false,
+                displaySingleLocationInSidebar: false,
+                displayRatingFormInSidebar: false,
+                displayLocationFormInSidebar: true,
+            });
+        }
+    }
+
+    // LocationForm: after closing new location thank you message
+    handleCloseLocationForm() {
+        this.setState({
+            displaySingleLocationInSidebar: true,
+            displayLocationFormInSidebar: false
+        });
     }
 
     componentDidMount() {
@@ -296,7 +360,11 @@ export default class App extends React.Component {
                     )}
 
                     {this.state.displayLocationFormInSidebar && (
-                        <LocationForm />
+                        <LocationForm
+                            geocodingLocation={this.state.geocodingLocation}
+                            handleSubmitNewLocation={(newLocation) => this.handleSubmitNewLocation(newLocation)}
+                            handleCloseLocationForm={this.handleCloseLocationForm}
+                        />
                     )}
 
                 </div>
@@ -305,10 +373,12 @@ export default class App extends React.Component {
                     <Map
                         allLocations={this.state.allLocations}
                         displayedLocations={this.state.displayedLocations}
+                        geocodingLocation={this.state.geocodingLocation}
                         handleLocationsInMapBounds={(locations) => this.handleLocationsInMapBounds(locations)}
                         handleMapMarkerClick={(location) => this.handleMapMarkerClick(location)}
-                        selectedLocation={this.state.selectedLocation}
+                        handleMapDoubleClick ={(reverseGeocodingData) => this.handleMapDoubleClick(reverseGeocodingData)}
                         hoveredLocation={this.state.hoveredLocation}
+                        selectedLocation={this.state.selectedLocation}
                     />
                 </div>
             </div>

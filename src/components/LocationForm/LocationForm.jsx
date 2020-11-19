@@ -9,13 +9,11 @@ class LocationForm extends React.Component {
         this.state = {
             displayForm: true,
             name: '',
-            address: '',
-            postalCode: '',
-            city: '',
             phone: '',
-            openingHours: ''
+            hours: ''
         };
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.handlePhoneInputChange = this.handlePhoneInputChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleThankYouClick = this.handleThankYouClick.bind(this);
     }
@@ -24,9 +22,16 @@ class LocationForm extends React.Component {
         const value = e.target.value;
         const name = e.target.name;
 
-        this.setState({
-            [name]: value
-        });
+        this.setState({ [name]: value });
+    }
+
+    handlePhoneInputChange(e) {
+        const value = e.target.value
+            .replace(/[^0-9]/g, '')
+            // Add a space after any at-least-2-digit group followed by more digits
+            .replace(/(\d{2,})(?=\d)/g, '$1 ')
+
+        this.setState({ phone: value });
     }
 
     handleSubmit() {
@@ -37,7 +42,7 @@ class LocationForm extends React.Component {
             postalCode: this.state.postalCode,
             city: this.state.city,
             phone: this.state.phone,
-            openingHours: this.state.openingHours
+            hours: this.state.hours
         });
         this.setState({ displayForm: false });
     }
@@ -52,7 +57,11 @@ class LocationForm extends React.Component {
             <div className="location-form">
                 {this.state.displayForm ? (
                     <form action="" onSubmit={this.handleSubmit}>
-                        <h2>Ajouter un nouveau restaurant</h2>
+                        <h2>
+                            Ajouter un restaurant<br />
+                            au {this.props.geocodingLocation.street}<br />
+                            {this.props.geocodingLocation.city} ?
+                        </h2>
                         <div className="location-form-content">
                             <div className="location-form-content-inner">
                                 <label htmlFor="name">Nom :</label>
@@ -62,25 +71,30 @@ class LocationForm extends React.Component {
                                     value={this.state.name}
                                     onChange={this.handleInputChange}
                                     id="name"
+                                    required
                                 />
 
-                                <label htmlFor="address">Adresse :</label>
+                                <label htmlFor="phone">Téléphone :</label>
                                 <input
-                                    type="text"
-                                    name="address"
-                                    value={this.state.address}
-                                    onChange={this.handleInputChange}
-                                    id="address"
+                                    type="tel"
+                                    name="phone"
+                                    value={this.state.phone}
+                                    onChange={this.handlePhoneInputChange}
+                                    id="phone"
+                                    required
                                 />
 
-                                <label htmlFor="postal-code">Adresse :</label>
+                                <label htmlFor="hours">Horaires d'ouverture :</label>
                                 <input
                                     type="text"
-                                    name="address"
-                                    value={this.state.address}
+                                    name="hours"
+                                    value={this.state.hours}
                                     onChange={this.handleInputChange}
-                                    id="postal-code"
+                                    id="hours"
+                                    required
                                 />
+                                <p className="hours-description">De préférence sous la forme : "11am - 11pm"</p>
+
                                 <button type="submit">Valider</button>
                             </div>
                         </div>
@@ -97,8 +111,9 @@ class LocationForm extends React.Component {
 }
 
 LocationForm.propTypes = {
-    handleCloseLocationForm: PropTypes.func.isRequired,
-    handleSubmitNewLocation: PropTypes.func.isRequired
+    geocodingLocation: PropTypes.object.isRequired,
+    handleSubmitNewLocation: PropTypes.func.isRequired,
+    handleCloseLocationForm: PropTypes.func.isRequired
 };
 
 export default LocationForm;

@@ -92,6 +92,7 @@ class RatingForm extends React.Component {
                                             buttonDownName="button-down"
                                             handleInputChange={(e) => this.handleInputChange(e)}
                                             handleButtonClick={this.handleButtonsInputClick}
+                                            required={true}
                                         />
                                     </div>
                                     <textarea
@@ -102,6 +103,7 @@ class RatingForm extends React.Component {
                                         placeholder="Rédigez votre commentaire ici"
                                         rows="10"
                                         cols="38"
+                                        required={true}
                                     />
                                     <button type="submit">Valider</button>
                                 </div>

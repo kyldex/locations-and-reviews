@@ -3,7 +3,16 @@ import PropTypes from 'prop-types';
 
 import './RatingInput.css';
 
-const RatingInput = ({ buttonUpName, buttonDownName, inputName, inputValue, handleButtonClick, handleInputBlur, handleInputChange }) => {
+const RatingInput = ({
+    buttonUpName,
+    buttonDownName,
+    inputName,
+    inputValue,
+    handleButtonClick,
+    handleInputBlur,
+    handleInputChange,
+    required
+}) => {
     return (
         <div className="rating-input">
             <div className="rating-input-inner">
@@ -17,6 +26,7 @@ const RatingInput = ({ buttonUpName, buttonDownName, inputName, inputValue, hand
                     min="0"
                     max="5"
                     step="1"
+                    required={required}
                 />
                 
                 <div className="rating-input-buttons">
@@ -41,6 +51,10 @@ const RatingInput = ({ buttonUpName, buttonDownName, inputName, inputValue, hand
     );
 }
 
+RatingInput.defaultProps = {
+    required: false
+}
+
 RatingInput.propTypes = {
     buttonUpName: PropTypes.string.isRequired,
     buttonDownName: PropTypes.string.isRequired,
@@ -53,6 +67,7 @@ RatingInput.propTypes = {
     handleButtonClick: PropTypes.func.isRequired,
     handleInputBlur: PropTypes.func,
     handleInputChange: PropTypes.func.isRequired,
+    required: PropTypes.bool
 };
 
 export default RatingInput;

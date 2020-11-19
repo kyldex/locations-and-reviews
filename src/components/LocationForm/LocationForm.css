@@ -1,12 +1,17 @@
-.location-form-inner {
-    display: flex;
-    justify-content: center;
+.location-form {
     margin-top: 2rem;
 }
 
-.location-form-inner h2 {
+.location-form h2 {
     text-align: center;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    line-height: 1.3;
+}
+
+.location-form-content {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
 }
 
 .location-form-content {
@@ -17,4 +22,38 @@
 .location-form-content-inner {
     display: flex;
     flex-direction: column;
+}
+
+.location-form-content-inner label {
+    margin-top: 0.5rem;
+}
+
+.location-form-content-inner input {
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+    padding-left: 0.6rem;
+}
+
+.location-form-content-inner .hours-description {
+    font-size: 0.8rem;
+}
+
+.location-form-content-inner button {
+    margin-top: 1.2rem;
+    cursor: pointer;
+}
+
+.location-form .thank-you {
+    text-align: center;
+    margin-top: 5rem;
+}
+
+.location-form .thank-you p {
+    font-size: 1.5rem;
+}
+
+.location-form .thank-you button {
+    margin-top: 2rem;
+    text-align: center;
+    cursor: pointer;
 }
