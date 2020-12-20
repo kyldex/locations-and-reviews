@@ -99,11 +99,18 @@ export default class App extends React.Component {
 
     // Map
     handleMapMarkerClick(location) {
+        // Infowindow has been closed
         if (location === null) {
             if (this.state.displaySingleLocationInSidebar) {
                 this.setState({
                     displayFilterInSidebar: true,
                     displaySingleLocationInSidebar: false,
+                    selectedLocation: null
+                });
+            } else if (this.state.displayRatingFormInSidebar) {
+                this.setState({
+                    displayFilterInSidebar: true,
+                    displayRatingFormInSidebar: false,
                     selectedLocation: null
                 });
             } else {
@@ -139,6 +146,12 @@ export default class App extends React.Component {
                 this.setState({
                     displayFilterInSidebar: true,
                     displaySingleLocationInSidebar: false,
+                    selectedLocation: null
+                });
+            } else if (this.state.displayRatingFormInSidebar) {
+                this.setState({
+                    displayFilterInSidebar: true,
+                    displayRatingFormInSidebar: false,
                     selectedLocation: null
                 });
             } else {
@@ -366,7 +379,6 @@ export default class App extends React.Component {
                             handleCloseLocationForm={this.handleCloseLocationForm}
                         />
                     )}
-
                 </div>
 
                 <div id="map">
