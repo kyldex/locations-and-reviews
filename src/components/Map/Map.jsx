@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { GoogleMap, InfoWindow, LoadScript, Marker } from '@react-google-maps/api';
 
-import './Map.css';
+import './Map.scss';
 import { mapStyles } from '../../map-styles';
 
 const { REACT_APP_GMAP_API_KEY } = process.env;

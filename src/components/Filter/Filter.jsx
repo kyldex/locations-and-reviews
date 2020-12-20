@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import FilterControls from './FilterControls.jsx';
 import LocationCard from './LocationCard.jsx';
 
-import './Filter.css';
+import './Filter.scss';
 
 const Filter = ({
     currentMinRatingAverage,

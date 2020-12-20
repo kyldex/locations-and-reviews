@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import './SingleLocation.css';
+import './SingleLocation.scss';
 
 const { REACT_APP_GMAP_API_KEY } = process.env;
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import RatingInput from '../common/RatingInput.jsx';
 
-import './FilterControls.css';
+import './FilterControls.scss';
 
 class FilterControls extends React.Component {
     constructor(props) {

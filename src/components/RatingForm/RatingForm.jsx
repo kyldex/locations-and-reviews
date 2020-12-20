@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import RatingInput from '../common/RatingInput.jsx';
 
-import './RatingForm.css';
+import './RatingForm.scss';
 
 class RatingForm extends React.Component {
     constructor(props) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import './LocationForm.css';
+import './LocationForm.scss';
 
 class LocationForm extends React.Component {
     constructor(props) {

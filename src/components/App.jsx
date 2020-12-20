@@ -7,7 +7,7 @@ import SingleLocation from './SingleLocation/SingleLocation.jsx';
 import RatingForm from './RatingForm/RatingForm.jsx';
 import LocationForm from './LocationForm/LocationForm.jsx';
 
-import './App.css';
+import './App.scss';
 
 export default class App extends React.Component {
     constructor(props) {
