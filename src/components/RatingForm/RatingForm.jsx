@@ -20,7 +20,6 @@ class RatingForm extends React.Component {
     }
 
     handleSubmit(e) {
-        console.log('submit rating');
         e.preventDefault();
         this.props.handleSubmitNewRating({
             rating_id: '',

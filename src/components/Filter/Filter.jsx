@@ -15,7 +15,6 @@ const Filter = ({
     handleLocationCardHover,
     minRatingAverage,
     maxRatingAverage,
-    ratingsAverage
 }) => {
     return (
         <>
@@ -32,7 +31,6 @@ const Filter = ({
                     <LocationCard
                         key={location.properties.store_id}
                         location={location}
-                        ratingsAverage={ratingsAverage}
                         handleLocationCardClick={(location) => handleLocationCardClick(location)}
                         handleLocationCardHover={(location) => handleLocationCardHover(location)}
                     />
@@ -59,8 +57,7 @@ Filter.propTypes = {
     handleLocationCardClick: PropTypes.func.isRequired,
     handleLocationCardHover: PropTypes.func.isRequired,
     minRatingAverage: PropTypes.number.isRequired,
-    maxRatingAverage: PropTypes.number.isRequired,
-    ratingsAverage: PropTypes.object
+    maxRatingAverage: PropTypes.number.isRequired
 }
 
 export default Filter;

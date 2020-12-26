@@ -30,17 +30,15 @@ class LocationForm extends React.Component {
         this.setState({ phone: value });
     }
 
-    handleSubmit() {
+    handleSubmit(e) {
         // e.preventDefault();
-        // console.log('submit');
-        this.props.handleSubmitNewLocation({
-            name: this.state.name,
-            address: this.props.geocodingLocation.street,
-            // postalCode: this.state.postalCode,
-            postalCodeAndCity: this.props.geocodingLocation.city,
-            phone: this.state.phone,
-            hours: this.state.hours
-        });
+
+        const newLocation = Object.assign({}, this.props.geocodedLocation);
+        newLocation.properties.name = this.state.name;
+        newLocation.properties.phone = this.state.phone;
+        newLocation.properties.hours = this.state.hours;
+
+        this.props.handleSubmitNewLocation(newLocation);
         this.setState({ displayForm: false });
     }
 
@@ -56,8 +54,8 @@ class LocationForm extends React.Component {
                     <form action="" onSubmit={this.handleSubmit}>
                         <h2>
                             Ajouter un restaurant<br />
-                            au {this.props.geocodingLocation.street}<br />
-                            {this.props.geocodingLocation.city} ?
+                            au {this.props.geocodedLocation.properties.address.street_number} {this.props.geocodedLocation.properties.address.street}<br />
+                            {this.props.geocodedLocation.properties.address.postal_code} {this.props.geocodedLocation.properties.address.city} ?
                         </h2>
                         <div className="location-form-content">
                             <div className="location-form-content-inner">
@@ -108,7 +106,7 @@ class LocationForm extends React.Component {
 }
 
 LocationForm.propTypes = {
-    geocodingLocation: PropTypes.object.isRequired,
+    geocodedLocation: PropTypes.object.isRequired,
     handleSubmitNewLocation: PropTypes.func.isRequired,
     handleCloseLocationForm: PropTypes.func.isRequired
 };

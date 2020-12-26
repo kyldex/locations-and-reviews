@@ -193,10 +193,10 @@ class Map extends React.Component {
                         </Marker>
                     ))}
 
-                    {this.props.geocodingLocation && (
+                    {this.props.geocodedLocation && (
                         <Marker
                             icon="/src/assets/img/restaurant.svg"
-                            position={{ lat: this.props.geocodingLocation.coords.lat, lng: this.props.geocodingLocation.coords.lng }}
+                            position={{ lat: this.props.geocodedLocation.geometry.coordinates[1], lng: this.props.geocodedLocation.geometry.coordinates[0] }}
                             onDblClick={() => this.props.handleMapDoubleClick(null)}
                         >
                             <InfoWindow
@@ -205,7 +205,7 @@ class Map extends React.Component {
                                 <div className="infowindow-geocoding-location">
                                     <div className="title">Ajouter un restaurant ?</div>
                                     <p>
-                                        Adresse : {this.props.geocodingLocation.street} {this.props.geocodingLocation.city}<br />
+                                        Adresse : {this.props.geocodedLocation.properties.address.street_number} {this.props.geocodedLocation.properties.address.street}, {this.props.geocodedLocation.properties.address.postal_code} {this.props.geocodedLocation.properties.address.city}<br />
                                         Remplissez le formulaire !
                                     </p>
                                 </div>
@@ -221,7 +221,7 @@ class Map extends React.Component {
 Map.propTypes = {
     allLocations: PropTypes.array,
     displayedLocations: PropTypes.array,
-    geocodingLocation: PropTypes.object,
+    geocodedLocation: PropTypes.object,
     handleLocationsInMapBounds: PropTypes.func.isRequired,
     handleMapMarkerClick: PropTypes.func.isRequired,
     handleMapDoubleClick: PropTypes.func.isRequired,

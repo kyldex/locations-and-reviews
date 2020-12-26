@@ -1,6 +1,7 @@
 import React from 'react';
 import * as data from '../data/restaurants.json';
-import reverseGeocoding from '../helpers/reverseGeocoding';
+import parseGeocodingData from '../helpers/parseGeocodingData';
+import getRatingsAverage from '../helpers/getRatingsAverage';
 
 import Map from './Map/Map.jsx';
 import Filter from './Filter/Filter.jsx';
@@ -18,7 +19,6 @@ export default class App extends React.Component {
             displayedLocations: null,
             filteredLocationsByAverage: null,
             locationsInMapBounds: null,
-            ratingsAverage: {},
             minRatingAverage: 0,
             maxRatingAverage: 5,
             currentMinRatingAverage: 0,
@@ -27,7 +27,7 @@ export default class App extends React.Component {
             // On location card click or on map marker click
             selectedLocation: null,
             // Double click on map
-            geocodingLocation : null,
+            geocodedLocation : null,
             // Change sidebar display
             displayFilterInSidebar: true,
             displaySingleLocationInSidebar: false,
@@ -56,27 +56,8 @@ export default class App extends React.Component {
         this.setState({
             allLocations: allLocations,
             displayedLocations: allLocations,
-            ratingsAverage: this.getRatingsAverage(allLocations),
             lastRatingId: lastRatingId
         });
-    }
-
-    // Init
-    getRatingsAverage(allLocations) {
-        const locationsRatingsAverage = {};
-
-        allLocations.forEach((location) => {
-            const locationId = location.properties.store_id;
-            let ratingsTotal = 0;
-
-            location.properties.ratings.forEach((rating) => {
-                ratingsTotal += rating.stars;
-            })
-
-            locationsRatingsAverage[locationId] = ratingsTotal / 2;
-        })
-
-        return locationsRatingsAverage;
     }
 
     // Map
@@ -134,7 +115,7 @@ export default class App extends React.Component {
                 this.setState({
                     displayLocationFormInSidebar: false,
                     displaySingleLocationInSidebar: true,
-                    geocodingLocation : null,
+                    geocodedLocation : null,
                     selectedLocation: location
                 });
             } else {
@@ -167,54 +148,35 @@ export default class App extends React.Component {
 
     // Map
     handleMapDoubleClick(reverseGeocodingData) {
-        const newLocation = reverseGeocoding(reverseGeocodingData);
-
         // New location marker has been double-clicked or infowindow has been closed
         if (reverseGeocodingData === null) {
             this.handleDisplayLocationForm(null);
 
         } else {
-            const geocodingLocationStreet = reverseGeocodingData.address_components[0].long_name + ' ' + reverseGeocodingData.address_components[1].long_name;
-            const geocodingLocationCity = reverseGeocodingData.address_components[6].long_name + ' ' + reverseGeocodingData.address_components[2].long_name;
-            const geocodingLocationCoords = reverseGeocodingData.geometry.location;
-            const geocodingLocation = {
-                street: geocodingLocationStreet,
-                city: geocodingLocationCity,
-                coords: geocodingLocationCoords
-            };
-
-            this.handleDisplayLocationForm(geocodingLocation);
+            const geocodedLocation = parseGeocodingData(reverseGeocodingData);
+            this.handleDisplayLocationForm(geocodedLocation);
         }
     }
 
     // Filter
     handleChangeFilterInputs(newMinRating, newMaxRating) {
-        const { allLocations, locationsInMapBounds, ratingsAverage } = this.state;
-
-        const filteredIds = [];
+        const { allLocations, locationsInMapBounds } = this.state;
         const filteredLocations = [];
         const newDisplayedLocations = [];
 
         if (newMinRating === '' || newMaxRating === '') {
             this.setState({
                 currentMinRatingAverage: newMinRating,
-                currentMaxRatingAverage: newMaxRating,
+                currentMaxRatingAverage: newMaxRating
             });
 
         } else {
-            for (const storeId in ratingsAverage) {
-                if (ratingsAverage[storeId] >= newMinRating && ratingsAverage[storeId] <= newMaxRating) {
-                    filteredIds.push(parseInt(storeId));
-                }
-            }
-
             if (allLocations !== null) {
-                filteredIds.forEach((storeId) => {
-                    allLocations.forEach((location) => {
-                        if (parseInt(location.properties.store_id) === storeId) {
-                            filteredLocations.push(location);
-                        }
-                    });
+                allLocations.forEach((location) => {
+                    const locationRatingAverage = location.properties.ratings_average;
+                    if (locationRatingAverage >= newMinRating && locationRatingAverage <= newMaxRating) {
+                        filteredLocations.push(location);
+                    }
                 });
             }
 
@@ -276,21 +238,24 @@ export default class App extends React.Component {
         const newRatingId = this.state.lastRatingId + 1;
         newRating.rating_id = newRatingId.toString();
 
+        const allLocations = [...this.state.allLocations];
         let correspondingLocationIndex;
-        this.state.allLocations.forEach((location, index) => {
+        allLocations.forEach((location, index) => {
             if (location.properties.store_id === newRating.store_id) {
                 correspondingLocationIndex = index;
             }
         });
+        const correspondingLocation = allLocations[correspondingLocationIndex];
 
-        const allLocations = [...this.state.allLocations];
-        allLocations[correspondingLocationIndex].properties.ratings.push(
+        correspondingLocation.properties.ratings.push(
             {
                 rating_id: newRating.rating_id,
                 stars: newRating.rating_stars,
                 comment: newRating.rating_comment
             }
         );
+
+        correspondingLocation.properties.ratings_average = getRatingsAverage(correspondingLocation);
 
         this.setState({
             allLocations: allLocations,
@@ -307,28 +272,39 @@ export default class App extends React.Component {
     }
 
     // LocationForm
-    handleSubmitNewLocation(newLocation) {
-        // console.log(newLocation);
-    }
-
-    // LocationForm
-    handleDisplayLocationForm(geocodingLocation) {
-        if (geocodingLocation === null) {
+    handleDisplayLocationForm(geocodedLocation) {
+        if (geocodedLocation === null) {
             this.setState({
-                geocodingLocation: null,
+                geocodedLocation: null,
                 displayFilterInSidebar: true,
                 displayLocationFormInSidebar: false,
             });
 
         } else {
             this.setState({
-                geocodingLocation: geocodingLocation,
+                geocodedLocation: geocodedLocation,
                 displayFilterInSidebar: false,
                 displaySingleLocationInSidebar: false,
                 displayRatingFormInSidebar: false,
                 displayLocationFormInSidebar: true,
             });
         }
+    }
+
+    // LocationForm
+    handleSubmitNewLocation(newLocation) {
+        const lastLocationIndex = this.state.allLocations.length - 1;
+        const lastLocationId = parseInt(this.state.allLocations[lastLocationIndex].properties.store_id);
+        const newLocationId = lastLocationId + 1;
+        newLocation.properties.store_id = newLocationId.toString();
+
+        const allLocations = [...this.state.allLocations];
+        allLocations.push(newLocation);
+
+        this.setState({
+            allLocations: allLocations,
+            selectedLocation: newLocation
+        });
     }
 
     // LocationForm: after closing new location thank you message
@@ -357,7 +333,6 @@ export default class App extends React.Component {
                             handleLocationCardHover={(location) => this.handleLocationCardHover(location)}
                             minRatingAverage={this.state.minRatingAverage}
                             maxRatingAverage={this.state.maxRatingAverage}
-                            ratingsAverage={this.state.ratingsAverage}
                         />
                     )}
 
@@ -384,7 +359,7 @@ export default class App extends React.Component {
 
                     {this.state.displayLocationFormInSidebar && (
                         <LocationForm
-                            geocodingLocation={this.state.geocodingLocation}
+                            geocodedLocation={this.state.geocodedLocation}
                             handleSubmitNewLocation={(newLocation) => this.handleSubmitNewLocation(newLocation)}
                             handleCloseLocationForm={this.handleCloseLocationForm}
                         />
@@ -395,7 +370,7 @@ export default class App extends React.Component {
                     <Map
                         allLocations={this.state.allLocations}
                         displayedLocations={this.state.displayedLocations}
-                        geocodingLocation={this.state.geocodingLocation}
+                        geocodedLocation={this.state.geocodedLocation}
                         handleLocationsInMapBounds={(locations) => this.handleLocationsInMapBounds(locations)}
                         handleMapMarkerClick={(location) => this.handleMapMarkerClick(location)}
                         handleMapDoubleClick ={(reverseGeocodingData) => this.handleMapDoubleClick(reverseGeocodingData)}

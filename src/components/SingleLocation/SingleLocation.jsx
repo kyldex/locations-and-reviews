@@ -5,7 +5,7 @@ import './SingleLocation.scss';
 
 const { REACT_APP_GMAP_API_KEY } = process.env;
 
-const SingleLocation = ({ addedRatings, handleButtonClick, handleReturnToLocationsList, maxRatingAverage, selectedLocation }) => {
+const SingleLocation = ({ handleButtonClick, handleReturnToLocationsList, maxRatingAverage, selectedLocation }) => {
     const lat = selectedLocation.geometry.coordinates[1];
     const lng = selectedLocation.geometry.coordinates[0];
     const imgURL = `https://maps.googleapis.com/maps/api/streetview?size=600x400&location=${lat},${lng}&key=${REACT_APP_GMAP_API_KEY}`;
@@ -38,7 +38,6 @@ const SingleLocation = ({ addedRatings, handleButtonClick, handleReturnToLocatio
 };
 
 SingleLocation.propTypes = {
-    addedRatings: PropTypes.array,
     handleButtonClick: PropTypes.func.isRequired,
     handleReturnToLocationsList: PropTypes.func.isRequired,
     maxRatingAverage: PropTypes.number.isRequired,

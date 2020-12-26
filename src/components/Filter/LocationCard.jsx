@@ -3,10 +3,7 @@ import PropTypes from 'prop-types';
 
 import './LocationCard.scss';
 
-const LocationCard = ({ handleLocationCardClick, handleLocationCardHover, location, ratingsAverage }) => {
-    const storeId = location.properties.store_id;
-    const average = ratingsAverage[storeId];
-
+const LocationCard = ({ handleLocationCardClick, handleLocationCardHover, location }) => {
     return (
         <div
             className="location-card"
@@ -15,7 +12,7 @@ const LocationCard = ({ handleLocationCardClick, handleLocationCardHover, locati
             onMouseLeave={() => handleLocationCardHover(null)}
         >
             <h2>{location.properties.name}</h2>
-            <p>{`Moyenne : ${average}`}</p>
+            <p>Moyenne : {location.properties.ratings_average}</p>
         </div>
     )
 }
@@ -23,8 +20,7 @@ const LocationCard = ({ handleLocationCardClick, handleLocationCardHover, locati
 LocationCard.propTypes = {
     handleLocationCardClick: PropTypes.func.isRequired,
     handleLocationCardHover: PropTypes.func.isRequired,
-    location: PropTypes.object,
-    ratingsAverage: PropTypes.object
+    location: PropTypes.object
 }
 
 export default LocationCard;
