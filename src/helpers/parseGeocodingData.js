@@ -22,7 +22,8 @@ export default function parseGeocodingData(reverseGeocodingData) {
             phone: '',
             category: 'restaurant',
             hours: '',
-            ratings: []
+            ratings: [],
+            ratings_average: 'Aucune note'
         }
     };
 

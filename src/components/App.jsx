@@ -299,10 +299,14 @@ export default class App extends React.Component {
         newLocation.properties.store_id = newLocationId.toString();
 
         const allLocations = [...this.state.allLocations];
+        const displayedLocations = [...this.state.displayedLocations]
         allLocations.push(newLocation);
+        displayedLocations.push(newLocation);
 
         this.setState({
             allLocations: allLocations,
+            displayedLocations: displayedLocations,
+            geocodedLocation: null,
             selectedLocation: newLocation
         });
     }
