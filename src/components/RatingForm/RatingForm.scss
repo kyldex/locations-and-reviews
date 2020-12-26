@@ -1,10 +1,10 @@
-.rating-form {
+.rating-form-inner {
     display: flex;
     justify-content: center;
     margin-top: 2rem;
 }
 
-.rating-form h2 {
+.rating-form-inner h2 {
     text-align: center;
     font-size: 1.5rem;
 }
@@ -29,11 +29,27 @@
     margin-right: 5px;
 }
 
-.rating-form textarea {
+.rating-form-inner textarea {
     margin-top: 1rem;
 }
 
-.rating-form button {
+.rating-form-inner button {
     margin-top: 1rem;
     text-align: center;
+    cursor: pointer;
+}
+
+.rating-form .thank-you {
+    text-align: center;
+    margin-top: 5rem;
+}
+
+.rating-form .thank-you p {
+    font-size: 1.5rem;
+}
+
+.rating-form .thank-you button {
+    margin-top: 2rem;
+    text-align: center;
+    cursor: pointer;
 }

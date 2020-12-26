@@ -1,4 +1,4 @@
-/* Reset user agent */
+// Reset user agent
 * {
     box-sizing: border-box;
 }
@@ -33,13 +33,13 @@ button {
     background: none;
     border: 0;
     color: inherit;
-    /* cursor: default; */
+    // cursor: default;
     font: inherit;
     line-height: normal;
     overflow: visible;
     padding: 0;
-    -webkit-appearance: button; /* for input */
-    -webkit-user-select: none; /* for button */
+    -webkit-appearance: button; // for input
+    -webkit-user-select: none; // for button
        -moz-user-select: none;
         -ms-user-select: none;
 }
@@ -54,15 +54,15 @@ button::-moz-focus-inner {
     padding: 0;
 }
 
-/* Hide arrows from input number */
-/* Chrome, Safari, Edge, Opera */
+// Hide arrows from input number
+// Chrome, Safari, Edge, Opera
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-/* Firefox */
+// Firefox
 input[type=number] {
   -moz-appearance: textfield;
 }

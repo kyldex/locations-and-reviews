@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import RatingInput from '../../common/RatingInput.jsx';
+import RatingInput from '../common/RatingInput.jsx';
 
-import './Filter.css';
+import './FilterControls.scss';
 
-class Filter extends React.Component {
+class FilterControls extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -23,8 +23,8 @@ class Filter extends React.Component {
             fourStarsWidth: null
         };
         this.handleInputBlur = this.handleInputBlur.bind(this);
-        this.handleButtonClick = this.handleButtonClick.bind(this);
         this.handleMouseDown = this.handleMouseDown.bind(this);
+        this.handleButtonClick = this.handleButtonClick.bind(this);
     }
 
     makeResizable() {
@@ -236,7 +236,7 @@ class Filter extends React.Component {
     }
 
     handleButtonClick(e) {
-        const {minRatingAverage, maxRatingAverage, currentMinRatingAverage, currentMaxRatingAverage} = this.props;
+        const { minRatingAverage, maxRatingAverage, currentMinRatingAverage, currentMaxRatingAverage } = this.props;
         let newFilterValues;
 
         if (e.target.classList.contains('button-min-up') && currentMinRatingAverage < maxRatingAverage) {
@@ -277,7 +277,6 @@ class Filter extends React.Component {
     // Refer to this article by Hung Nguyen
     // https://medium.com/the-z/making-a-resizable-div-in-js-is-not-easy-as-you-think-bda19a1bc53d
     handleMouseDown(e) {
-        // e.preventDefault();
         const currentResizer = e.target;
         let originalMouseX = e.pageX;
         const thisFilterComponent = this;
@@ -521,7 +520,7 @@ class Filter extends React.Component {
     }
 }
 
-Filter.propTypes = {
+FilterControls.propTypes = {
     minRatingAverage: PropTypes.number.isRequired,
     maxRatingAverage: PropTypes.number.isRequired,
     // String type when filter input is empty
@@ -536,4 +535,4 @@ Filter.propTypes = {
     handleChangeFilterInputs: PropTypes.func.isRequired
 }
 
-export default Filter;
+export default FilterControls;

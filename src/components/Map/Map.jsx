@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { GoogleMap, InfoWindow, LoadScript, Marker } from '@react-google-maps/api';
 
-import './Map.css';
+import './Map.scss';
 import { mapStyles } from '../../map-styles';
 
 const { REACT_APP_GMAP_API_KEY } = process.env;
@@ -27,6 +27,7 @@ class Map extends React.Component {
         }
         this.mapRef = React.createRef();
         this.handleLoad = this.handleLoad.bind(this);
+        this.handleDoubleClick = this.handleDoubleClick.bind(this);
         this.handleDragEndAndZoomChanged = this.handleDragEndAndZoomChanged.bind(this);
         this.handleClickMarkerUserPos = this.handleClickMarkerUserPos.bind(this);
     }
@@ -55,6 +56,24 @@ class Map extends React.Component {
 
     handleLoad(map) {
         this.mapRef.current = map;
+    }
+
+    handleDoubleClick(e) {
+        const thisMapComponent = this;
+        const lat = e.latLng.lat();
+        const lng = e.latLng.lng();
+        let reverseGeocodingData;
+
+        const request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                const response = JSON.parse(this.responseText);
+                reverseGeocodingData = response.results[0];
+                thisMapComponent.props.handleMapDoubleClick(reverseGeocodingData);
+            }
+        };
+        request.open('GET', `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&location_type=ROOFTOP&result_type=street_address&key=${REACT_APP_GMAP_API_KEY}`);
+        request.send();
     }
 
     getMapCenter() {
@@ -98,11 +117,10 @@ class Map extends React.Component {
 
     componentDidMount() {
         // Try HTML5 geolocation
-        this.showCurrentLocation();
+        // this.showCurrentLocation();
     }
     
     render() {
-        console.log('render map');
         return (
             <LoadScript
                 googleMapsApiKey={REACT_APP_GMAP_API_KEY}
@@ -117,10 +135,17 @@ class Map extends React.Component {
                         width: "100%",
                         height: "100%"
                     }}
+                    onDblClick={this.handleDoubleClick}
                     onDragEnd={this.handleDragEndAndZoomChanged}
                     onLoad={this.handleLoad}
                     onZoomChanged={this.handleDragEndAndZoomChanged}
-                    options={{styles: STYLES_ARRAY}}
+                    options={{
+                        disableDoubleClickZoom: true,
+                        fullscreenControl: false,
+                        mapTypeControl: false,
+                        streetViewControl: false,
+                        styles: STYLES_ARRAY
+                    }}
                     ref={this.mapRef}
                     zoom={this.state.isUserMarkerShown ? 14 : 12}
                 >
@@ -142,32 +167,50 @@ class Map extends React.Component {
                         </Marker>
                     )}
                     
-                    {this.props.displayedLocations ? this.props.displayedLocations.map((location) => (
+                    {this.props.displayedLocations && this.props.displayedLocations.map((location) => (
                         <Marker
                             icon="/src/assets/img/restaurant.svg"
-                            key={location.properties.storeid}
+                            key={location.properties.store_id}
                             position={{
                                 lat: location.geometry.coordinates[1],
                                 lng: location.geometry.coordinates[0]
                             }}
                             onClick={() => this.props.handleMapMarkerClick(location)}
-                            animation={this.props.hoveredLocation && this.props.hoveredLocation.properties.storeid === location.properties.storeid ? 1 : null}
+                            animation={this.props.hoveredLocation && this.props.hoveredLocation.properties.store_id === location.properties.store_id ? 1 : null}
                         >
-                            {this.props.selectedLocation && this.props.selectedLocation.properties.storeid === location.properties.storeid && (
+                            {this.props.selectedLocation && this.props.selectedLocation.properties.store_id === location.properties.store_id && (
                                 <InfoWindow
                                     onCloseClick={() => this.props.handleMapMarkerClick(null)}
                                 >
-                                    <div>
-                                        <div className="infowindow-title">{this.props.selectedLocation.properties.name}</div>
+                                    <div className="infowindow-displayed-locations">
+                                        <div className="title">{this.props.selectedLocation.properties.name}</div>
                                         <p>{this.props.selectedLocation.properties.hours}</p>
-                                        <p>{this.props.selectedLocation.properties.address}</p>
+                                        <p>{this.props.selectedLocation.properties.address.street_number} {this.props.selectedLocation.properties.address.street}, {this.props.selectedLocation.properties.address.postal_code} {this.props.selectedLocation.properties.address.city}</p>
                                         <p>{this.props.selectedLocation.properties.phone}</p>
                                     </div>
                                 </InfoWindow>
                             )}
                         </Marker>
-                    )) : (
-                        <div>Waiting for map</div>
+                    ))}
+
+                    {this.props.geocodedLocation && (
+                        <Marker
+                            icon="/src/assets/img/restaurant.svg"
+                            position={{ lat: this.props.geocodedLocation.geometry.coordinates[1], lng: this.props.geocodedLocation.geometry.coordinates[0] }}
+                            onDblClick={() => this.props.handleMapDoubleClick(null)}
+                        >
+                            <InfoWindow
+                                onCloseClick={() => this.props.handleMapDoubleClick(null)}
+                            >
+                                <div className="infowindow-geocoding-location">
+                                    <div className="title">Ajouter un restaurant ?</div>
+                                    <p>
+                                        Adresse : {this.props.geocodedLocation.properties.address.street_number} {this.props.geocodedLocation.properties.address.street}, {this.props.geocodedLocation.properties.address.postal_code} {this.props.geocodedLocation.properties.address.city}<br />
+                                        Remplissez le formulaire !
+                                    </p>
+                                </div>
+                            </InfoWindow>
+                        </Marker>
                     )}
                 </GoogleMap>
             </LoadScript>
@@ -178,10 +221,12 @@ class Map extends React.Component {
 Map.propTypes = {
     allLocations: PropTypes.array,
     displayedLocations: PropTypes.array,
+    geocodedLocation: PropTypes.object,
     handleLocationsInMapBounds: PropTypes.func.isRequired,
     handleMapMarkerClick: PropTypes.func.isRequired,
-    selectedLocation: PropTypes.object,
-    hoveredLocation: PropTypes.object
-}
+    handleMapDoubleClick: PropTypes.func.isRequired,
+    hoveredLocation: PropTypes.object,
+    selectedLocation: PropTypes.object
+};
 
 export default Map;
