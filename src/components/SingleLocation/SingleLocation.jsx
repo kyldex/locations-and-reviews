@@ -27,18 +27,10 @@ const SingleLocation = ({ addedRatings, handleButtonClick, handleReturnToLocatio
 
             <div className="single-location-reviews">
                 {selectedLocation.properties.ratings.map((rating) => (
-                    <div className="single-location-review" key={rating.ratingId}>
+                    <div className="single-location-review" key={rating.rating_id}>
                         <p>{`${rating.stars}/${maxRatingAverage}`}</p>
                         <p>{rating.comment}</p>
                     </div>
-                ))}
-                {addedRatings && addedRatings.map((addedRating) => (
-                    addedRating.storeId === selectedLocation.properties.storeid && (
-                    <div className="single-location-review" key={addedRating.ratingId}>
-                        <p>{`${addedRating.ratingStars}/${maxRatingAverage}`}</p>
-                        <p>{addedRating.ratingComment}</p>
-                    </div>
-                    )
                 ))}
             </div>
         </div>

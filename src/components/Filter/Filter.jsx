@@ -30,7 +30,7 @@ const Filter = ({
             <div className="location-cards">
                 {displayedLocations ? displayedLocations.map((location) => (
                     <LocationCard
-                        key={location.properties.storeid}
+                        key={location.properties.store_id}
                         location={location}
                         ratingsAverage={ratingsAverage}
                         handleLocationCardClick={(location) => handleLocationCardClick(location)}

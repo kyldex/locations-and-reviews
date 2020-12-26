@@ -4,14 +4,14 @@ import PropTypes from 'prop-types';
 import './LocationCard.scss';
 
 const LocationCard = ({ handleLocationCardClick, handleLocationCardHover, location, ratingsAverage }) => {
-    const storeId = location.properties.storeid;
+    const storeId = location.properties.store_id;
     const average = ratingsAverage[storeId];
 
     return (
         <div
             className="location-card"
             onClick={() => handleLocationCardClick(location)}
-            onMouseOver={() => handleLocationCardHover(location)}
+            onMouseEnter={() => handleLocationCardHover(location)}
             onMouseLeave={() => handleLocationCardHover(null)}
         >
             <h2>{location.properties.name}</h2>

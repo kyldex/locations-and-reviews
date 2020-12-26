@@ -1,5 +1,6 @@
 import React from 'react';
 import * as data from '../data/restaurants.json';
+import reverseGeocoding from '../helpers/reverseGeocoding';
 
 import Map from './Map/Map.jsx';
 import Filter from './Filter/Filter.jsx';
@@ -22,6 +23,7 @@ export default class App extends React.Component {
             maxRatingAverage: 5,
             currentMinRatingAverage: 0,
             currentMaxRatingAverage: 5,
+            lastRatingId: null,
             // On location card click or on map marker click
             selectedLocation: null,
             // Double click on map
@@ -32,10 +34,7 @@ export default class App extends React.Component {
             displayRatingFormInSidebar: false,
             displayLocationFormInSidebar: false,
             // On location card hover
-            hoveredLocation: null,
-            // Data added by user
-            addedRatings: null,
-            addedLocations: null
+            hoveredLocation: null
         };
         this.handleReturnToLocationsList = this.handleReturnToLocationsList.bind(this);
         this.handleDisplayRatingForm = this.handleDisplayRatingForm.bind(this);
@@ -49,10 +48,16 @@ export default class App extends React.Component {
         // Fetch data
         const allLocations = data.features;
 
+        // Get last rating id
+        const lastLocationIndex = allLocations.length - 1;
+        const lastRatingIndex = allLocations[lastLocationIndex].properties.ratings.length - 1;
+        const lastRatingId = parseInt(allLocations[lastLocationIndex].properties.ratings[lastRatingIndex].rating_id);
+
         this.setState({
             allLocations: allLocations,
             displayedLocations: allLocations,
-            ratingsAverage: this.getRatingsAverage(allLocations)
+            ratingsAverage: this.getRatingsAverage(allLocations),
+            lastRatingId: lastRatingId
         });
     }
 
@@ -61,7 +66,7 @@ export default class App extends React.Component {
         const locationsRatingsAverage = {};
 
         allLocations.forEach((location) => {
-            const locationId = location.properties.storeid;
+            const locationId = location.properties.store_id;
             let ratingsTotal = 0;
 
             location.properties.ratings.forEach((rating) => {
@@ -82,7 +87,7 @@ export default class App extends React.Component {
         if (filteredLocationsByAverage !== null) {
             locations.forEach((location1) => {
                 filteredLocationsByAverage.forEach((location2) => {
-                    if (location1.properties.storeid === location2.properties.storeid) {
+                    if (location1.properties.store_id === location2.properties.store_id) {
                         newDisplayedLocations.push(location1);
                     }
                 });
@@ -137,7 +142,7 @@ export default class App extends React.Component {
             }
 
         // A marker was selected before selecting a new one
-        } else if (location.properties.storeid !== this.state.selectedLocation.properties.storeid) {
+        } else if (location.properties.store_id !== this.state.selectedLocation.properties.store_id) {
             this.setState({ selectedLocation: location });
         
         // Same marker has been clicked again
@@ -162,6 +167,9 @@ export default class App extends React.Component {
 
     // Map
     handleMapDoubleClick(reverseGeocodingData) {
+        const newLocation = reverseGeocoding(reverseGeocodingData);
+
+        // New location marker has been double-clicked or infowindow has been closed
         if (reverseGeocodingData === null) {
             this.handleDisplayLocationForm(null);
 
@@ -203,7 +211,7 @@ export default class App extends React.Component {
             if (allLocations !== null) {
                 filteredIds.forEach((storeId) => {
                     allLocations.forEach((location) => {
-                        if (parseInt(location.properties.storeid) === storeId) {
+                        if (parseInt(location.properties.store_id) === storeId) {
                             filteredLocations.push(location);
                         }
                     });
@@ -213,7 +221,7 @@ export default class App extends React.Component {
             if (locationsInMapBounds !== null) {
                 filteredLocations.forEach((location1) => {
                     locationsInMapBounds.forEach((location2) => {
-                        if (location1.properties.storeid === location2.properties.storeid) {
+                        if (location1.properties.store_id === location2.properties.store_id) {
                             newDisplayedLocations.push(location1);
                         }
                     });
@@ -265,26 +273,29 @@ export default class App extends React.Component {
 
     // RatingForm
     handleSubmitNewRating(newRating) {
-        if (this.state.addedRatings === null) {
-            const lastLocationIndex = this.state.allLocations.length - 1;
-            const lastRatingIndex = this.state.allLocations[lastLocationIndex].properties.ratings.length - 1;
-            const lastRatingId = this.state.allLocations[lastLocationIndex].properties.ratings[lastRatingIndex].ratingId
-            const newRatingId = parseInt(lastRatingId) + 1;
-            newRating['ratingId'] = newRatingId.toString();
-            const addedRatings = [newRating];
+        const newRatingId = this.state.lastRatingId + 1;
+        newRating.rating_id = newRatingId.toString();
 
-            this.setState({ addedRatings: addedRatings });
+        let correspondingLocationIndex;
+        this.state.allLocations.forEach((location, index) => {
+            if (location.properties.store_id === newRating.store_id) {
+                correspondingLocationIndex = index;
+            }
+        });
 
-        } else {
-            const addedRatings = this.state.addedRatings;
-            const lastRatingIndex = addedRatings.length - 1;
-            const lastRatingId = addedRatings[lastRatingIndex].ratingId;
-            const newRatingId = parseInt(lastRatingId) + 1;
-            newRating['ratingId'] = newRatingId.toString();
-            const newAddedRatings = [...addedRatings, newRating]
-    
-            this.setState({ addedRatings: newAddedRatings });
-        }
+        const allLocations = [...this.state.allLocations];
+        allLocations[correspondingLocationIndex].properties.ratings.push(
+            {
+                rating_id: newRating.rating_id,
+                stars: newRating.rating_stars,
+                comment: newRating.rating_comment
+            }
+        );
+
+        this.setState({
+            allLocations: allLocations,
+            lastRatingId: parseInt(newRatingId)
+        });
     }
 
     // RatingForm: after closing new rating thank you message
@@ -297,7 +308,7 @@ export default class App extends React.Component {
 
     // LocationForm
     handleSubmitNewLocation(newLocation) {
-        console.log(newLocation);
+        // console.log(newLocation);
     }
 
     // LocationForm
@@ -352,7 +363,6 @@ export default class App extends React.Component {
 
                     {this.state.displaySingleLocationInSidebar && (
                         <SingleLocation
-                            addedRatings={this.state.addedRatings}
                             handleButtonClick={this.handleDisplayRatingForm}
                             handleReturnToLocationsList={this.handleReturnToLocationsList}
                             maxRatingAverage={this.state.maxRatingAverage}

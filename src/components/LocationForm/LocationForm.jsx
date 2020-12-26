@@ -26,21 +26,18 @@ class LocationForm extends React.Component {
     }
 
     handlePhoneInputChange(e) {
-        const value = e.target.value
-            .replace(/[^0-9]/g, '')
-            // Add a space after any at-least-2-digit group followed by more digits
-            .replace(/(\d{2,})(?=\d)/g, '$1 ')
-
+        const value = e.target.value.replace(/[^0-9+\s]/g, '');
         this.setState({ phone: value });
     }
 
     handleSubmit() {
-        e.preventDefault();
+        // e.preventDefault();
+        // console.log('submit');
         this.props.handleSubmitNewLocation({
             name: this.state.name,
-            address: this.state.address,
-            postalCode: this.state.postalCode,
-            city: this.state.city,
+            address: this.props.geocodingLocation.street,
+            // postalCode: this.state.postalCode,
+            postalCodeAndCity: this.props.geocodingLocation.city,
             phone: this.state.phone,
             hours: this.state.hours
         });

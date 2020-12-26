@@ -20,12 +20,13 @@ class RatingForm extends React.Component {
     }
 
     handleSubmit(e) {
+        console.log('submit rating');
         e.preventDefault();
         this.props.handleSubmitNewRating({
-            ratingId: '',
-            ratingStars: this.state.ratingStars,
-            ratingComment: this.state.ratingComment,
-            storeId: this.props.selectedLocation.properties.storeid
+            rating_id: '',
+            rating_stars: this.state.ratingStars,
+            rating_comment: this.state.ratingComment,
+            store_id: this.props.selectedLocation.properties.store_id
         });
         this.setState({ displayForm: false });
     }

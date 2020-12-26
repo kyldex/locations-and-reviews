@@ -117,7 +117,7 @@ class Map extends React.Component {
 
     componentDidMount() {
         // Try HTML5 geolocation
-        this.showCurrentLocation();
+        // this.showCurrentLocation();
     }
     
     render() {
@@ -170,22 +170,22 @@ class Map extends React.Component {
                     {this.props.displayedLocations && this.props.displayedLocations.map((location) => (
                         <Marker
                             icon="/src/assets/img/restaurant.svg"
-                            key={location.properties.storeid}
+                            key={location.properties.store_id}
                             position={{
                                 lat: location.geometry.coordinates[1],
                                 lng: location.geometry.coordinates[0]
                             }}
                             onClick={() => this.props.handleMapMarkerClick(location)}
-                            animation={this.props.hoveredLocation && this.props.hoveredLocation.properties.storeid === location.properties.storeid ? 1 : null}
+                            animation={this.props.hoveredLocation && this.props.hoveredLocation.properties.store_id === location.properties.store_id ? 1 : null}
                         >
-                            {this.props.selectedLocation && this.props.selectedLocation.properties.storeid === location.properties.storeid && (
+                            {this.props.selectedLocation && this.props.selectedLocation.properties.store_id === location.properties.store_id && (
                                 <InfoWindow
                                     onCloseClick={() => this.props.handleMapMarkerClick(null)}
                                 >
                                     <div className="infowindow-displayed-locations">
                                         <div className="title">{this.props.selectedLocation.properties.name}</div>
                                         <p>{this.props.selectedLocation.properties.hours}</p>
-                                        <p>{this.props.selectedLocation.properties.address}</p>
+                                        <p>{this.props.selectedLocation.properties.address.street_number} {this.props.selectedLocation.properties.address.street}, {this.props.selectedLocation.properties.address.postal_code} {this.props.selectedLocation.properties.address.city}</p>
                                         <p>{this.props.selectedLocation.properties.phone}</p>
                                     </div>
                                 </InfoWindow>
