@@ -31,7 +31,7 @@ class LocationForm extends React.Component {
     }
 
     handleSubmit(e) {
-        // e.preventDefault();
+        e.preventDefault();
 
         const newLocation = Object.assign({}, this.props.geocodedLocation);
         newLocation.properties.name = this.state.name;
@@ -106,7 +106,7 @@ class LocationForm extends React.Component {
 }
 
 LocationForm.propTypes = {
-    geocodedLocation: PropTypes.object.isRequired,
+    geocodedLocation: PropTypes.object,
     handleSubmitNewLocation: PropTypes.func.isRequired,
     handleCloseLocationForm: PropTypes.func.isRequired
 };
