@@ -23,9 +23,13 @@ class Map extends React.Component {
                 lng: null
             },
             isUserMarkerShown: false,
-            infoWindowUserPos: true
+            infoWindowUserPos: true,
+            googlePlacesLocations: null
         }
         this.mapRef = React.createRef();
+        this.googlePlacesMarkers = [];
+        this.googlePlaceInfoWindow = null;
+        this.getPlacesFromGoogleAPI = this.getPlacesFromGoogleAPI.bind(this);
         this.handleLoad = this.handleLoad.bind(this);
         this.handleDoubleClick = this.handleDoubleClick.bind(this);
         this.handleDragEndAndZoomChanged = this.handleDragEndAndZoomChanged.bind(this);
@@ -56,6 +60,54 @@ class Map extends React.Component {
 
     handleLoad(map) {
         this.mapRef.current = map;
+        this.googlePlaceInfoWindow = new google.maps.InfoWindow();
+        this.getPlacesFromGoogleAPI();
+    }
+
+    getPlacesFromGoogleAPI() {
+        const bounds = this.mapRef.current.getBounds();
+        const request = {
+            bounds: bounds,
+            type: ['restaurant']
+        };
+        const locations = [];
+
+        const service = new google.maps.places.PlacesService(this.mapRef.current);
+        service.nearbySearch(request, (results, status) => {
+            if (status == google.maps.places.PlacesServiceStatus.OK) {
+                // Removes previous markers
+                for (let i = 0; i < this.googlePlacesMarkers.length; i++) {
+                    this.googlePlacesMarkers[i].setMap(null);
+                }
+                // Clears the existing array, no references elsewhere
+                this.googlePlacesMarkers.length = 0;
+
+                for (let i = 0; i < results.length; i++) {
+                    locations.push(results[i]);
+
+                    const marker = new google.maps.Marker({
+                        map: this.mapRef.current,
+                        icon: '/src/assets/img/restaurant.svg',
+                        position: {
+                            lat: results[i].geometry.location.lat(),
+                            lng: results[i].geometry.location.lng()
+                        }
+                    });
+
+                    marker.addListener('click', () => {
+                        this.googlePlaceInfoWindow.setContent(results[i].name);
+                        this.googlePlaceInfoWindow.open(this.mapRef.current, marker);
+                    });
+
+                    this.googlePlacesMarkers.push(marker);
+                }
+
+            } else {
+                console.log('Error when requesting Google Places API. Status : ' + status)
+            }
+        });
+
+        return locations;
     }
 
     handleDoubleClick(e) {
@@ -99,9 +151,11 @@ class Map extends React.Component {
 
         const newPos = this.getMapCenter();
         const locationsInMapBounds = this.getLocationsInMapBounds();
+        const googlePlacesLocations = this.getPlacesFromGoogleAPI();
 
         this.setState({
-            center: newPos
+            center: newPos,
+            googlePlacesLocations: googlePlacesLocations
         });
 
         this.props.handleLocationsInMapBounds(locationsInMapBounds);
@@ -117,7 +171,7 @@ class Map extends React.Component {
 
     componentDidMount() {
         // Try HTML5 geolocation
-        // this.showCurrentLocation();
+        this.showCurrentLocation();
     }
     
     render() {
@@ -146,7 +200,7 @@ class Map extends React.Component {
                         streetViewControl: false,
                         styles: STYLES_ARRAY
                     }}
-                    ref={this.mapRef}
+                    // ref={this.mapRef}
                     zoom={this.state.isUserMarkerShown ? 14 : 12}
                 >
                     {this.state.isUserMarkerShown && (
@@ -192,6 +246,17 @@ class Map extends React.Component {
                             )}
                         </Marker>
                     ))}
+
+                    {/* {this.state.googlePlacesLocations && this.state.googlePlacesLocations.map((location) => (
+                        <Marker
+                            icon="/src/assets/img/restaurant.svg"
+                            key={location.place_id}
+                            position={{
+                                lat: location.geometry.location.lat(),
+                                lng: location.geometry.location.lng()
+                            }}
+                        />
+                    ))} */}
 
                     {this.props.geocodedLocation && (
                         <Marker
