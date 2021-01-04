@@ -9,10 +9,7 @@ class FilterControls extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            resizableWidth: null,
             originalResizableWidth: null,
-            resizableLeft: null,
-            resizableRight: null,
             halfResizerWidth: null,
             minMouseX: null,
             maxMouseX: null,
@@ -30,10 +27,6 @@ class FilterControls extends React.Component {
     makeResizable() {
         const resizable = this.resizable.current;
         const originalResizableWidth = parseFloat(getComputedStyle(resizable, null).getPropertyValue('width'));
-        let resizableWidth = originalResizableWidth;
-
-        let resizableLeft = 0;
-        let resizableRight = 0;
 
         const resizer = document.querySelector('.resizer');
         const halfResizerWidth = Math.floor(parseFloat(getComputedStyle(resizer, null).getPropertyValue('width')) / 2); 
@@ -46,27 +39,8 @@ class FilterControls extends React.Component {
         const threeStarsWidth = Math.floor(originalResizableWidth * (3 / 5));
         const fourStarsWidth = Math.floor(originalResizableWidth * (4 / 5));
 
-        // Passer certaines constantes dans les props ?
-        // // If input values have been changed before returning to filter display
-        // if (this.props.currentMinRatingAverage !== 0) {
-        //     const newFilterValues = this.handleInput(this.props.currentMinRatingAverage, 'filter-input-min');
-        //     resizableWidth = newFilterValues.newResizableWidth;
-        //     resizableLeft = newFilterValues.newResizableLeft;
-        //     resizableRight = newFilterValues.newResizableRight;
-        // }
-
-        // if (this.props.currentMaxRatingAverage !== 5) {
-        //     const newFilterValues = this.handleInput(this.props.currentMaxRatingAverage, 'filter-input-max');
-        //     resizableWidth = newFilterValues.newResizableWidth;
-        //     resizableLeft = newFilterValues.newResizableLeft;
-        //     resizableRight = newFilterValues.newResizableRight;
-        // }
-
         this.setState({
-            resizableWidth,
             originalResizableWidth,
-            resizableLeft,
-            resizableRight,
             halfResizerWidth,
             minMouseX,
             maxMouseX,
@@ -77,17 +51,31 @@ class FilterControls extends React.Component {
         });
     }
 
+    // Check if input values had been changed before returning to filter display
+    checkInputValues() {
+        if (this.props.currentMinRatingAverage !== this.props.minRatingAverage) {
+            this.handleInput(this.props.currentMinRatingAverage, 'filter-input-min');
+        }
+
+        if (this.props.currentMaxRatingAverage !== this.props.maxRatingAverage) {
+            this.handleInput(this.props.currentMaxRatingAverage, 'filter-input-max');
+        }
+    }
+
     handleInput(value, input) {
         const { minRatingAverage, maxRatingAverage, currentMinRatingAverage, currentMaxRatingAverage } = this.props;
-        const {
-            resizableWidth,
-            originalResizableWidth,
-            resizableLeft,
-            resizableRight,
-            halfResizerWidth,
-            oneStarWidth
-        } = this.state;
         const resizable = this.resizable.current;
+        let { originalResizableWidth, halfResizerWidth, oneStarWidth } = this.state;
+        // if component has mounted but state is not initialized yet (when checkInputValues() is called for example)
+        if (originalResizableWidth === null || halfResizerWidth === null || oneStarWidth === null) {
+            originalResizableWidth = parseFloat(getComputedStyle(resizable, null).getPropertyValue('width'));
+            const resizer = document.querySelector('.resizer');
+            halfResizerWidth = Math.floor(parseFloat(getComputedStyle(resizer, null).getPropertyValue('width')) / 2);
+            oneStarWidth = Math.floor(originalResizableWidth / 5);
+        }
+        const resizableWidth = parseFloat(getComputedStyle(resizable, null).getPropertyValue('width'));
+        const resizableLeft = parseFloat(getComputedStyle(resizable, null).getPropertyValue('left'));
+        const resizableRight = parseFloat(getComputedStyle(resizable, null).getPropertyValue('right'));
 
         let newMinValue, newMaxValue, newResizableWidth, newResizableLeft, newResizableRight;
 
@@ -102,7 +90,6 @@ class FilterControls extends React.Component {
                     newResizableWidth = originalResizableWidth - (newResizableLeft + resizableRight);
                     resizable.style.left = newResizableLeft + 'px';
                     resizable.style.width = newResizableWidth + 'px';
-                    newResizableRight = resizableRight;
 
                     newMinValue = value;
                     newMaxValue = currentMaxRatingAverage;
@@ -110,30 +97,22 @@ class FilterControls extends React.Component {
                 // Resizers are at the same position
                 } else if (value === currentMaxRatingAverage) {
                     newResizableLeft = value * oneStarWidth - halfResizerWidth;
-                    newResizableWidth = halfResizerWidth;
                     resizable.style.left = newResizableLeft + 'px';
                     resizable.style.width = halfResizerWidth + 'px';
-                    newResizableRight = resizableRight;
 
                     newMinValue = value;
                     newMaxValue = currentMaxRatingAverage;
 
                 } else {
-                    newResizableLeft = 0;
                     newResizableWidth = resizableWidth + resizableLeft;
                     resizable.style.left = '0px';
                     resizable.style.width = newResizableWidth + 'px';
-                    newResizableRight = resizableRight;
 
                     newMinValue = minRatingAverage;
                     newMaxValue = currentMaxRatingAverage;
                 }
 
             } else {
-                newResizableWidth = resizableWidth;
-                newResizableLeft = resizableLeft;
-                newResizableRight = resizableRight;
-
                 newMinValue =  '';
                 newMaxValue = currentMaxRatingAverage;
             }
@@ -148,24 +127,19 @@ class FilterControls extends React.Component {
                     newResizableRight = originalResizableWidth - value * oneStarWidth;
                     newResizableWidth = originalResizableWidth - (resizableLeft + newResizableRight);
                     resizable.style.width = newResizableWidth + 'px';
-                    newResizableLeft = resizableLeft;
+                    console.log(originalResizableWidth, value, oneStarWidth);
 
                     newMinValue = currentMinRatingAverage;
                     newMaxValue = value;
 
                 // Resizers are at the same position
                 } else if (value === currentMinRatingAverage) {
-                    newResizableRight = originalResizableWidth - value * oneStarWidth + halfResizerWidth;
-                    newResizableWidth = halfResizerWidth;
                     resizable.style.width = halfResizerWidth + 'px';
-                    newResizableLeft = resizableLeft;
 
                     newMinValue = currentMinRatingAverage;
                     newMaxValue = value;
 
                 } else {
-                    newResizableLeft = resizableLeft;
-                    newResizableRight = resizableRight;
                     newResizableWidth = resizableWidth + resizableRight;
                     resizable.style.width = newResizableWidth + 'px';
 
@@ -174,16 +148,12 @@ class FilterControls extends React.Component {
                 }
 
             } else {
-                newResizableWidth = resizableWidth;
-                newResizableLeft = resizableLeft;
-                newResizableRight = resizableRight;
-
                 newMinValue = currentMinRatingAverage;
                 newMaxValue = '';
             }
         }
 
-        return { newMinValue, newMaxValue, newResizableWidth, newResizableLeft, newResizableRight };
+        return { newMinValue, newMaxValue };
     }
 
     handleInputChange(e) {
@@ -200,12 +170,6 @@ class FilterControls extends React.Component {
         const newFilterValues = this.handleInput(value, input);
 
         this.props.handleChangeFilterInputs(newFilterValues.newMinValue, newFilterValues.newMaxValue);
-
-        this.setState({
-            resizableWidth: newFilterValues.newResizableWidth,
-            resizableLeft: newFilterValues.newResizableLeft,
-            resizableRight: newFilterValues.newResizableRight
-        });
     }
 
     handleInputBlur(e) {
@@ -225,12 +189,6 @@ class FilterControls extends React.Component {
 
         if (newFilterValues) {
             this.props.handleChangeFilterInputs(newFilterValues.newMinValue, newFilterValues.newMaxValue);
-
-            this.setState({
-                resizableWidth: newFilterValues.newResizableWidth,
-                resizableLeft: newFilterValues.newResizableLeft,
-                resizableRight: newFilterValues.newResizableRight
-            });
         }
     }
 
@@ -263,16 +221,10 @@ class FilterControls extends React.Component {
 
         if (newFilterValues) {
             this.props.handleChangeFilterInputs(newFilterValues.newMinValue, newFilterValues.newMaxValue);
-
-            this.setState({
-                resizableWidth: newFilterValues.newResizableWidth,
-                resizableLeft: newFilterValues.newResizableLeft,
-                resizableRight: newFilterValues.newResizableRight
-            });
         }
     }
 
-    // To create this algorithm, refer to this article by Hung Nguyen :
+    // Algorithm created with the help of this article by Hung Nguyen :
     // https://medium.com/the-z/making-a-resizable-div-in-js-is-not-easy-as-you-think-bda19a1bc53d
     handleMouseDown(e) {
         const currentResizer = e.target;
@@ -281,10 +233,7 @@ class FilterControls extends React.Component {
 
         const { currentMinRatingAverage, currentMaxRatingAverage } = this.props;
         const {
-            resizableWidth,
             originalResizableWidth,
-            resizableLeft,
-            resizableRight,
             halfResizerWidth,
             minMouseX,
             maxMouseX,
@@ -294,6 +243,9 @@ class FilterControls extends React.Component {
             fourStarsWidth
         } = this.state;
         const resizable = this.resizable.current;
+        const resizableWidth = parseFloat(getComputedStyle(resizable, null).getPropertyValue('width'));
+        const resizableLeft = parseFloat(getComputedStyle(resizable, null).getPropertyValue('left'));
+        const resizableRight = parseFloat(getComputedStyle(resizable, null).getPropertyValue('right'));
 
         window.addEventListener('mousemove', resize);
         window.addEventListener('mouseup', stopResize);
@@ -367,12 +319,6 @@ class FilterControls extends React.Component {
             currentResizableWidth = parseFloat(getComputedStyle(resizable, null).getPropertyValue('width'));
 
             thisFilterComponent.props.handleChangeFilterInputs(newMinValue, newMaxValue);
-            
-            thisFilterComponent.setState({
-                resizableWidth: currentResizableWidth,
-                resizableLeft: currentResizableLeft,
-                resizableRight: currentResizableRight
-            });
         }
 
         function stopResize() {
@@ -450,19 +396,13 @@ class FilterControls extends React.Component {
 
                 newResizableRight = parseFloat(getComputedStyle(resizable, null).getPropertyValue('right'));
             }
-
-            thisFilterComponent.setState({
-                resizableWidth: newResizableWidth,
-                resizableLeft: newResizableLeft,
-                resizableRight: newResizableRight
-            });
-
             window.removeEventListener('mouseup', stopResize);
         }
     }
 
     componentDidMount() {
         this.makeResizable();
+        this.checkInputValues();
     }
 
     render() {

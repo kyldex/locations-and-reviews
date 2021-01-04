@@ -200,7 +200,7 @@ class Map extends React.Component {
                         streetViewControl: false,
                         styles: STYLES_ARRAY
                     }}
-                    // ref={this.mapRef}
+                    ref={this.mapRef}
                     zoom={this.state.isUserMarkerShown ? 14 : 12}
                 >
                     {this.state.isUserMarkerShown && (
