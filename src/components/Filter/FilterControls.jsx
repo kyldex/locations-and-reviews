@@ -9,7 +9,6 @@ class FilterControls extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            resizable: null,
             resizableWidth: null,
             originalResizableWidth: null,
             resizableLeft: null,
@@ -22,13 +21,14 @@ class FilterControls extends React.Component {
             threeStarsWidth: null,
             fourStarsWidth: null
         };
+        this.resizable = React.createRef();
         this.handleInputBlur = this.handleInputBlur.bind(this);
         this.handleMouseDown = this.handleMouseDown.bind(this);
         this.handleButtonClick = this.handleButtonClick.bind(this);
     }
 
     makeResizable() {
-        const resizable = document.querySelector('.resizable');
+        const resizable = this.resizable.current;
         const originalResizableWidth = parseFloat(getComputedStyle(resizable, null).getPropertyValue('width'));
         let resizableWidth = originalResizableWidth;
 
@@ -63,7 +63,6 @@ class FilterControls extends React.Component {
         // }
 
         this.setState({
-            resizable,
             resizableWidth,
             originalResizableWidth,
             resizableLeft,
@@ -81,7 +80,6 @@ class FilterControls extends React.Component {
     handleInput(value, input) {
         const { minRatingAverage, maxRatingAverage, currentMinRatingAverage, currentMaxRatingAverage } = this.props;
         const {
-            resizable,
             resizableWidth,
             originalResizableWidth,
             resizableLeft,
@@ -89,6 +87,7 @@ class FilterControls extends React.Component {
             halfResizerWidth,
             oneStarWidth
         } = this.state;
+        const resizable = this.resizable.current;
 
         let newMinValue, newMaxValue, newResizableWidth, newResizableLeft, newResizableRight;
 
@@ -184,7 +183,7 @@ class FilterControls extends React.Component {
             }
         }
 
-        return {newMinValue, newMaxValue, newResizableWidth, newResizableLeft, newResizableRight};
+        return { newMinValue, newMaxValue, newResizableWidth, newResizableLeft, newResizableRight };
     }
 
     handleInputChange(e) {
@@ -273,8 +272,7 @@ class FilterControls extends React.Component {
         }
     }
 
-    // To create this algorithm,
-    // Refer to this article by Hung Nguyen
+    // To create this algorithm, refer to this article by Hung Nguyen :
     // https://medium.com/the-z/making-a-resizable-div-in-js-is-not-easy-as-you-think-bda19a1bc53d
     handleMouseDown(e) {
         const currentResizer = e.target;
@@ -283,7 +281,6 @@ class FilterControls extends React.Component {
 
         const { currentMinRatingAverage, currentMaxRatingAverage } = this.props;
         const {
-            resizable,
             resizableWidth,
             originalResizableWidth,
             resizableLeft,
@@ -296,6 +293,7 @@ class FilterControls extends React.Component {
             threeStarsWidth,
             fourStarsWidth
         } = this.state;
+        const resizable = this.resizable.current;
 
         window.addEventListener('mousemove', resize);
         window.addEventListener('mouseup', stopResize);
@@ -491,7 +489,10 @@ class FilterControls extends React.Component {
 
                         <div className="filter-selector-line">
                             <div className="filter-selector-line-inner">
-                                <div className="resizable">
+                                <div
+                                    className="resizable"
+                                    ref={this.resizable}
+                                >
                                     <div
                                         className="resizer left"
                                         onMouseDown={this.handleMouseDown}
