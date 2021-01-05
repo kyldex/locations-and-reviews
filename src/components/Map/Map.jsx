@@ -23,13 +23,10 @@ class Map extends React.Component {
                 lng: null
             },
             isUserMarkerShown: false,
-            infoWindowUserPos: true,
-            googlePlacesLocations: null
+            infoWindowUserPos: true
         }
         this.mapRef = React.createRef();
-        this.googlePlacesMarkers = [];
-        this.googlePlaceInfoWindow = null;
-        this.getPlacesFromGoogleAPI = this.getPlacesFromGoogleAPI.bind(this);
+        // this.getLocationsFromGooglePlacesAPI = this.getLocationsFromGooglePlacesAPI.bind(this);
         this.handleLoad = this.handleLoad.bind(this);
         this.handleDoubleClick = this.handleDoubleClick.bind(this);
         this.handleDragEndAndZoomChanged = this.handleDragEndAndZoomChanged.bind(this);
@@ -60,54 +57,81 @@ class Map extends React.Component {
 
     handleLoad(map) {
         this.mapRef.current = map;
-        this.googlePlaceInfoWindow = new google.maps.InfoWindow();
-        this.getPlacesFromGoogleAPI();
+        this.googlePlacesInfoWindow = new google.maps.InfoWindow();
+
+        // this.getLocationsFromGooglePlacesAPI().then((googlePlacesLocations) => {
+        //     this.props.handleGooglePlacesLocations(googlePlacesLocations);
+        // });
     }
 
-    getPlacesFromGoogleAPI() {
+    getLocationsFromGooglePlacesAPI() {
+        // Nearby Search request
+        // https://developers.google.com/maps/documentation/javascript/places#place_search_requests
+        const getNearbySearch = (nearbySearchRequest) => {
+            return new Promise((resolve, reject) => {
+                const service = new google.maps.places.PlacesService(this.mapRef.current);
+                service.nearbySearch(nearbySearchRequest, (results, status) => {
+                    if (status == google.maps.places.PlacesServiceStatus.OK) {
+                        resolve(results);
+                    } else {
+                        reject('Error during Nearby Search request (Google Places API). Status : ' + status);
+                    }
+                });
+            });
+        }
+
+        // Place Details request
+        // https://developers.google.com/maps/documentation/javascript/places#place_details
+        const getPlacesDetails = (nearbySearchResults) => {
+            const getPlaceDetails = (placeDetailsRequest) => {
+                return new Promise((resolve, reject) => {
+                    const service = new google.maps.places.PlacesService(this.mapRef.current);
+                    service.getDetails(placeDetailsRequest, (location, status) => {
+                        if (status == google.maps.places.PlacesServiceStatus.OK) {
+                            resolve(location);
+                        } else {
+                            reject('Error during Place Details request (Google Places API). Status : ' + status);
+                        }
+                    });
+                });
+            }
+
+            const promises = [];
+
+            // si nearbySearchResults.length est utilisé, erreur de quota remontée (20 lieux) et pas d'accès aux resolve
+            for (let i = 0; i < 7; i++) {
+                const placeDetailsRequest = {
+                    placeId: nearbySearchResults[i].place_id,
+                    fields: [
+                        'geometry',
+                        'name',
+                        'place_id',
+                        'address_component',
+                        'international_phone_number',
+                        'reviews',
+                        'rating'
+                    ]
+                };
+                
+                promises.push(getPlaceDetails(placeDetailsRequest));
+            }
+
+            return Promise.all(promises);
+        }
+
         const bounds = this.mapRef.current.getBounds();
-        const request = {
+        const nearbySearchRequest = {
             bounds: bounds,
             type: ['restaurant']
         };
-        const locations = [];
 
-        const service = new google.maps.places.PlacesService(this.mapRef.current);
-        service.nearbySearch(request, (results, status) => {
-            if (status == google.maps.places.PlacesServiceStatus.OK) {
-                // Removes previous markers
-                for (let i = 0; i < this.googlePlacesMarkers.length; i++) {
-                    this.googlePlacesMarkers[i].setMap(null);
-                }
-                // Clears the existing array, no references elsewhere
-                this.googlePlacesMarkers.length = 0;
-
-                for (let i = 0; i < results.length; i++) {
-                    locations.push(results[i]);
-
-                    const marker = new google.maps.Marker({
-                        map: this.mapRef.current,
-                        icon: '/src/assets/img/restaurant.svg',
-                        position: {
-                            lat: results[i].geometry.location.lat(),
-                            lng: results[i].geometry.location.lng()
-                        }
-                    });
-
-                    marker.addListener('click', () => {
-                        this.googlePlaceInfoWindow.setContent(results[i].name);
-                        this.googlePlaceInfoWindow.open(this.mapRef.current, marker);
-                    });
-
-                    this.googlePlacesMarkers.push(marker);
-                }
-
-            } else {
-                console.log('Error when requesting Google Places API. Status : ' + status)
-            }
+        return getNearbySearch(nearbySearchRequest).then((nearbySearchResults) => {
+            return getPlacesDetails(nearbySearchResults).then((placeDetailsResults) => {
+                return placeDetailsResults;
+            }).catch((error) => {
+                console.log(error);
+            });
         });
-
-        return locations;
     }
 
     handleDoubleClick(e) {
@@ -150,15 +174,16 @@ class Map extends React.Component {
         }
 
         const newPos = this.getMapCenter();
-        const locationsInMapBounds = this.getLocationsInMapBounds();
-        const googlePlacesLocations = this.getPlacesFromGoogleAPI();
-
         this.setState({
             center: newPos,
-            googlePlacesLocations: googlePlacesLocations
         });
 
+        const locationsInMapBounds = this.getLocationsInMapBounds();
         this.props.handleLocationsInMapBounds(locationsInMapBounds);
+
+        this.getLocationsFromGooglePlacesAPI().then((googlePlacesLocations) => {
+            this.props.handleGooglePlacesLocations(googlePlacesLocations);
+        });
     }
 
     handleClickMarkerUserPos() {
@@ -223,7 +248,7 @@ class Map extends React.Component {
                     
                     {this.props.displayedLocations && this.props.displayedLocations.map((location) => (
                         <Marker
-                            icon="/src/assets/img/restaurant.svg"
+                            icon="/src/assets/img/restaurant-2.svg"
                             key={location.properties.store_id}
                             position={{
                                 lat: location.geometry.coordinates[1],
@@ -247,20 +272,21 @@ class Map extends React.Component {
                         </Marker>
                     ))}
 
-                    {/* {this.state.googlePlacesLocations && this.state.googlePlacesLocations.map((location) => (
+                    {this.props.googlePlacesLocations && this.props.googlePlacesLocations.map((location) => (
                         <Marker
-                            icon="/src/assets/img/restaurant.svg"
-                            key={location.place_id}
+                            icon="/src/assets/img/restaurant-3.svg"
+                            key={location.properties.place_id}
                             position={{
-                                lat: location.geometry.location.lat(),
-                                lng: location.geometry.location.lng()
+                                lat: location.geometry.coordinates[1],
+                                lng: location.geometry.coordinates[0]
                             }}
-                        />
-                    ))} */}
+                        >
+                        </Marker>
+                    ))}
 
                     {this.props.geocodedLocation && (
                         <Marker
-                            icon="/src/assets/img/restaurant.svg"
+                            icon="/src/assets/img/restaurant-2.svg"
                             position={{ lat: this.props.geocodedLocation.geometry.coordinates[1], lng: this.props.geocodedLocation.geometry.coordinates[0] }}
                             onDblClick={() => this.props.handleMapDoubleClick(null)}
                         >
@@ -287,7 +313,9 @@ Map.propTypes = {
     allLocations: PropTypes.array,
     displayedLocations: PropTypes.array,
     geocodedLocation: PropTypes.object,
+    googlePlacesLocations: PropTypes.array,
     handleLocationsInMapBounds: PropTypes.func.isRequired,
+    handleGooglePlacesLocations: PropTypes.func.isRequired,
     handleMapMarkerClick: PropTypes.func.isRequired,
     handleMapDoubleClick: PropTypes.func.isRequired,
     hoveredLocation: PropTypes.object,

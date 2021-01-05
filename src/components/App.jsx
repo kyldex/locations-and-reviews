@@ -1,6 +1,7 @@
 import React from 'react';
 import * as data from '../data/restaurants.json';
 import parseGeocodingData from '../helpers/parseGeocodingData';
+import parseLocationRequest from '../helpers/parseLocationRequest';
 import getRatingsAverage from '../helpers/getRatingsAverage';
 
 import Map from './Map/Map.jsx';
@@ -16,6 +17,7 @@ export default class App extends React.Component {
         super(props);
         this.state = {
             allLocations: null,
+            googlePlacesLocations: null,
             displayedLocations: null,
             filteredLocationsByAverage: null,
             locationsInMapBounds: null,
@@ -80,6 +82,24 @@ export default class App extends React.Component {
         this.setState({
             displayedLocations: newDisplayedLocations,
             locationsInMapBounds: locations
+        });
+    }
+
+    // Map
+    handleGooglePlacesLocations(googlePlacesLocations) {
+        let parsedGooglePlacesLocations;
+
+        if (googlePlacesLocations !== undefined) {
+            parsedGooglePlacesLocations = [];
+            googlePlacesLocations.forEach((location) => {
+                parsedGooglePlacesLocations.push(parseLocationRequest(location));
+            });
+        } else {
+            parsedGooglePlacesLocations = null;
+        }
+
+        this.setState({
+            googlePlacesLocations: parsedGooglePlacesLocations
         });
     }
 
@@ -375,7 +395,9 @@ export default class App extends React.Component {
                         allLocations={this.state.allLocations}
                         displayedLocations={this.state.displayedLocations}
                         geocodedLocation={this.state.geocodedLocation}
+                        googlePlacesLocations={this.state.googlePlacesLocations}
                         handleLocationsInMapBounds={(locations) => this.handleLocationsInMapBounds(locations)}
+                        handleGooglePlacesLocations={(googlePlacesLocations) => this.handleGooglePlacesLocations(googlePlacesLocations)}
                         handleMapMarkerClick={(location) => this.handleMapMarkerClick(location)}
                         handleMapDoubleClick ={(reverseGeocodingData) => this.handleMapDoubleClick(reverseGeocodingData)}
                         hoveredLocation={this.state.hoveredLocation}

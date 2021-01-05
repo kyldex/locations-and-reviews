@@ -127,7 +127,6 @@ class FilterControls extends React.Component {
                     newResizableRight = originalResizableWidth - value * oneStarWidth;
                     newResizableWidth = originalResizableWidth - (resizableLeft + newResizableRight);
                     resizable.style.width = newResizableWidth + 'px';
-                    console.log(originalResizableWidth, value, oneStarWidth);
 
                     newMinValue = currentMinRatingAverage;
                     newMaxValue = value;
