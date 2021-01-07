@@ -16,7 +16,7 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            allLocations: null,
+            databaseLocations: null,
             googlePlacesLocations: null,
             displayedLocations: null,
             filteredLocationsByAverage: null,
@@ -48,16 +48,16 @@ export default class App extends React.Component {
     // Init
     initLocations() {
         // Fetch data
-        const allLocations = data.features;
+        const databaseLocations = [...data.features];
 
         // Get last rating id
-        const lastLocationIndex = allLocations.length - 1;
-        const lastRatingIndex = allLocations[lastLocationIndex].properties.ratings.length - 1;
-        const lastRatingId = parseInt(allLocations[lastLocationIndex].properties.ratings[lastRatingIndex].rating_id);
+        const lastLocationIndex = databaseLocations.length - 1;
+        const lastRatingIndex = databaseLocations[lastLocationIndex].properties.ratings.length - 1;
+        const lastRatingId = parseInt(databaseLocations[lastLocationIndex].properties.ratings[lastRatingIndex].rating_id);
 
         this.setState({
-            allLocations: allLocations,
-            displayedLocations: allLocations,
+            databaseLocations: databaseLocations,
+            displayedLocations: databaseLocations,
             lastRatingId: lastRatingId
         });
     }
@@ -86,21 +86,24 @@ export default class App extends React.Component {
     }
 
     // Map
-    handleGooglePlacesLocations(googlePlacesLocations) {
-        let parsedGooglePlacesLocations;
+    handleGooglePlacesLocations(fetchedGooglePlacesLocations) {
+        const parsedGooglePlacesLocations = [];
 
-        if (googlePlacesLocations !== undefined) {
-            parsedGooglePlacesLocations = [];
-            googlePlacesLocations.forEach((location) => {
+        // Successful API call (at least one new location has been fetched)
+        if (fetchedGooglePlacesLocations !== undefined && fetchedGooglePlacesLocations.length !== 0) {
+            fetchedGooglePlacesLocations.forEach((location) => {
                 parsedGooglePlacesLocations.push(parseLocationRequest(location));
             });
-        } else {
-            parsedGooglePlacesLocations = null;
-        }
 
-        this.setState({
-            googlePlacesLocations: parsedGooglePlacesLocations
-        });
+            if (this.state.googlePlacesLocations !== null) {
+                this.setState((prevState) => ({
+                    googlePlacesLocations: [...prevState.googlePlacesLocations, ...parsedGooglePlacesLocations]
+                }));
+            // First call to the API
+            } else if (this.state.googlePlacesLocations === null){
+                this.setState({googlePlacesLocations: parsedGooglePlacesLocations});
+            }
+        }
     }
 
     // Map
@@ -180,7 +183,7 @@ export default class App extends React.Component {
 
     // Filter
     handleChangeFilterInputs(newMinRating, newMaxRating) {
-        const { allLocations, locationsInMapBounds } = this.state;
+        const { databaseLocations, locationsInMapBounds } = this.state;
         const filteredLocations = [];
         const newDisplayedLocations = [];
 
@@ -191,8 +194,8 @@ export default class App extends React.Component {
             });
 
         } else {
-            if (allLocations !== null) {
-                allLocations.forEach((location) => {
+            if (databaseLocations !== null) {
+                databaseLocations.forEach((location) => {
                     const locationRatingAverage = location.properties.ratings_average;
                     if (locationRatingAverage >= newMinRating && locationRatingAverage <= newMaxRating) {
                         filteredLocations.push(location);
@@ -258,14 +261,14 @@ export default class App extends React.Component {
         const newRatingId = this.state.lastRatingId + 1;
         newRating.rating_id = newRatingId.toString();
 
-        const allLocations = [...this.state.allLocations];
+        const databaseLocations = [...this.state.databaseLocations];
         let correspondingLocationIndex;
-        allLocations.forEach((location, index) => {
+        databaseLocations.forEach((location, index) => {
             if (location.properties.store_id === newRating.store_id) {
                 correspondingLocationIndex = index;
             }
         });
-        const correspondingLocation = allLocations[correspondingLocationIndex];
+        const correspondingLocation = databaseLocations[correspondingLocationIndex];
 
         correspondingLocation.properties.ratings.push(
             {
@@ -278,7 +281,7 @@ export default class App extends React.Component {
         correspondingLocation.properties.ratings_average = getRatingsAverage(correspondingLocation);
 
         this.setState({
-            allLocations: allLocations,
+            databaseLocations: databaseLocations,
             lastRatingId: parseInt(newRatingId)
         });
     }
@@ -313,18 +316,16 @@ export default class App extends React.Component {
 
     // LocationForm
     handleSubmitNewLocation(newLocation) {
-        const lastLocationIndex = this.state.allLocations.length - 1;
-        const lastLocationId = parseInt(this.state.allLocations[lastLocationIndex].properties.store_id);
+        const lastLocationIndex = this.state.databaseLocations.length - 1;
+        const lastLocationId = parseInt(this.state.databaseLocations[lastLocationIndex].properties.store_id);
         const newLocationId = lastLocationId + 1;
         newLocation.properties.store_id = newLocationId.toString();
 
-        const allLocations = [...this.state.allLocations];
-        const displayedLocations = [...this.state.displayedLocations]
-        allLocations.push(newLocation);
-        displayedLocations.push(newLocation);
+        const databaseLocations = [...this.state.databaseLocations, newLocation];
+        const displayedLocations = [...this.state.displayedLocations, newLocation];
 
         this.setState({
-            allLocations: allLocations,
+            databaseLocations: databaseLocations,
             displayedLocations: displayedLocations,
             geocodedLocation: null,
             selectedLocation: newLocation
@@ -392,8 +393,7 @@ export default class App extends React.Component {
 
                 <div id="map">
                     <Map
-                        allLocations={this.state.allLocations}
-                        displayedLocations={this.state.displayedLocations}
+                        databaseLocations={this.state.databaseLocations}
                         geocodedLocation={this.state.geocodedLocation}
                         googlePlacesLocations={this.state.googlePlacesLocations}
                         handleLocationsInMapBounds={(locations) => this.handleLocationsInMapBounds(locations)}

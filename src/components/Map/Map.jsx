@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import delay from '../../helpers/delay';
 
 import { GoogleMap, InfoWindow, LoadScript, Marker } from '@react-google-maps/api';
 
@@ -26,7 +27,6 @@ class Map extends React.Component {
             infoWindowUserPos: true
         }
         this.mapRef = React.createRef();
-        // this.getLocationsFromGooglePlacesAPI = this.getLocationsFromGooglePlacesAPI.bind(this);
         this.handleLoad = this.handleLoad.bind(this);
         this.handleDoubleClick = this.handleDoubleClick.bind(this);
         this.handleDragEndAndZoomChanged = this.handleDragEndAndZoomChanged.bind(this);
@@ -57,17 +57,19 @@ class Map extends React.Component {
 
     handleLoad(map) {
         this.mapRef.current = map;
-        this.googlePlacesInfoWindow = new google.maps.InfoWindow();
 
-        // this.getLocationsFromGooglePlacesAPI().then((googlePlacesLocations) => {
-        //     this.props.handleGooglePlacesLocations(googlePlacesLocations);
-        // });
+        // Wait until the map is fully initialized
+        google.maps.event.addListenerOnce(this.mapRef.current, 'idle', () => {
+            this.getLocationsFromGooglePlacesAPI().then((googlePlacesLocations) => {
+                this.props.handleGooglePlacesLocations(googlePlacesLocations);
+            });
+        });
     }
 
-    getLocationsFromGooglePlacesAPI() {
+    async getLocationsFromGooglePlacesAPI() {
         // Nearby Search request
         // https://developers.google.com/maps/documentation/javascript/places#place_search_requests
-        const getNearbySearch = (nearbySearchRequest) => {
+        const getNearbySearch = async (nearbySearchRequest) => {
             return new Promise((resolve, reject) => {
                 const service = new google.maps.places.PlacesService(this.mapRef.current);
                 service.nearbySearch(nearbySearchRequest, (results, status) => {
@@ -82,7 +84,7 @@ class Map extends React.Component {
 
         // Place Details request
         // https://developers.google.com/maps/documentation/javascript/places#place_details
-        const getPlacesDetails = (nearbySearchResults) => {
+        const getPlacesDetails = async (nearbySearchResults) => {
             const getPlaceDetails = (placeDetailsRequest) => {
                 return new Promise((resolve, reject) => {
                     const service = new google.maps.places.PlacesService(this.mapRef.current);
@@ -98,8 +100,7 @@ class Map extends React.Component {
 
             const promises = [];
 
-            // si nearbySearchResults.length est utilisé, erreur de quota remontée (20 lieux) et pas d'accès aux resolve
-            for (let i = 0; i < 7; i++) {
+            for (let i = 0; i < nearbySearchResults.length; i++) {
                 const placeDetailsRequest = {
                     placeId: nearbySearchResults[i].place_id,
                     fields: [
@@ -113,6 +114,7 @@ class Map extends React.Component {
                     ]
                 };
                 
+                await delay(100);
                 promises.push(getPlaceDetails(placeDetailsRequest));
             }
 
@@ -126,11 +128,43 @@ class Map extends React.Component {
         };
 
         return getNearbySearch(nearbySearchRequest).then((nearbySearchResults) => {
-            return getPlacesDetails(nearbySearchResults).then((placeDetailsResults) => {
-                return placeDetailsResults;
-            }).catch((error) => {
-                console.log(error);
-            });
+            // Limited number of requests per second with the Place Details API, slice response to 8 locations
+            const slicedNearbySearchResults = nearbySearchResults.slice(0, 7);
+
+            // Cache system to avoid requesting location details if they've been already fetched and stored into the application state
+            const remainingLocations = [];
+
+            if (this.props.googlePlacesLocations !== null) {
+                slicedNearbySearchResults.forEach((fetchedLocation) => {
+                    let isAlreadyCached = false;
+
+                    this.props.googlePlacesLocations.forEach((cachedLocation) => {
+                        if (fetchedLocation.place_id === cachedLocation.properties.place_id) {
+                            isAlreadyCached = true;
+                        }
+                    })
+
+                    if (!isAlreadyCached) {
+                        remainingLocations.push(fetchedLocation);
+                    }
+                })
+            // First call to the API
+            } else if (this.props.googlePlacesLocations === null) {
+                remainingLocations.push(...slicedNearbySearchResults);
+            }
+
+            if (remainingLocations.length !== 0) {
+                return getPlacesDetails(remainingLocations).then((placeDetailsResults) => {
+                    return placeDetailsResults;
+                }).catch((error) => {
+                    console.log(error);
+                });
+            } else {
+                return remainingLocations;
+            }
+
+        }).catch((error) => {
+            console.log(error);
         });
     }
 
@@ -158,8 +192,8 @@ class Map extends React.Component {
 
     getLocationsInMapBounds() {
         const locationsInMapBounds = [];
-
-        this.props.allLocations.forEach((location) => {
+        
+        this.props.databaseLocations.forEach((location) => {
             if (this.mapRef.current.getBounds().contains({lat: location.geometry.coordinates[1], lng: location.geometry.coordinates[0]})) {
                 locationsInMapBounds.push(location);
             }
@@ -181,8 +215,8 @@ class Map extends React.Component {
         const locationsInMapBounds = this.getLocationsInMapBounds();
         this.props.handleLocationsInMapBounds(locationsInMapBounds);
 
-        this.getLocationsFromGooglePlacesAPI().then((googlePlacesLocations) => {
-            this.props.handleGooglePlacesLocations(googlePlacesLocations);
+        this.getLocationsFromGooglePlacesAPI().then((fetchedGooglePlacesLocations) => {
+            this.props.handleGooglePlacesLocations(fetchedGooglePlacesLocations);
         });
     }
 
@@ -226,7 +260,7 @@ class Map extends React.Component {
                         styles: STYLES_ARRAY
                     }}
                     ref={this.mapRef}
-                    zoom={this.state.isUserMarkerShown ? 14 : 12}
+                    zoom={this.state.isUserMarkerShown ? 14 : 7}
                 >
                     {this.state.isUserMarkerShown && (
                         <Marker
@@ -246,7 +280,7 @@ class Map extends React.Component {
                         </Marker>
                     )}
                     
-                    {this.props.displayedLocations && this.props.displayedLocations.map((location) => (
+                    {this.props.databaseLocations && this.props.databaseLocations.map((location) => (
                         <Marker
                             icon="/src/assets/img/restaurant-2.svg"
                             key={location.properties.store_id}
@@ -310,8 +344,7 @@ class Map extends React.Component {
 }
 
 Map.propTypes = {
-    allLocations: PropTypes.array,
-    displayedLocations: PropTypes.array,
+    databaseLocations: PropTypes.array,
     geocodedLocation: PropTypes.object,
     googlePlacesLocations: PropTypes.array,
     handleLocationsInMapBounds: PropTypes.func.isRequired,

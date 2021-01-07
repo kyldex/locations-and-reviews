@@ -7,6 +7,7 @@ export default function parseLocationRequest(locationRequest) {
     const parsedReviews = [];
     locationRequest.reviews.forEach((review) => {
         parsedReviews.push({
+            rating_id: '',
             stars: review.rating,
             comment: review.text
         });
@@ -20,6 +21,7 @@ export default function parseLocationRequest(locationRequest) {
         type: 'Feature',
         properties: {
             name: locationRequest.name,
+            store_id: '',
             place_id: locationRequest.place_id,
             address: {
                 street_number: locationRequest.address_components[0].long_name,
@@ -29,6 +31,7 @@ export default function parseLocationRequest(locationRequest) {
             },
             phone: locationRequest.international_phone_number,
             category: 'restaurant',
+            hours: '',
             ratings: parsedReviews,
             ratings_average: locationRequest.rating
         }
