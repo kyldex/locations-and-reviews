@@ -16,15 +16,16 @@ class Map extends React.Component {
         super(props);
         this.state = {
             center: {
-                lat: 48.8534,
-                lng: 2.3488
+                lat: 47.180087,
+                lng: 2.299790
             },
             userMarkerPos: {
                 lat: null,
                 lng: null
             },
             isUserMarkerShown: false,
-            infoWindowUserPos: true
+            infoWindowUserPos: true,
+            infoWindowUserPosError: null
         }
         this.mapRef = React.createRef();
         this.handleLoad = this.handleLoad.bind(this);
@@ -48,15 +49,19 @@ class Map extends React.Component {
                         },
                         isUserMarkerShown: true
                     }));
+                },
+                // Browser supports geolocation, but user has denied permission
+                () => {
+                    this.setState({infoWindowUserPosError: 'permission denied'});
                 }
             );
         } else {
-          (error) => console.log(error);
+            this.setState({infoWindowUserPosError: 'browser doesn\'t support geolocation'});
         }
     }
 
-    handleLoad(map) {
-        this.mapRef.current = map;
+    handleLoad(mapLibraryInstance) {
+        this.mapRef.current = mapLibraryInstance;
 
         // Wait until the map is fully initialized
         google.maps.event.addListenerOnce(this.mapRef.current, 'idle', () => {
@@ -208,9 +213,17 @@ class Map extends React.Component {
         }
 
         const newPos = this.getMapCenter();
-        this.setState({
-            center: newPos,
-        });
+
+        if (this.state.infoWindowUserPosError) {
+            this.setState({
+                center: newPos,
+                infoWindowUserPosError: null
+            });
+        } else {
+            this.setState({
+                center: newPos,
+            });
+        }
 
         const locationsInMapBounds = this.getLocationsInMapBounds();
         this.props.handleLocationsInMapBounds(locationsInMapBounds);
@@ -278,6 +291,30 @@ class Map extends React.Component {
                                 </InfoWindow>
                             )}
                         </Marker>
+                    )}
+
+                    {this.state.infoWindowUserPosError && (
+                        <InfoWindow
+                            position={{
+                                lat: this.state.center.lat,
+                                lng: this.state.center.lng
+                            }}
+                        >
+                            <>
+                                {this.state.infoWindowUserPosError === "permission denied" && (
+                                    <p className="">
+                                        Géolocalisation refusée.<br />
+                                        Nous utilisons la localisation par défaut.
+                                    </p>
+                                )}
+                                {this.state.infoWindowUserPosError === "browser doesn't support geolocation" && (
+                                    <p className="">
+                                        Votre navigateur ne semble pas supporter la géolocalisation.<br />
+                                        Nous utilisons la localisation par défaut.
+                                    </p>
+                                )}
+                            </>
+                        </InfoWindow>
                     )}
                     
                     {this.props.databaseLocations && this.props.databaseLocations.map((location) => (

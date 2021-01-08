@@ -4,7 +4,26 @@
  * @returns {Object}
  */
 export default function parseLocationRequest(locationRequest) {
+    const address = {
+        street_number: '',
+        street: '',
+        postal_code: '',
+        city: ''
+    }
     const parsedReviews = [];
+    const someAddressDataIsMissing =
+        locationRequest.address_components[0] === undefined ||
+        locationRequest.address_components[1] === undefined ||
+        locationRequest.address_components[6] === undefined ||
+        locationRequest.address_components[2] === undefined;
+
+    if (!someAddressDataIsMissing) {
+        address.street_number = locationRequest.address_components[0].long_name;
+        address.street = locationRequest.address_components[1].long_name;
+        address.postal_code = locationRequest.address_components[6].long_name;
+        address.city = locationRequest.address_components[2].long_name;
+    }
+
     locationRequest.reviews.forEach((review) => {
         parsedReviews.push({
             rating_id: '',
@@ -23,12 +42,7 @@ export default function parseLocationRequest(locationRequest) {
             name: locationRequest.name,
             store_id: '',
             place_id: locationRequest.place_id,
-            address: {
-                street_number: locationRequest.address_components[0].long_name,
-                street: locationRequest.address_components[1].long_name,
-                postal_code: locationRequest.address_components[6].long_name,
-                city: locationRequest.address_components[2].long_name
-            },
+            address: address,
             phone: locationRequest.international_phone_number,
             category: 'restaurant',
             hours: '',
