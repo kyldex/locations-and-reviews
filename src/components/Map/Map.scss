@@ -1,3 +1,24 @@
+// Autocomplete
+.pac-target-input {
+    position: absolute;
+    left: 50%;
+    margin-left: -190px;
+    padding: 0 12px;
+    width: 400px;
+    height: 32px;
+    font-family: "Lato", "Arial", sans-serif;
+    font-size: 14px;
+    outline: none;
+    text-overflow: ellipses;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.pac-item {
+    font-family: "Lato", "Arial", sans-serif;
+}
+
 .infowindow-displayed-locations .title {
     font-weight: 400;
     font-size: 1.5rem;

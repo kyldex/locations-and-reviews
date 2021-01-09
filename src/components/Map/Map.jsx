@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import delay from '../../helpers/delay';
 
-import { GoogleMap, InfoWindow, LoadScript, Marker } from '@react-google-maps/api';
+import { Autocomplete, GoogleMap, InfoWindow, LoadScript, Marker } from '@react-google-maps/api';
 
 import './Map.scss';
 import { mapStyles } from '../../map-styles';
@@ -28,10 +28,13 @@ class Map extends React.Component {
             infoWindowUserPosError: null
         }
         this.mapRef = React.createRef();
-        this.handleLoad = this.handleLoad.bind(this);
+        this.autocompleteRef = React.createRef();
+        this.handleMapLoad = this.handleMapLoad.bind(this);
+        this.handleAutocompleteLoad = this.handleAutocompleteLoad.bind(this);
         this.handleDoubleClick = this.handleDoubleClick.bind(this);
         this.handleDragEndAndZoomChanged = this.handleDragEndAndZoomChanged.bind(this);
         this.handleClickMarkerUserPos = this.handleClickMarkerUserPos.bind(this);
+        this.handleAutocompleteOnPlaceChanged = this.handleAutocompleteOnPlaceChanged.bind(this);
     }
 
     showCurrentLocation() {
@@ -60,7 +63,7 @@ class Map extends React.Component {
         }
     }
 
-    handleLoad(mapLibraryInstance) {
+    handleMapLoad(mapLibraryInstance) {
         this.mapRef.current = mapLibraryInstance;
 
         // Wait until the map is fully initialized
@@ -69,6 +72,10 @@ class Map extends React.Component {
                 this.props.handleGooglePlacesLocations(googlePlacesLocations);
             });
         });
+    }
+
+    handleAutocompleteLoad(autocompleteInstance) {
+        this.autocompleteRef.current = autocompleteInstance;
     }
 
     async getLocationsFromGooglePlacesAPI() {
@@ -241,6 +248,15 @@ class Map extends React.Component {
         }
     }
 
+    async handleAutocompleteOnPlaceChanged() {
+        if (this.autocompleteRef.current !== null) {
+            const place = await this.autocompleteRef.current.getPlace();
+            console.log(place);
+          } else {
+            console.log('Autocomplete n\'est pas encore chargé');
+          }
+    }
+
     componentDidMount() {
         // Try HTML5 geolocation
         this.showCurrentLocation();
@@ -263,7 +279,7 @@ class Map extends React.Component {
                     }}
                     onDblClick={this.handleDoubleClick}
                     onDragEnd={this.handleDragEndAndZoomChanged}
-                    onLoad={this.handleLoad}
+                    onLoad={this.handleMapLoad}
                     onZoomChanged={this.handleDragEndAndZoomChanged}
                     options={{
                         disableDoubleClickZoom: true,
@@ -272,9 +288,19 @@ class Map extends React.Component {
                         streetViewControl: false,
                         styles: STYLES_ARRAY
                     }}
-                    ref={this.mapRef}
                     zoom={this.state.isUserMarkerShown ? 14 : 7}
                 >
+                    <Autocomplete
+                        onLoad={this.handleAutocompleteLoad}
+                        onPlaceChanged={this.handleAutocompleteOnPlaceChanged}
+                        restrictions={{country: 'fr'}}
+                    >
+                        <input
+                            type="text"
+                            placeholder="Recherche"
+                        />
+                    </Autocomplete>
+
                     {this.state.isUserMarkerShown && (
                         <Marker
                             icon="/src/assets/img/user-location.svg"
