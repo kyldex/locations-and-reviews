@@ -24,6 +24,7 @@ class Map extends React.Component {
                 lng: null
             },
             isUserMarkerShown: false,
+            userHasJustGivenPermission: false,
             infoWindowUserPos: true,
             infoWindowUserPosError: null
         }
@@ -42,15 +43,12 @@ class Map extends React.Component {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
                     this.setState(() => ({
-                        center: {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude
-                        },
                         userMarkerPos: {
                             lat: position.coords.latitude,
                             lng: position.coords.longitude   
                         },
-                        isUserMarkerShown: true
+                        isUserMarkerShown: true,
+                        userHasJustGivenPermission: true
                     }));
                 },
                 // Browser supports geolocation, but user has denied permission
@@ -219,17 +217,29 @@ class Map extends React.Component {
             return;
         }
 
-        const newPos = this.getMapCenter();
+        // Used to be able to change map center when the user has just given permission, despite the map restriction option
+        if (this.state.userHasJustGivenPermission) {
+            this.setState({
+                center: {
+                    lat: this.state.userMarkerPos.lat,
+                    lng: this.state.userMarkerPos.lng
+                },
+                userHasJustGivenPermission: false
+            })
 
-        if (this.state.infoWindowUserPosError) {
-            this.setState({
-                center: newPos,
-                infoWindowUserPosError: null
-            });
         } else {
-            this.setState({
-                center: newPos,
-            });
+            const newPos = this.getMapCenter();
+
+            if (this.state.infoWindowUserPosError) {
+                this.setState({
+                    center: newPos,
+                    infoWindowUserPosError: null
+                });
+            } else {
+                this.setState({
+                    center: newPos,
+                });
+            }
         }
 
         const locationsInMapBounds = this.getLocationsInMapBounds();
@@ -285,10 +295,19 @@ class Map extends React.Component {
                         disableDoubleClickZoom: true,
                         fullscreenControl: false,
                         mapTypeControl: false,
+                        restriction: {
+                            latLngBounds: {
+                                north: 51.12032,
+                                east: 8.27500,
+                                south: 42.31384,
+                                west: -5.17106
+                            },
+                            strictBounds: false,
+                        },
                         streetViewControl: false,
                         styles: STYLES_ARRAY
                     }}
-                    zoom={this.state.isUserMarkerShown ? 14 : 7}
+                    zoom={this.state.isUserMarkerShown ? 14 : 6}
                 >
                     <Autocomplete
                         onLoad={this.handleAutocompleteLoad}
@@ -297,7 +316,7 @@ class Map extends React.Component {
                     >
                         <input
                             type="text"
-                            placeholder="Recherche"
+                            placeholder="Recherchez et sélectionnez une adresse ou un lieu"
                         />
                     </Autocomplete>
 
