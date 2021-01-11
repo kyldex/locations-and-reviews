@@ -19,14 +19,22 @@ class Map extends React.Component {
                 lat: 47.180087,
                 lng: 2.299790
             },
-            userMarkerPos: {
+            zoom: 6,
+            // User location
+            userLocationMarker: false,
+            userLocationMarkerCoords: {
                 lat: null,
                 lng: null
             },
-            isUserMarkerShown: false,
-            userHasJustGivenPermission: false,
-            infoWindowUserPos: true,
-            infoWindowUserPosError: null
+            userLocationInfowindow: true,
+            userLocationInfowindowError: null,
+            // Autocomplete
+            autocompleteLocationMarker: false,
+            autocompleteLocationMarkerCoords: {
+                lat: null,
+                lng: null
+            },
+            autocompleteAddress: null
         }
         this.mapRef = React.createRef();
         this.autocompleteRef = React.createRef();
@@ -41,35 +49,47 @@ class Map extends React.Component {
     showCurrentLocation() {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
-                (position) => {
+                async (position) => {
                     this.setState(() => ({
-                        userMarkerPos: {
+                        center: {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        },
+                        zoom: 14,
+                        userLocationMarkerCoords: {
                             lat: position.coords.latitude,
                             lng: position.coords.longitude   
                         },
-                        isUserMarkerShown: true,
-                        userHasJustGivenPermission: true
+                        userLocationMarker: true
                     }));
+                    await delay(1000);
+                    this.getLocationsFromGooglePlacesAPI().then((fetchedGooglePlacesLocations) => {
+                        this.props.handleGooglePlacesLocations(fetchedGooglePlacesLocations);
+                    });
                 },
                 // Browser supports geolocation, but user has denied permission
                 () => {
-                    this.setState({infoWindowUserPosError: 'permission denied'});
+                    this.setState({userLocationInfowindowError: 'permission denied'});
                 }
             );
         } else {
-            this.setState({infoWindowUserPosError: 'browser doesn\'t support geolocation'});
+            this.setState({userLocationInfowindowError: 'browser doesn\'t support geolocation'});
         }
     }
 
     handleMapLoad(mapLibraryInstance) {
         this.mapRef.current = mapLibraryInstance;
 
-        // Wait until the map is fully initialized
-        google.maps.event.addListenerOnce(this.mapRef.current, 'idle', () => {
-            this.getLocationsFromGooglePlacesAPI().then((googlePlacesLocations) => {
-                this.props.handleGooglePlacesLocations(googlePlacesLocations);
-            });
-        });
+        // // Wait until the map is fully initialized
+        // google.maps.event.addListenerOnce(this.mapRef.current, 'idle', () => {
+        //     google.maps.event.addListener(this.mapRef.current, 'center_changed', () => {
+        //         console.log(this.mapRef.current.getCenter().toJSON());
+        //     });
+
+        //     // this.getLocationsFromGooglePlacesAPI().then((googlePlacesLocations) => {
+        //     //     this.props.handleGooglePlacesLocations(googlePlacesLocations);
+        //     // });
+        // });
     }
 
     handleAutocompleteLoad(autocompleteInstance) {
@@ -131,15 +151,10 @@ class Map extends React.Component {
             return Promise.all(promises);
         }
 
-        const bounds = this.mapRef.current.getBounds();
-        const nearbySearchRequest = {
-            bounds: bounds,
-            type: ['restaurant']
-        };
-
-        return getNearbySearch(nearbySearchRequest).then((nearbySearchResults) => {
+        const getLocations = (nearbySearchRequest) => {
+            return getNearbySearch(nearbySearchRequest).then((nearbySearchResults) => {
             // Limited number of requests per second with the Place Details API, slice response to 8 locations
-            const slicedNearbySearchResults = nearbySearchResults.slice(0, 7);
+            const slicedNearbySearchResults = nearbySearchResults.slice(0, 10);
 
             // Cache system to avoid requesting location details if they've been already fetched and stored into the application state
             const remainingLocations = [];
@@ -166,16 +181,42 @@ class Map extends React.Component {
             if (remainingLocations.length !== 0) {
                 return getPlacesDetails(remainingLocations).then((placeDetailsResults) => {
                     return placeDetailsResults;
-                }).catch((error) => {
+                }).catch(async (error) => {
                     console.log(error);
+                    if (placeDetailsRequestAttempts <= 2) {
+                        placeDetailsRequestAttempts++;
+                        const slicedRemainingLocations = remainingLocations.slice(0, 2);
+                        await delay(1000);
+                        return getPlacesDetails(slicedRemainingLocations).then((placeDetailsResults) => {
+                            return placeDetailsResults;
+                        }).catch((error) => {
+                            console.log(error);
+                        })
+                    }
                 });
             } else {
                 return remainingLocations;
             }
 
-        }).catch((error) => {
-            console.log(error);
-        });
+            }).catch(async (error) => {
+                console.log(error);
+                if (nearbySearchRequestAttempts <= 3) {
+                    nearbySearchRequestAttempts++;
+                    await delay(1000);
+                    return getLocations(nearbySearchRequest);
+                }
+            });
+        }
+
+        const bounds = this.mapRef.current.getBounds();
+        const nearbySearchRequest = {
+            bounds: bounds,
+            type: ['restaurant']
+        };
+        let nearbySearchRequestAttempts = 1;
+        let placeDetailsRequestAttempts = 0;
+
+        return getLocations(nearbySearchRequest);
     }
 
     handleDoubleClick(e) {
@@ -196,10 +237,6 @@ class Map extends React.Component {
         request.send();
     }
 
-    getMapCenter() {
-       return this.mapRef.current.getCenter().toJSON();
-    }
-
     getLocationsInMapBounds() {
         const locationsInMapBounds = [];
         
@@ -212,59 +249,72 @@ class Map extends React.Component {
         return locationsInMapBounds;
     }
 
-    handleDragEndAndZoomChanged() {
+    async handleDragEndAndZoomChanged() {
         if (!this.mapRef.current) {
             return;
         }
 
-        // Used to be able to change map center when the user has just given permission, despite the map restriction option
-        if (this.state.userHasJustGivenPermission) {
+        // Monitor map center and zoom to update state accordingly
+        const mapCenter = this.mapRef.current.getCenter().toJSON();
+        const mapZoom = this.mapRef.current.getZoom();
+
+        // If present, makes infowindow user location error disappear
+        if (this.state.userLocationInfowindowError) {
             this.setState({
-                center: {
-                    lat: this.state.userMarkerPos.lat,
-                    lng: this.state.userMarkerPos.lng
-                },
-                userHasJustGivenPermission: false
-            })
-
+                center: mapCenter,
+                zoom: mapZoom,
+                userLocationInfowindowError: null
+            });
         } else {
-            const newPos = this.getMapCenter();
-
-            if (this.state.infoWindowUserPosError) {
-                this.setState({
-                    center: newPos,
-                    infoWindowUserPosError: null
-                });
-            } else {
-                this.setState({
-                    center: newPos,
-                });
-            }
+            this.setState({
+                center: mapCenter,
+                zoom: mapZoom
+            });
         }
 
         const locationsInMapBounds = this.getLocationsInMapBounds();
         this.props.handleLocationsInMapBounds(locationsInMapBounds);
-
-        this.getLocationsFromGooglePlacesAPI().then((fetchedGooglePlacesLocations) => {
-            this.props.handleGooglePlacesLocations(fetchedGooglePlacesLocations);
-        });
     }
 
     handleClickMarkerUserPos() {
-        if (this.state.infoWindowUserPos === true) {
-            this.setState({ infoWindowUserPos: false })
+        if (this.state.userLocationInfowindow === true) {
+            this.setState({ userLocationInfowindow: false })
         } else {
-            this.setState({ infoWindowUserPos: true }) 
+            this.setState({ userLocationInfowindow: true }) 
         }
     }
 
     async handleAutocompleteOnPlaceChanged() {
         if (this.autocompleteRef.current !== null) {
             const place = await this.autocompleteRef.current.getPlace();
-            console.log(place);
-          } else {
+
+            if (place.geometry !== undefined && place.formatted_address !== undefined) {
+                const placeLocationLat = place.geometry.location.lat();
+                const placeLocationLng = place.geometry.location.lng();
+    
+                this.setState({
+                    center: {
+                        lat: placeLocationLat,
+                        lng: placeLocationLng
+                    },
+                    zoom: 14,
+                    autocompleteLocationMarker: true,
+                    autocompleteLocationMarkerCoords: {
+                        lat: placeLocationLat,
+                        lng: placeLocationLng
+                    },
+                    autocompleteAddress: place.formatted_address
+                });
+    
+                await delay(1000);
+                this.getLocationsFromGooglePlacesAPI().then((fetchedGooglePlacesLocations) => {
+                    this.props.handleGooglePlacesLocations(fetchedGooglePlacesLocations);
+                });
+            }
+
+        } else {
             console.log('Autocomplete n\'est pas encore chargé');
-          }
+        }
     }
 
     componentDidMount() {
@@ -295,21 +345,13 @@ class Map extends React.Component {
                         disableDoubleClickZoom: true,
                         fullscreenControl: false,
                         mapTypeControl: false,
-                        restriction: {
-                            latLngBounds: {
-                                north: 51.12032,
-                                east: 8.27500,
-                                south: 42.31384,
-                                west: -5.17106
-                            },
-                            strictBounds: false,
-                        },
                         streetViewControl: false,
                         styles: STYLES_ARRAY
                     }}
-                    zoom={this.state.isUserMarkerShown ? 14 : 6}
+                    zoom={this.state.zoom}
                 >
                     <Autocomplete
+                        fields={['formatted_address', 'geometry']}
                         onLoad={this.handleAutocompleteLoad}
                         onPlaceChanged={this.handleAutocompleteOnPlaceChanged}
                         restrictions={{country: 'fr'}}
@@ -320,13 +362,13 @@ class Map extends React.Component {
                         />
                     </Autocomplete>
 
-                    {this.state.isUserMarkerShown && (
+                    {this.state.userLocationMarker && (
                         <Marker
                             icon="/src/assets/img/user-location.svg"
-                            position={{ lat: this.state.userMarkerPos.lat, lng: this.state.userMarkerPos.lng }}
+                            position={{ lat: this.state.userLocationMarkerCoords.lat, lng: this.state.userLocationMarkerCoords.lng }}
                             onClick={this.handleClickMarkerUserPos}
                         >
-                            {this.state.infoWindowUserPos && (
+                            {this.state.userLocationInfowindow && (
                                 <InfoWindow
                                     onCloseClick={this.handleClickMarkerUserPos}
                                 >
@@ -338,7 +380,7 @@ class Map extends React.Component {
                         </Marker>
                     )}
 
-                    {this.state.infoWindowUserPosError && (
+                    {this.state.userLocationInfowindowError && (
                         <InfoWindow
                             position={{
                                 lat: this.state.center.lat,
@@ -346,13 +388,13 @@ class Map extends React.Component {
                             }}
                         >
                             <>
-                                {this.state.infoWindowUserPosError === "permission denied" && (
+                                {this.state.userLocationInfowindowError === "permission denied" && (
                                     <p className="">
                                         Géolocalisation refusée.<br />
                                         Nous utilisons la localisation par défaut.
                                     </p>
                                 )}
-                                {this.state.infoWindowUserPosError === "browser doesn't support geolocation" && (
+                                {this.state.userLocationInfowindowError === "browser doesn't support geolocation" && (
                                     <p className="">
                                         Votre navigateur ne semble pas supporter la géolocalisation.<br />
                                         Nous utilisons la localisation par défaut.
@@ -361,8 +403,19 @@ class Map extends React.Component {
                             </>
                         </InfoWindow>
                     )}
+
+                    {this.state.autocompleteLocationMarker && (
+                        <Marker
+                            icon="/src/assets/img/autocomplete.svg"
+                            position={{ lat: this.state.autocompleteLocationMarkerCoords.lat, lng: this.state.autocompleteLocationMarkerCoords.lng }}
+                        >
+                            <InfoWindow>
+                                <p>{this.state.autocompleteAddress}</p>
+                            </InfoWindow>
+                        </Marker>
+                    )}
                     
-                    {this.props.databaseLocations && this.props.databaseLocations.map((location) => (
+                    {this.props.displayedLocations && this.props.displayedLocations.map((location) => (
                         <Marker
                             icon="/src/assets/img/restaurant-2.svg"
                             key={location.properties.store_id}
@@ -427,6 +480,7 @@ class Map extends React.Component {
 
 Map.propTypes = {
     databaseLocations: PropTypes.array,
+    displayedLocations: PropTypes.array,
     geocodedLocation: PropTypes.object,
     googlePlacesLocations: PropTypes.array,
     handleLocationsInMapBounds: PropTypes.func.isRequired,

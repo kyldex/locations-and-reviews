@@ -231,6 +231,369 @@
                 ],
                 "ratings_average": 1.5
             }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [4.84948, 45.76104]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "L'Alexandrin",
+                "store_id": "8",
+                "address": {
+                    "street_number": "83",
+                    "street": "Rue Moncey",
+                    "postal_code": "69003",
+                    "city": "Lyon"
+                },
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                        "rating_id": "15",
+                        "stars": 5,
+                        "comment": "Excellent ! Très bon service, le serveur a été très accueillant, personnel, sympathique et discret. La cuisine est absolument exquise, les suggestions de vins toujours parfaite. Tout cela pour un prix très acceptable pour la qualité de l'expérience ! Bravo et merci pour ces 2h30 de dégustation !"
+                    },
+                    {
+                        "rating_id": "16",
+                        "stars": 4,
+                        "comment": "Cuisine gourmande et créative, je me suis régalée avec de bons produits et une belle présentation des plats. J'ai enlevé 1 étoile pour le service, les serveuses sont discrètes et professionnelles mais le chef est trop présent à mon goût, avec  une voix qui porte. J'ai trouvé cela dommage, car il m'a donné l'impression de trop en faire et l'intimité du repas a été compromise. Tout dépend donc de ce que l'on recherche."
+                    }
+                ],
+                "ratings_average": 4.5
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [4.83243, 45.76551]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "Le Casse Museau",
+                "store_id": "9",
+                "address": {
+                    "street_number": "2",
+                    "street": "Rue Chavanne",
+                    "postal_code": "69001",
+                    "city": "Lyon"
+                },
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                        "rating_id": "17",
+                        "stars": 5,
+                        "comment": "Déjeuner entre collègues : Un accueil chaleureux et personnalisé vraiment cela fait du bien durant la pause déjeuner. Le repas que du beau et du bon avec des produits frais et bien cuisinés. Pour le dessert la Poire Belle Hélène avec la Chantilly maison juste succulente . En accompagnement le pot de rouge fort agréable. Encore merci pour ce pur moment de plaisir. Nous reviendrons à bientôt."
+                    },
+                    {
+                        "rating_id": "18",
+                        "stars": 4,
+                        "comment": "Service très sympathique. Dommage la quenelle n'était pas maison même si elle était délicieuse."
+                    }
+                ],
+                "ratings_average": 4.5
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-0.56667, 44.83523]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "Atelier des Faures",
+                "store_id": "10",
+                "address": {
+                    "street_number": "48",
+                    "street": "Rue des Faures",
+                    "postal_code": "33000",
+                    "city": "Bordeaux"
+                },
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                        "rating_id": "19",
+                        "stars": 5,
+                        "comment": "Délicieux. La qualité est au rendez vous. Dégustation dans une assez petite salle qui donne une ambiance convivial. (Pensez à réserver). Le service est parfait. La serveuse est très souriante et à l'écoute, et le cuisinier passe prendre des nouvelles sur le repas. Les prix sont totalement abordable. Agréablement surprise pour la très bonne qualité des repas. Rien à redire. Je repasserais volontier à ma prochaine visite sur Bordeaux."
+                    },
+                    {
+                        "rating_id": "20",
+                        "stars": 5,
+                        "comment": "Le p t'tit resto à ne pas manquer !!! un délice, une cuisine parfumée et colorée. Passage obligé."
+                    }
+                ],
+                "ratings_average": 5
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-0.49675, 44.85033]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "La Villa Gourmande",
+                "store_id": "11",
+                "address": {
+                    "street_number": "19",
+                    "street": "Boulevard de Feydeau",
+                    "postal_code": "33370",
+                    "city": "Artiguès-près-Bordeaux"
+                },
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                        "rating_id": "21",
+                        "stars": 5,
+                        "comment": "Un endroit exceptionnel. Je ne peux que recommander. Les plats sont délicieux, bien présentés et abordables. Les serveuses adorables et aimables. J'y retourne avec plaisir !"
+                    },
+                    {
+                        "rating_id": "22",
+                        "stars": 2,
+                        "comment": "Serveuse qui dit a un client « chut » quand il veut parler car elle n’est pas capable de prendre toutes les commandes. Pars de la table sans s’excuser même si plus tard elle dira que selon elle c’était de l’humour. La convivialité est aussi primordiale pour un restaurant et je ne reviendrais pas là bas. Dommage"
+                    }
+                ],
+                "ratings_average": 3.5
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [3.86698, 43.60067]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "Restaurant La Terrasse",
+                "store_id": "12",
+                "address": {
+                    "street_number": "12",
+                    "street": "Avenue de Toulouse",
+                    "postal_code": "34070",
+                    "city": "Montpellier"
+                },
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                        "rating_id": "23",
+                        "stars": 3,
+                        "comment": "Satisfaite. Il n'y a que la musique qui m'a dérangée mais ça c'est que moi pour les plats c'était bon raisonnable niveau prix"
+                    },
+                    {
+                        "rating_id": "24",
+                        "stars": 5,
+                        "comment": "Tout simplement un super restaurant :) Cadre chaleureux et accueillant, cuisine et serveurs au Top !!!!!! Je ne peux que vous conseiller La Terrasse !!!!!!!"
+                    }
+                ],
+                "ratings_average": 4
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [3.85702, 43.64112]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "Pizza du Plan",
+                "store_id": "13",
+                "address": {
+                    "street_number": "43",
+                    "street": "Rue des 4 Vents",
+                    "postal_code": "34090",
+                    "city": "Montpellier"
+                },
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                        "rating_id": "25",
+                        "stars": 4,
+                        "comment": "Je trouve les pizzas très bonnes, de plus la dame qui fait les pizzas est vraiment aimable et c'est agréable. J'aurais bien mis 5 étoiles mais malheureusement les oignons sont surgelés et ont retrouve souvent les mêmes personnes devant le camion entrain de boire de l'alcool. Mais globalement je recommande quand même parce que les pizzas sont très bonnes."
+                    },
+                    {
+                        "rating_id": "26",
+                        "stars": 4,
+                        "comment": "J y passe régulièrement le soir, l'accueil est sympathique et les pizzas bonnes."
+                    }
+                ],
+                "ratings_average": 4
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [2.39440, 47.08452]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "Chez Jacques",
+                "store_id": "14",
+                "address": {
+                    "street_number": "3",
+                    "street": "Place Jacques Coeur",
+                    "postal_code": "18000",
+                    "city": "Bourges"
+                },
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                        "rating_id": "27",
+                        "stars": 4,
+                        "comment": "Très satisfaits. Personnel très agréable. Menu au top. À recommander"
+                    },
+                    {
+                        "rating_id": "28",
+                        "stars": 3,
+                        "comment": "Première fois dans ce restaurant pour un anniversaire, j'ai pris le menu à 28€ avec foie gras, aloyau et tiramisu nutella. Le cadre est plutôt agréable, le personnel sympathique. Le foie gras servi avec du pain d'épice et des oignons confits, le foie gras est bon, mon aloyau un peu dur, mais servi avec une purée excellente, et le tiramisu moins bon que le mien mais bon tout de même malgré le fait que je n'ai pas senti le Nutella. Salade gourmande pour mon ami, assiette très chargée, bonne également. Aucun de nous 2 n'a réussi à finir son assiette par contre. En somme, satisfaits mais on s'attendait quand même à une cuisine plus recherchée, avec un peu plus de peps pour le prix."
+                    }
+                ],
+                "ratings_average": 3.5
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [2.40849, 47.08172]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "Le Jardin Gourmand",
+                "store_id": "15",
+                "address": {
+                    "street_number": "15B",
+                    "street": "Avenue Ernest Renan",
+                    "postal_code": "18000",
+                    "city": "Bourges"
+                },
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                        "rating_id": "29",
+                        "stars": 4,
+                        "comment": "Contrairement à ce qui a été mis, attente très raisonnable pour un restaurant gastronomique. Plats raffinés et bon service."
+                    },
+                    {
+                        "rating_id": "30",
+                        "stars": 2,
+                        "comment": "L'accueil me semble légèrement trop hautain pour la qualité gastronomique proposé. Les plats et ingrédients choisis sont bons, mais les recettes ne sont pas époustouflantes, sans explosion de saveurs au palais. La décoration trop froide et aseptisé ne convient pas au style du bâtiment. en général et d'après mon avis, le restaurant et la cuisine proposé manque de personnalité. la vaisselle commence à être usée, l'argenterie ne brille pas et parait abimé... Si vous cherchez un bon restaurant gastronomique avec du caractère, je conseillerai d'ajouter un petit billet et de choisir une adresse mieux réputée."
+                    }
+                ],
+                "ratings_average": 3
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-1.68368, 48.10295]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "L'Embarcadère",
+                "store_id": "16",
+                "address": {
+                    "street_number": "26",
+                    "street": "Rue du Dr Francis Joly",
+                    "postal_code": "35000",
+                    "city": "Rennes"
+                },
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                        "rating_id": "31",
+                        "stars": 5,
+                        "comment": "Excellente carte avec des prix abordables compte tenu des produits proposés. La façade du restaurant peut surprendre mais la déxoration intérieure est parfaite. Nous y avons mangé un samedi midi. Le service était un peu long mais cela ne nous a pas du tout dérangé. Très bonne adresse je recommande."
+                    },
+                    {
+                        "rating_id": "32",
+                        "stars": 4,
+                        "comment": "Nous avons passé une merveilleuse soirée ! Le plateau de fruit de mer était très bon, un aïoli maison généreux, comme on les aime. Le service et la cuisine sont fait avec beaucoup d’amour et ça se ressent !! Nous remercions encore Benoit et Sophie pour ce superbe dîné, généreux et convivial. Nous reviendrons avec plaisir et recommandons vivement cette adresse à ne pas louper !!!"
+                    }
+                ],
+                "ratings_average": 4.5
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-1.64686, 48.12876]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "La Via Roma",
+                "store_id": "17",
+                "address": {
+                    "street_number": "268",
+                    "street": "Rue de Fougères",
+                    "postal_code": "35700",
+                    "city": "Rennes"
+                },
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                        "rating_id": "33",
+                        "stars": 5,
+                        "comment": "L'un des meilleurs restaurants de Rennes. Pizza et plats de qualité. Accueil chaleureux et convivial. Une excellente sangria ! Vous ne pouvez pas y passer seulement une fois, vous allez vouloir y revenir très vite !"
+                    },
+                    {
+                        "rating_id": "34",
+                        "stars": 5,
+                        "comment": "Délicieux. Accueil chaleureux. Service super. Les pizzas très bonnes. Et crêpes aussi.. Bravo"
+                    }
+                ],
+                "ratings_average": 5
+            }
+        },
+        {
+            "geometry": {
+                "type": "Point",
+                "coordinates": [6.17547, 48.67485]
+            },
+            "type": "Feature",
+            "properties": {
+                "name": "La Flambée",
+                "store_id": "18",
+                "address": {
+                    "street_number": "133",
+                    "street": "Avenue du Général Leclerc",
+                    "postal_code": "54000",
+                    "city": "Nancy"
+                },
+                "phone": "+33 6 00 00 00 00",
+                "category": "restaurant",
+                "hours": "11am - 11pm",
+                "ratings": [
+                    {
+                        "rating_id": "35",
+                        "stars": 5,
+                        "comment": "Que ce soit avec des salades ,des pizzas en passant par la viande la flambée reste un endroit chaleureux acceuillant et où l'on se sent bien et surtout un endroit d'où l'on repart repu. Une carte avec un large choix. Un grand merci au Arnaud et à la patronne pour leur acceuil et leur gentillesse. Nous y passons assez souvent et nous recommandons vivement cette pizzeria."
+                    },
+                    {
+                        "rating_id": "36",
+                        "stars": 4,
+                        "comment": "Bon accueil. Préparation rapide. Pizza de bonne taille. Juste Dommage que l'oeuf de la Calzone ne soit pas cuit ;)"
+                    }
+                ],
+                "ratings_average": 4.5
+            }
         }
     ]
 }

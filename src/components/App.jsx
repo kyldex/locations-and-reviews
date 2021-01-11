@@ -95,14 +95,7 @@ export default class App extends React.Component {
                 parsedGooglePlacesLocations.push(parseLocationRequest(location));
             });
 
-            if (this.state.googlePlacesLocations !== null) {
-                this.setState((prevState) => ({
-                    googlePlacesLocations: [...prevState.googlePlacesLocations, ...parsedGooglePlacesLocations]
-                }));
-            // First call to the API
-            } else if (this.state.googlePlacesLocations === null){
-                this.setState({googlePlacesLocations: parsedGooglePlacesLocations});
-            }
+            this.setState({ googlePlacesLocations: parsedGooglePlacesLocations });
         }
     }
 
@@ -394,6 +387,7 @@ export default class App extends React.Component {
                 <div id="map">
                     <Map
                         databaseLocations={this.state.databaseLocations}
+                        displayedLocations={this.state.displayedLocations}
                         geocodedLocation={this.state.geocodedLocation}
                         googlePlacesLocations={this.state.googlePlacesLocations}
                         handleLocationsInMapBounds={(locations) => this.handleLocationsInMapBounds(locations)}
