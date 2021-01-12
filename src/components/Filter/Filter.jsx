@@ -11,6 +11,7 @@ const Filter = ({
     currentMaxRatingAverage,
     displayedLocations,
     handleChangeFilterInputs,
+    handleGooglePlacesRefresh,
     handleLocationCardClick,
     handleLocationCardHover,
     minRatingAverage,
@@ -25,6 +26,17 @@ const Filter = ({
                 currentMaxRatingAverage={currentMaxRatingAverage}
                 handleChangeFilterInputs={(newMinValue, newMaxValue) => handleChangeFilterInputs(newMinValue, newMaxValue)}
             />
+
+            <div className="google-places">
+                <div>Recharger Google Places :</div>
+                <button
+                    type="button"
+                    className="google-places-button"
+                    onClick={handleGooglePlacesRefresh}
+                >
+                    <img src="/src/assets/img/restaurant-4.svg" className="google-places-button-img" alt="Google Places button image"/>
+                </button>
+            </div>
 
             <div className="location-cards">
                 {displayedLocations ? displayedLocations.map((location) => (
@@ -54,6 +66,7 @@ Filter.propTypes = {
     ]).isRequired,
     displayedLocations: PropTypes.array,
     handleChangeFilterInputs: PropTypes.func.isRequired,
+    handleGooglePlacesRefresh: PropTypes.func.isRequired,
     handleLocationCardClick: PropTypes.func.isRequired,
     handleLocationCardHover: PropTypes.func.isRequired,
     minRatingAverage: PropTypes.number.isRequired,

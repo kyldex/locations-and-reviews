@@ -38,11 +38,13 @@ export default class App extends React.Component {
             // On location card hover
             hoveredLocation: null
         };
+        this.mapComponentRef = React.createRef();
         this.handleReturnToLocationsList = this.handleReturnToLocationsList.bind(this);
         this.handleDisplayRatingForm = this.handleDisplayRatingForm.bind(this);
         this.handleCloseRatingForm = this.handleCloseRatingForm.bind(this);
         this.handleDisplayLocationForm = this.handleDisplayLocationForm.bind(this);
         this.handleCloseLocationForm = this.handleCloseLocationForm.bind(this);
+        this.handleGooglePlacesRefresh = this.handleGooglePlacesRefresh.bind(this);
     }
 
     // Init
@@ -218,6 +220,16 @@ export default class App extends React.Component {
     }
 
     // Filter
+    handleGooglePlacesRefresh() {
+        const mapComponentRef = this.mapComponentRef.current;
+        const mapCenter = mapComponentRef.mapRef.current.getCenter().toJSON();
+        
+        mapComponentRef.getLocationsFromGooglePlacesAPI(mapCenter).then((fetchedGooglePlacesLocations) => {
+            this.handleGooglePlacesLocations(fetchedGooglePlacesLocations);
+        });
+    }
+
+    // Filter
     handleLocationCardClick(location) {
         this.setState({
             displayFilterInSidebar: false,
@@ -347,6 +359,7 @@ export default class App extends React.Component {
                             currentMaxRatingAverage={this.state.currentMaxRatingAverage}
                             displayedLocations={this.state.displayedLocations}
                             handleChangeFilterInputs={(newMinValue, newMaxValue) => this.handleChangeFilterInputs(newMinValue, newMaxValue)}
+                            handleGooglePlacesRefresh={this.handleGooglePlacesRefresh}
                             handleLocationCardClick={(location) => this.handleLocationCardClick(location)}
                             handleLocationCardHover={(location) => this.handleLocationCardHover(location)}
                             minRatingAverage={this.state.minRatingAverage}
@@ -395,6 +408,7 @@ export default class App extends React.Component {
                         handleMapMarkerClick={(location) => this.handleMapMarkerClick(location)}
                         handleMapDoubleClick ={(reverseGeocodingData) => this.handleMapDoubleClick(reverseGeocodingData)}
                         hoveredLocation={this.state.hoveredLocation}
+                        ref={this.mapComponentRef}
                         selectedLocation={this.state.selectedLocation}
                     />
                 </div>

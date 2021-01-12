@@ -88,10 +88,6 @@ class Map extends React.Component {
         //     google.maps.event.addListener(this.mapRef.current, 'center_changed', () => {
         //         console.log(this.mapRef.current.getCenter().toJSON());
         //     });
-
-        //     // this.getLocationsFromGooglePlacesAPI().then((googlePlacesLocations) => {
-        //     //     this.props.handleGooglePlacesLocations(googlePlacesLocations);
-        //     // });
         // });
     }
 
@@ -217,9 +213,20 @@ class Map extends React.Component {
             });
         }
 
+        const currentMapZoom = this.state.zoom;
+        let radius;
+        if (currentMapZoom <= 15) {
+            radius = '1000';
+        } else if (currentMapZoom === 16) {
+            radius = '700';
+        } else if (currentMapZoom === 17) {
+            radius = '300';
+        } else if (currentMapZoom >= 18) {
+            radius = '150';
+        }
         const nearbySearchRequest = {
             location: centerRef,
-            radius: '1000',
+            radius: radius,
             type: ['restaurant']
         };
         let nearbySearchRequestAttempts = 1;
