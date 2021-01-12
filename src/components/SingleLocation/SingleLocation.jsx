@@ -6,9 +6,11 @@ import './SingleLocation.scss';
 const { REACT_APP_GMAP_API_KEY } = process.env;
 
 const SingleLocation = ({ handleButtonClick, handleReturnToLocationsList, maxRatingAverage, selectedLocation }) => {
-    const lat = selectedLocation.geometry.coordinates[1];
-    const lng = selectedLocation.geometry.coordinates[0];
-    const imgURL = `https://maps.googleapis.com/maps/api/streetview?size=600x400&location=${lat},${lng}&key=${REACT_APP_GMAP_API_KEY}`;
+    const streetNumber = selectedLocation.properties.address.street_number;
+    const street = selectedLocation.properties.address.street.toLowerCase().replace(/\s/g, '%20').replace(/'/g, '%27');
+    const postalCode = selectedLocation.properties.address.postal_code;
+    const city = selectedLocation.properties.address.city.toLowerCase().replace(/\s/g, '%20').replace(/'/g, '%27');
+    const imgURL = `https://maps.googleapis.com/maps/api/streetview?size=600x400&location=${streetNumber},%20${street},%20${postalCode},%20${city}&key=${REACT_APP_GMAP_API_KEY}`;
 
     return (
         <div className="single-location">

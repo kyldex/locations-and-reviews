@@ -239,12 +239,12 @@
             },
             "type": "Feature",
             "properties": {
-                "name": "L'Alexandrin",
+                "name": "Ludovic B Restaurant",
                 "store_id": "8",
                 "address": {
-                    "street_number": "83",
-                    "street": "Rue Moncey",
-                    "postal_code": "69003",
+                    "street_number": "90",
+                    "street": "Rue Masséna",
+                    "postal_code": "69006",
                     "city": "Lyon"
                 },
                 "phone": "+33 6 00 00 00 00",
@@ -254,12 +254,12 @@
                     {
                         "rating_id": "15",
                         "stars": 5,
-                        "comment": "Excellent ! Très bon service, le serveur a été très accueillant, personnel, sympathique et discret. La cuisine est absolument exquise, les suggestions de vins toujours parfaite. Tout cela pour un prix très acceptable pour la qualité de l'expérience ! Bravo et merci pour ces 2h30 de dégustation !"
+                        "comment": "Un repas magique dans un cadre charmant, très appréciable en cette période troublée. C'est un sans faute de l'entrée jusqu'au final avec une petite touche d'attention ! Le service y est irréprochable."
                     },
                     {
                         "rating_id": "16",
                         "stars": 4,
-                        "comment": "Cuisine gourmande et créative, je me suis régalée avec de bons produits et une belle présentation des plats. J'ai enlevé 1 étoile pour le service, les serveuses sont discrètes et professionnelles mais le chef est trop présent à mon goût, avec  une voix qui porte. J'ai trouvé cela dommage, car il m'a donné l'impression de trop en faire et l'intimité du repas a été compromise. Tout dépend donc de ce que l'on recherche."
+                        "comment": "L'un des nombreux restaurants de la rue Masséna avec une petite terrasse mais il fait partie des toques blanches lyonnaises. 2 menus au choix avec 2 entrées 2 plats et pleins de desserts. Les plats sont très bons même s'il y manque un peu d'originalité à mon goût. Dommage. Service un peu long mais le serveur est très sympathique et de bons conseils."
                     }
                 ],
                 "ratings_average": 4.5
