@@ -55,15 +55,18 @@ class Map extends React.Component {
                             lat: position.coords.latitude,
                             lng: position.coords.longitude
                         },
-                        zoom: 14,
+                        zoom: 15,
                         userLocationMarkerCoords: {
                             lat: position.coords.latitude,
                             lng: position.coords.longitude   
                         },
                         userLocationMarker: true
                     }));
-                    await delay(1000);
-                    this.getLocationsFromGooglePlacesAPI().then((fetchedGooglePlacesLocations) => {
+                    const centerRef = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    this.getLocationsFromGooglePlacesAPI(centerRef).then((fetchedGooglePlacesLocations) => {
                         this.props.handleGooglePlacesLocations(fetchedGooglePlacesLocations);
                     });
                 },
@@ -96,7 +99,13 @@ class Map extends React.Component {
         this.autocompleteRef.current = autocompleteInstance;
     }
 
-    async getLocationsFromGooglePlacesAPI() {
+
+    /**
+     * Returns an array of Google Places locations
+     * @param {Object} centerRef - latitude and longitude to be used for the circle's center of the Nearby Search
+     * @returns {Array}
+     */
+    async getLocationsFromGooglePlacesAPI(centerRef) {
         // Nearby Search request
         // https://developers.google.com/maps/documentation/javascript/places#place_search_requests
         const getNearbySearch = async (nearbySearchRequest) => {
@@ -208,9 +217,9 @@ class Map extends React.Component {
             });
         }
 
-        const bounds = this.mapRef.current.getBounds();
         const nearbySearchRequest = {
-            bounds: bounds,
+            location: centerRef,
+            radius: '1000',
             type: ['restaurant']
         };
         let nearbySearchRequestAttempts = 1;
@@ -291,13 +300,13 @@ class Map extends React.Component {
             if (place.geometry !== undefined && place.formatted_address !== undefined) {
                 const placeLocationLat = place.geometry.location.lat();
                 const placeLocationLng = place.geometry.location.lng();
-    
+
                 this.setState({
                     center: {
                         lat: placeLocationLat,
                         lng: placeLocationLng
                     },
-                    zoom: 14,
+                    zoom: 15,
                     autocompleteLocationMarker: true,
                     autocompleteLocationMarkerCoords: {
                         lat: placeLocationLat,
@@ -306,9 +315,15 @@ class Map extends React.Component {
                     autocompleteAddress: place.formatted_address
                 });
     
-                await delay(1000);
-                this.getLocationsFromGooglePlacesAPI().then((fetchedGooglePlacesLocations) => {
+                const centerRef = {
+                    lat: placeLocationLat,
+                    lng: placeLocationLng
+                }
+                this.getLocationsFromGooglePlacesAPI(centerRef).then((fetchedGooglePlacesLocations) => {
                     this.props.handleGooglePlacesLocations(fetchedGooglePlacesLocations);
+
+                    const locationsInMapBounds = this.getLocationsInMapBounds();
+                    this.props.handleLocationsInMapBounds(locationsInMapBounds);
                 });
             }
 
