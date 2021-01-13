@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="64" height="64" viewBox="0 0 128 128">
+    <g>
+        <linearGradient id="a">
+            <stop offset="0%" stop-color="#fff" fill-opacity="0"/>
+            <stop offset="100%" stop-color="#6b6b6b"/>
+        </linearGradient>
+        <path d="M63.85 0A63.85 63.85 0 110 63.85 63.85 63.85 0 0163.85 0zm.65 19.5a44 44 0 11-44 44 44 44 0 0144-44z" fill="url(#a)" fill-rule="evenodd"/>
+        <animateTransform attributeName="transform" type="rotate" from="0 64 64" to="360 64 64" dur="1080ms" repeatCount="indefinite"/>
+    </g>
+</svg>

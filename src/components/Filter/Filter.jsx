@@ -9,6 +9,7 @@ import './Filter.scss';
 const Filter = ({
     currentMinRatingAverage,
     currentMaxRatingAverage,
+    googlePlacesButtonIsDisabled,
     displayedLocations,
     handleChangeFilterInputs,
     handleGooglePlacesRefresh,
@@ -31,11 +32,17 @@ const Filter = ({
                 <div>Recharger Google Places :</div>
                 <button
                     type="button"
-                    className="google-places-button"
+                    className={`google-places-button ${googlePlacesButtonIsDisabled ? 'google-places-button--gray' : 'google-places-button--red'}`}
                     onClick={handleGooglePlacesRefresh}
+                    disabled={googlePlacesButtonIsDisabled}
                 >
                     <img src="/src/assets/img/restaurant-4.svg" className="google-places-button-img" alt="Google Places button image"/>
                 </button>
+                <img
+                    className={`google-places-loading ${googlePlacesButtonIsDisabled ? 'google-places-loading--show' : ''}`}
+                    src="/src/assets/img/loading.svg"
+                    alt="Loading"
+                />
             </div>
 
             <div className="location-cards">
@@ -65,6 +72,7 @@ Filter.propTypes = {
         PropTypes.number
     ]).isRequired,
     displayedLocations: PropTypes.array,
+    googlePlacesButtonIsDisabled: PropTypes.bool.isRequired,
     handleChangeFilterInputs: PropTypes.func.isRequired,
     handleGooglePlacesRefresh: PropTypes.func.isRequired,
     handleLocationCardClick: PropTypes.func.isRequired,

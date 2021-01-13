@@ -221,8 +221,12 @@ class Map extends React.Component {
             radius = '700';
         } else if (currentMapZoom === 17) {
             radius = '300';
-        } else if (currentMapZoom >= 18) {
+        } else if (currentMapZoom === 18) {
             radius = '150';
+        } else if (currentMapZoom === 19) {
+            radius = '75';
+        } else if (currentMapZoom >= 20) {
+            radius = '40';
         }
         const nearbySearchRequest = {
             location: centerRef,

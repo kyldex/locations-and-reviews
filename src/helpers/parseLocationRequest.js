@@ -24,13 +24,15 @@ export default function parseLocationRequest(locationRequest) {
         address.city = locationRequest.address_components[2].long_name;
     }
 
-    locationRequest.reviews.forEach((review) => {
-        parsedReviews.push({
-            rating_id: '',
-            stars: review.rating,
-            comment: review.text
+    if (locationRequest.reviews !== undefined) {
+        locationRequest.reviews.forEach((review) => {
+            parsedReviews.push({
+                rating_id: '',
+                stars: review.rating,
+                comment: review.text
+            });
         });
-    });
+    }
 
     const parsedData = {
         geometry: {
@@ -42,6 +44,7 @@ export default function parseLocationRequest(locationRequest) {
             name: locationRequest.name,
             store_id: '',
             place_id: locationRequest.place_id,
+            is_google_places: true,
             address: address,
             phone: locationRequest.international_phone_number,
             category: 'restaurant',

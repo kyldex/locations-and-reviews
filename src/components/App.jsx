@@ -26,6 +26,7 @@ export default class App extends React.Component {
             currentMinRatingAverage: 0,
             currentMaxRatingAverage: 5,
             lastRatingId: null,
+            googlePlacesButtonIsDisabled: false,
             // On location card click or on map marker click
             selectedLocation: null,
             // Double click on map
@@ -223,9 +224,14 @@ export default class App extends React.Component {
     handleGooglePlacesRefresh() {
         const mapComponentRef = this.mapComponentRef.current;
         const mapCenter = mapComponentRef.mapRef.current.getCenter().toJSON();
-        
+        this.setState({ googlePlacesButtonIsDisabled: true });
+
         mapComponentRef.getLocationsFromGooglePlacesAPI(mapCenter).then((fetchedGooglePlacesLocations) => {
             this.handleGooglePlacesLocations(fetchedGooglePlacesLocations);
+            this.setState({ googlePlacesButtonIsDisabled: false });
+        }).catch((error) => {
+            console.log(error);
+            this.setState({ googlePlacesButtonIsDisabled: false });
         });
     }
 
@@ -358,6 +364,7 @@ export default class App extends React.Component {
                             currentMinRatingAverage={this.state.currentMinRatingAverage}
                             currentMaxRatingAverage={this.state.currentMaxRatingAverage}
                             displayedLocations={this.state.displayedLocations}
+                            googlePlacesButtonIsDisabled={this.state.googlePlacesButtonIsDisabled}
                             handleChangeFilterInputs={(newMinValue, newMaxValue) => this.handleChangeFilterInputs(newMinValue, newMaxValue)}
                             handleGooglePlacesRefresh={this.handleGooglePlacesRefresh}
                             handleLocationCardClick={(location) => this.handleLocationCardClick(location)}

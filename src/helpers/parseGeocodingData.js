@@ -13,6 +13,7 @@ export default function parseGeocodingData(reverseGeocodingData) {
         properties: {
             name: '',
             store_id: '',
+            is_google_places: false,
             address: {
                 street_number: reverseGeocodingData.address_components[0].long_name,
                 street: reverseGeocodingData.address_components[1].long_name,
