@@ -16,6 +16,7 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            allLocations: null,
             databaseLocations: null,
             googlePlacesLocations: null,
             displayedLocations: null,
@@ -59,6 +60,7 @@ export default class App extends React.Component {
         const lastRatingId = parseInt(databaseLocations[lastLocationIndex].properties.ratings[lastRatingIndex].rating_id);
 
         this.setState({
+            allLocations: databaseLocations,
             databaseLocations: databaseLocations,
             displayedLocations: databaseLocations,
             lastRatingId: lastRatingId
@@ -68,37 +70,93 @@ export default class App extends React.Component {
     // Map
     handleLocationsInMapBounds(locations) {
         const { filteredLocationsByAverage } = this.state;
-        const newDisplayedLocations = [];
+        const displayedLocations = [];
 
         if (filteredLocationsByAverage !== null) {
             locations.forEach((location1) => {
                 filteredLocationsByAverage.forEach((location2) => {
                     if (location1.properties.store_id === location2.properties.store_id) {
-                        newDisplayedLocations.push(location1);
+                        displayedLocations.push(location1);
                     }
                 });
             });
         } else {
-            newDisplayedLocations.push(...locations);
+            displayedLocations.push(...locations);
         }
 
         this.setState({
-            displayedLocations: newDisplayedLocations,
+            displayedLocations: displayedLocations,
             locationsInMapBounds: locations
         });
     }
 
     // Map
-    handleGooglePlacesLocations(fetchedGooglePlacesLocations) {
-        const parsedGooglePlacesLocations = [];
+    handleGooglePlacesLocations(locations) {
+        const parsedNewFetchedLocations = [];
+        const parsedAlreadyFetchedLocations = [];
 
         // Successful API call (at least one new location has been fetched)
-        if (fetchedGooglePlacesLocations !== undefined && fetchedGooglePlacesLocations.length !== 0) {
-            fetchedGooglePlacesLocations.forEach((location) => {
-                parsedGooglePlacesLocations.push(parseLocationRequest(location));
+        if (locations.newFetchedLocations !== undefined && locations.newFetchedLocations.length !== 0) {
+
+            locations.newFetchedLocations.forEach((location) => {
+                parsedNewFetchedLocations.push(parseLocationRequest(location));
             });
 
-            this.setState({ googlePlacesLocations: parsedGooglePlacesLocations });
+            // Avoid unnecessary parsing operation if location is already cached
+            if (locations.alreadyFetchedLocations !== undefined && locations.alreadyFetchedLocations.length !== 0) {
+                locations.alreadyFetchedLocations.forEach((alreadyFetchedLocation) => {
+                    this.state.googlePlacesLocations.forEach((googlePlacesLocation) => {
+                        if (alreadyFetchedLocation.place_id === googlePlacesLocation.properties.place_id) {
+                            parsedAlreadyFetchedLocations.push(googlePlacesLocation);
+                            return;
+                        }
+                    });
+                });
+            }
+
+            // All google places have been parsed
+            const googlePlacesLocation = [...parsedAlreadyFetchedLocations, ...parsedNewFetchedLocations];
+            const allLocations = [...this.state.databaseLocations, ...googlePlacesLocation];
+            const mapComponentRef = this.mapComponentRef.current;
+            const locationsInMapBounds = [];
+            const filteredLocationsByAverage = [];
+            const displayedLocations = [];
+        
+            // Get locations in map bounds
+            allLocations.forEach((location) => {
+                if (mapComponentRef.mapRef.current.getBounds().contains({lat: location.geometry.coordinates[1], lng: location.geometry.coordinates[0]})) {
+                    locationsInMapBounds.push(location);
+                }
+            });
+
+            // Handle locations in map bounds
+            allLocations.forEach((location) => {
+                const locationRatingAverage = location.properties.ratings_average;
+                if (locationRatingAverage >= this.state.currentMinRatingAverage && locationRatingAverage <= this.state.currentMaxRatingAverage) {
+                    filteredLocationsByAverage.push(location);
+                }
+            });
+
+            // Check current filter inputs values
+            if (filteredLocationsByAverage.length !== 0) {
+                locationsInMapBounds.forEach((location1) => {
+                    filteredLocationsByAverage.forEach((location2) => {
+                        if (location1.properties.store_id === location2.properties.store_id) {
+                            displayedLocations.push(location1);
+                        }
+                    });
+                });
+            } else {
+                displayedLocations.push(...locationsInMapBounds);
+            }
+
+            this.setState({
+                allLocations: allLocations,
+                googlePlacesLocations: googlePlacesLocation,
+                displayedLocations: displayedLocations,
+                filteredLocationsByAverage: filteredLocationsByAverage,
+                locationsInMapBounds: locationsInMapBounds
+            });
         }
     }
 
@@ -179,9 +237,9 @@ export default class App extends React.Component {
 
     // Filter
     handleChangeFilterInputs(newMinRating, newMaxRating) {
-        const { databaseLocations, locationsInMapBounds } = this.state;
-        const filteredLocations = [];
-        const newDisplayedLocations = [];
+        const { allLocations, locationsInMapBounds } = this.state;
+        const filteredLocationsByAverage = [];
+        const displayedLocations = [];
 
         if (newMinRating === '' || newMaxRating === '') {
             this.setState({
@@ -190,30 +248,31 @@ export default class App extends React.Component {
             });
 
         } else {
-            if (databaseLocations !== null) {
-                databaseLocations.forEach((location) => {
+            if (allLocations !== null) {
+                allLocations.forEach((location) => {
                     const locationRatingAverage = location.properties.ratings_average;
                     if (locationRatingAverage >= newMinRating && locationRatingAverage <= newMaxRating) {
-                        filteredLocations.push(location);
+                        filteredLocationsByAverage.push(location);
                     }
                 });
             }
 
             if (locationsInMapBounds !== null) {
-                filteredLocations.forEach((location1) => {
+                filteredLocationsByAverage.forEach((location1) => {
                     locationsInMapBounds.forEach((location2) => {
                         if (location1.properties.store_id === location2.properties.store_id) {
-                            newDisplayedLocations.push(location1);
+                            displayedLocations.push(location1);
+                            return;
                         }
                     });
                 });
             } else {
-                newDisplayedLocations.push(...filteredLocations);
+                displayedLocations.push(...filteredLocationsByAverage);
             }
 
             this.setState({
-                displayedLocations: newDisplayedLocations,
-                filteredLocationsByAverage: filteredLocations,
+                displayedLocations: displayedLocations,
+                filteredLocationsByAverage: filteredLocationsByAverage,
                 currentMinRatingAverage: newMinRating,
                 currentMaxRatingAverage: newMaxRating,
             });
@@ -226,8 +285,8 @@ export default class App extends React.Component {
         const mapCenter = mapComponentRef.mapRef.current.getCenter().toJSON();
         this.setState({ googlePlacesButtonIsDisabled: true });
 
-        mapComponentRef.getLocationsFromGooglePlacesAPI(mapCenter).then((fetchedGooglePlacesLocations) => {
-            this.handleGooglePlacesLocations(fetchedGooglePlacesLocations);
+        mapComponentRef.getLocationsFromGooglePlacesAPI(mapCenter).then((locations) => {
+            this.handleGooglePlacesLocations(locations);
             this.setState({ googlePlacesButtonIsDisabled: false });
         }).catch((error) => {
             console.log(error);
@@ -250,7 +309,7 @@ export default class App extends React.Component {
         this.setState({ hoveredLocation: location });
     }
 
-    // SingleLocation : back to filter display
+    // SingleLocation - back to filter display
     handleReturnToLocationsList() {
         this.setState({
             displayFilterInSidebar: true,
@@ -279,8 +338,8 @@ export default class App extends React.Component {
                 correspondingLocationIndex = index;
             }
         });
-        const correspondingLocation = databaseLocations[correspondingLocationIndex];
 
+        const correspondingLocation = databaseLocations[correspondingLocationIndex];
         correspondingLocation.properties.ratings.push(
             {
                 rating_id: newRating.rating_id,
@@ -288,16 +347,18 @@ export default class App extends React.Component {
                 comment: newRating.rating_comment
             }
         );
-
         correspondingLocation.properties.ratings_average = getRatingsAverage(correspondingLocation);
 
+        const allLocations = [...databaseLocations, ...this.state.googlePlacesLocations];
+
         this.setState({
+            allLocations: allLocations,
             databaseLocations: databaseLocations,
             lastRatingId: parseInt(newRatingId)
         });
     }
 
-    // RatingForm: after closing new rating thank you message
+    // RatingForm - after closing new rating thank you message
     handleCloseRatingForm() {
         this.setState({
             displaySingleLocationInSidebar: true,
@@ -327,15 +388,18 @@ export default class App extends React.Component {
 
     // LocationForm
     handleSubmitNewLocation(newLocation) {
+        // Set new location id
         const lastLocationIndex = this.state.databaseLocations.length - 1;
         const lastLocationId = parseInt(this.state.databaseLocations[lastLocationIndex].properties.store_id);
         const newLocationId = lastLocationId + 1;
         newLocation.properties.store_id = newLocationId.toString();
 
+        const allLocations = [...this.state.allLocations, newLocation];
         const databaseLocations = [...this.state.databaseLocations, newLocation];
         const displayedLocations = [...this.state.displayedLocations, newLocation];
 
         this.setState({
+            allLocations: allLocations,
             databaseLocations: databaseLocations,
             displayedLocations: displayedLocations,
             geocodedLocation: null,
@@ -343,7 +407,7 @@ export default class App extends React.Component {
         });
     }
 
-    // LocationForm: after closing new location thank you message
+    // LocationForm - after closing new location thank you message
     handleCloseLocationForm() {
         this.setState({
             displaySingleLocationInSidebar: true,
@@ -376,7 +440,7 @@ export default class App extends React.Component {
 
                     {this.state.displaySingleLocationInSidebar && (
                         <SingleLocation
-                            handleButtonClick={this.handleDisplayRatingForm}
+                            handleAddRatingButtonClick={this.handleDisplayRatingForm}
                             handleReturnToLocationsList={this.handleReturnToLocationsList}
                             maxRatingAverage={this.state.maxRatingAverage}
                             currentMinRatingAverage={this.state.currentMinRatingAverage}
@@ -406,7 +470,7 @@ export default class App extends React.Component {
 
                 <div id="map">
                     <Map
-                        databaseLocations={this.state.databaseLocations}
+                        allLocations={this.state.allLocations}
                         displayedLocations={this.state.displayedLocations}
                         geocodedLocation={this.state.geocodedLocation}
                         googlePlacesLocations={this.state.googlePlacesLocations}

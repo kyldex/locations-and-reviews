@@ -66,8 +66,8 @@ class Map extends React.Component {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
                     };
-                    this.getLocationsFromGooglePlacesAPI(centerRef).then((fetchedGooglePlacesLocations) => {
-                        this.props.handleGooglePlacesLocations(fetchedGooglePlacesLocations);
+                    this.getLocationsFromGooglePlacesAPI(centerRef).then((locations) => {
+                        this.props.handleGooglePlacesLocations(locations);
                     });
                 },
                 // Browser supports geolocation, but user has denied permission
@@ -82,24 +82,16 @@ class Map extends React.Component {
 
     handleMapLoad(mapLibraryInstance) {
         this.mapRef.current = mapLibraryInstance;
-
-        // // Wait until the map is fully initialized
-        // google.maps.event.addListenerOnce(this.mapRef.current, 'idle', () => {
-        //     google.maps.event.addListener(this.mapRef.current, 'center_changed', () => {
-        //         console.log(this.mapRef.current.getCenter().toJSON());
-        //     });
-        // });
     }
 
     handleAutocompleteLoad(autocompleteInstance) {
         this.autocompleteRef.current = autocompleteInstance;
     }
 
-
     /**
-     * Returns an array of Google Places locations
+     * Returns an object with new fetched locations (with Place Details requests) and already fetched locations (without Place Details requests)
      * @param {Object} centerRef - latitude and longitude to be used for the circle's center of the Nearby Search
-     * @returns {Array}
+     * @returns {Object}
      */
     async getLocationsFromGooglePlacesAPI(centerRef) {
         // Nearby Search request
@@ -138,6 +130,7 @@ class Map extends React.Component {
             for (let i = 0; i < nearbySearchResults.length; i++) {
                 const placeDetailsRequest = {
                     placeId: nearbySearchResults[i].place_id,
+                    language: 'fr',
                     fields: [
                         'geometry',
                         'name',
@@ -158,11 +151,12 @@ class Map extends React.Component {
 
         const getLocations = (nearbySearchRequest) => {
             return getNearbySearch(nearbySearchRequest).then((nearbySearchResults) => {
-            // Limited number of requests per second with the Place Details API, slice response to 8 locations
+            // Limited number of requests per second with the Place Details API, slice response to 11 locations
             const slicedNearbySearchResults = nearbySearchResults.slice(0, 10);
 
             // Cache system to avoid requesting location details if they've been already fetched and stored into the application state
-            const remainingLocations = [];
+            const newFetchedLocationsBeforeDetails = [];
+            const alreadyFetchedLocations = [];
 
             if (this.props.googlePlacesLocations !== null) {
                 slicedNearbySearchResults.forEach((fetchedLocation) => {
@@ -171,36 +165,39 @@ class Map extends React.Component {
                     this.props.googlePlacesLocations.forEach((cachedLocation) => {
                         if (fetchedLocation.place_id === cachedLocation.properties.place_id) {
                             isAlreadyCached = true;
+                            return;
                         }
                     })
 
                     if (!isAlreadyCached) {
-                        remainingLocations.push(fetchedLocation);
+                        newFetchedLocationsBeforeDetails.push(fetchedLocation);
+                    } else if (isAlreadyCached) {
+                        alreadyFetchedLocations.push(fetchedLocation);
                     }
                 })
             // First call to the API
             } else if (this.props.googlePlacesLocations === null) {
-                remainingLocations.push(...slicedNearbySearchResults);
+                newFetchedLocationsBeforeDetails.push(...slicedNearbySearchResults);
             }
 
-            if (remainingLocations.length !== 0) {
-                return getPlacesDetails(remainingLocations).then((placeDetailsResults) => {
-                    return placeDetailsResults;
+            if (newFetchedLocationsBeforeDetails.length !== 0) {
+                return getPlacesDetails(newFetchedLocationsBeforeDetails).then((newFetchedLocations) => {
+                    return { newFetchedLocations, alreadyFetchedLocations };
                 }).catch(async (error) => {
                     console.log(error);
                     if (placeDetailsRequestAttempts <= 2) {
                         placeDetailsRequestAttempts++;
-                        const slicedRemainingLocations = remainingLocations.slice(0, 2);
+                        const slicedNewFetchedLocationsBeforeDetails = newFetchedLocationsBeforeDetails.slice(0, 2);
                         await delay(1000);
-                        return getPlacesDetails(slicedRemainingLocations).then((placeDetailsResults) => {
-                            return placeDetailsResults;
+                        return getPlacesDetails(slicedNewFetchedLocationsBeforeDetails).then((newFetchedLocations) => {
+                            return { newFetchedLocations, alreadyFetchedLocations };
                         }).catch((error) => {
                             console.log(error);
                         })
                     }
                 });
             } else {
-                return remainingLocations;
+                return { newFetchedLocations: newFetchedLocationsBeforeDetails, alreadyFetchedLocations };
             }
 
             }).catch(async (error) => {
@@ -260,7 +257,7 @@ class Map extends React.Component {
     getLocationsInMapBounds() {
         const locationsInMapBounds = [];
         
-        this.props.databaseLocations.forEach((location) => {
+        this.props.allLocations.forEach((location) => {
             if (this.mapRef.current.getBounds().contains({lat: location.geometry.coordinates[1], lng: location.geometry.coordinates[0]})) {
                 locationsInMapBounds.push(location);
             }
@@ -274,7 +271,7 @@ class Map extends React.Component {
             return;
         }
 
-        // Monitor map center and zoom to update state accordingly
+        // Monitors map center and zoom to update state accordingly
         const mapCenter = this.mapRef.current.getCenter().toJSON();
         const mapZoom = this.mapRef.current.getZoom();
 
@@ -330,11 +327,8 @@ class Map extends React.Component {
                     lat: placeLocationLat,
                     lng: placeLocationLng
                 }
-                this.getLocationsFromGooglePlacesAPI(centerRef).then((fetchedGooglePlacesLocations) => {
-                    this.props.handleGooglePlacesLocations(fetchedGooglePlacesLocations);
-
-                    const locationsInMapBounds = this.getLocationsInMapBounds();
-                    this.props.handleLocationsInMapBounds(locationsInMapBounds);
+                this.getLocationsFromGooglePlacesAPI(centerRef).then((locations) => {
+                    this.props.handleGooglePlacesLocations(locations);
                 });
             }
 
@@ -443,7 +437,7 @@ class Map extends React.Component {
                     
                     {this.props.displayedLocations && this.props.displayedLocations.map((location) => (
                         <Marker
-                            icon="/src/assets/img/restaurant-2.svg"
+                            icon={location.properties.is_google_places ? "/src/assets/img/restaurant-3.svg" : "/src/assets/img/restaurant-2.svg"}
                             key={location.properties.store_id}
                             position={{
                                 lat: location.geometry.coordinates[1],
@@ -464,18 +458,6 @@ class Map extends React.Component {
                                     </div>
                                 </InfoWindow>
                             )}
-                        </Marker>
-                    ))}
-
-                    {this.props.googlePlacesLocations && this.props.googlePlacesLocations.map((location) => (
-                        <Marker
-                            icon="/src/assets/img/restaurant-3.svg"
-                            key={location.properties.place_id}
-                            position={{
-                                lat: location.geometry.coordinates[1],
-                                lng: location.geometry.coordinates[0]
-                            }}
-                        >
                         </Marker>
                     ))}
 
@@ -505,7 +487,7 @@ class Map extends React.Component {
 }
 
 Map.propTypes = {
-    databaseLocations: PropTypes.array,
+    allLocations: PropTypes.array,
     displayedLocations: PropTypes.array,
     geocodedLocation: PropTypes.object,
     googlePlacesLocations: PropTypes.array,

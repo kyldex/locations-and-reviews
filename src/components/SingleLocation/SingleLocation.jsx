@@ -5,7 +5,7 @@ import './SingleLocation.scss';
 
 const { REACT_APP_GMAP_API_KEY } = process.env;
 
-const SingleLocation = ({ handleButtonClick, handleReturnToLocationsList, maxRatingAverage, selectedLocation }) => {
+const SingleLocation = ({ handleAddRatingButtonClick, handleReturnToLocationsList, maxRatingAverage, selectedLocation }) => {
     const streetNumber = selectedLocation.properties.address.street_number;
     const street = selectedLocation.properties.address.street.toLowerCase().replace(/\s/g, '%20').replace(/'/g, '%27');
     const postalCode = selectedLocation.properties.address.postal_code;
@@ -17,15 +17,18 @@ const SingleLocation = ({ handleButtonClick, handleReturnToLocationsList, maxRat
             <img src={imgURL} alt="Photo du restaurant" />
             <button className="back-to-filter" onClick={(handleReturnToLocationsList)}>Retour à la liste</button>
             <h2>{selectedLocation.properties.name}</h2>
-            <div className="add-rating">
-                <button type="button">
-                    <img
-                        src="/src/assets/img/add-outline.svg"
-                        onClick={handleButtonClick}
-                    />
-                </button>
-                <p>Ajoutez votre avis !</p>
-            </div>
+
+            {!selectedLocation.properties.is_google_places && (
+                <div className="add-rating">
+                    <button type="button">
+                        <img
+                            src="/src/assets/img/add-outline.svg"
+                            onClick={handleAddRatingButtonClick}
+                        />
+                    </button>
+                    <p>Ajoutez votre avis !</p>
+                </div>
+            )}
 
             <div className="single-location-reviews">
                 {selectedLocation.properties.ratings.length === 0 && !selectedLocation.properties.is_google_places && (
@@ -34,9 +37,10 @@ const SingleLocation = ({ handleButtonClick, handleReturnToLocationsList, maxRat
                 {selectedLocation.properties.ratings.length === 0 && selectedLocation.properties.is_google_places && (
                     <p className="no-ratings">Nous n'avons pas pu récupérer les avis fournis par Google.</p>
                 )}
+                {/* Google places have an empty string as id, so array index is used as key to map */}
                 {selectedLocation.properties.ratings.length !== 0 && (
-                    selectedLocation.properties.ratings.map((rating) => (
-                        <div className="single-location-review" key={rating.rating_id}>
+                    selectedLocation.properties.ratings.map((rating, index) => (
+                        <div className="single-location-review" key={index}>
                             <p>{`${rating.stars}/${maxRatingAverage}`}</p>
                             <p>{rating.comment}</p>
                         </div>
@@ -48,7 +52,7 @@ const SingleLocation = ({ handleButtonClick, handleReturnToLocationsList, maxRat
 };
 
 SingleLocation.propTypes = {
-    handleButtonClick: PropTypes.func.isRequired,
+    handleAddRatingButtonClick: PropTypes.func.isRequired,
     handleReturnToLocationsList: PropTypes.func.isRequired,
     maxRatingAverage: PropTypes.number.isRequired,
     selectedLocation: PropTypes.object.isRequired

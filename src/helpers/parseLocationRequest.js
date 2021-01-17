@@ -42,7 +42,7 @@ export default function parseLocationRequest(locationRequest) {
         type: 'Feature',
         properties: {
             name: locationRequest.name,
-            store_id: '',
+            store_id: locationRequest.place_id,
             place_id: locationRequest.place_id,
             is_google_places: true,
             address: address,
