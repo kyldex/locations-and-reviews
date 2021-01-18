@@ -62,13 +62,13 @@ class Map extends React.Component {
                         },
                         userLocationMarker: true
                     }));
-                    const centerRef = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
-                    this.getLocationsFromGooglePlacesAPI(centerRef).then((locations) => {
-                        this.props.handleGooglePlacesLocations(locations);
-                    });
+                    // const centerRef = {
+                    //     lat: position.coords.latitude,
+                    //     lng: position.coords.longitude
+                    // };
+                    // this.getLocationsFromGooglePlacesAPI(centerRef).then((locations) => {
+                    //     this.props.handleGooglePlacesLocations(locations);
+                    // });
                 },
                 // Browser supports geolocation, but user has denied permission
                 () => {

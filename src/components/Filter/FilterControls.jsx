@@ -406,7 +406,7 @@ class FilterControls extends React.Component {
 
     render() {
         return (
-            <div className="filter">
+            <div className="filter-controls">
                 <form action="">
                     <div className="filter-title">Filtrer par notes</div>
 

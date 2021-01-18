@@ -1,5 +1,7 @@
 import React from 'react';
 import * as data from '../data/restaurants.json';
+import sortLocationsByName from '../helpers/sortLocationsByName';
+import sortLocationsByAverage from '../helpers/sortLocationsByAverage';
 import parseGeocodingData from '../helpers/parseGeocodingData';
 import parseLocationRequest from '../helpers/parseLocationRequest';
 import getRatingsAverage from '../helpers/getRatingsAverage';
@@ -20,6 +22,7 @@ export default class App extends React.Component {
             databaseLocations: null,
             googlePlacesLocations: null,
             displayedLocations: null,
+            displayedLocationsAreSortedBy: 'name',
             filteredLocationsByAverage: null,
             locationsInMapBounds: null,
             minRatingAverage: 0,
@@ -47,6 +50,7 @@ export default class App extends React.Component {
         this.handleDisplayLocationForm = this.handleDisplayLocationForm.bind(this);
         this.handleCloseLocationForm = this.handleCloseLocationForm.bind(this);
         this.handleGooglePlacesRefresh = this.handleGooglePlacesRefresh.bind(this);
+        this.handleSortLocationsByAverage = this.handleSortLocationsByAverage.bind(this);
     }
 
     // Init
@@ -59,10 +63,17 @@ export default class App extends React.Component {
         const lastRatingIndex = databaseLocations[lastLocationIndex].properties.ratings.length - 1;
         const lastRatingId = parseInt(databaseLocations[lastLocationIndex].properties.ratings[lastRatingIndex].rating_id);
 
+        let sortedDatabaseLocations;
+        if (this.state.displayedLocationsAreSortedBy === 'name') {
+            sortedDatabaseLocations = sortLocationsByName(databaseLocations);
+        } else if (this.state.displayedLocationsAreSortedBy === 'average') {
+            sortedDatabaseLocations = sortLocationsByName(databaseLocations);
+        }
+
         this.setState({
-            allLocations: databaseLocations,
-            databaseLocations: databaseLocations,
-            displayedLocations: databaseLocations,
+            allLocations: sortedDatabaseLocations,
+            databaseLocations: sortedDatabaseLocations,
+            displayedLocations: sortedDatabaseLocations,
             lastRatingId: lastRatingId
         });
     }
@@ -84,8 +95,15 @@ export default class App extends React.Component {
             displayedLocations.push(...locations);
         }
 
+        let sortedDisplayedLocations;
+        if (this.state.displayedLocationsAreSortedBy === 'name') {
+            sortedDisplayedLocations = sortLocationsByName(displayedLocations);
+        } else if (this.state.displayedLocationsAreSortedBy === 'average') {
+            sortedDisplayedLocations = sortLocationsByAverage(displayedLocations);
+        }
+
         this.setState({
-            displayedLocations: displayedLocations,
+            displayedLocations: sortedDisplayedLocations,
             locationsInMapBounds: locations
         });
     }
@@ -150,10 +168,17 @@ export default class App extends React.Component {
                 displayedLocations.push(...locationsInMapBounds);
             }
 
+            let sortedDisplayedLocations;
+            if (this.state.displayedLocationsAreSortedBy === 'name') {
+                sortedDisplayedLocations = sortLocationsByName(displayedLocations);
+            } else if (this.state.displayedLocationsAreSortedBy === 'average') {
+                sortedDisplayedLocations = sortLocationsByAverage(displayedLocations);
+            }
+
             this.setState({
                 allLocations: allLocations,
                 googlePlacesLocations: googlePlacesLocation,
-                displayedLocations: displayedLocations,
+                displayedLocations: sortedDisplayedLocations,
                 filteredLocationsByAverage: filteredLocationsByAverage,
                 locationsInMapBounds: locationsInMapBounds
             });
@@ -270,8 +295,15 @@ export default class App extends React.Component {
                 displayedLocations.push(...filteredLocationsByAverage);
             }
 
+            let sortedDisplayedLocations;
+            if (this.state.displayedLocationsAreSortedBy === 'name') {
+                sortedDisplayedLocations = sortLocationsByName(displayedLocations);
+            } else if (this.state.displayedLocationsAreSortedBy === 'average') {
+                sortedDisplayedLocations = sortLocationsByAverage(displayedLocations);
+            }
+
             this.setState({
-                displayedLocations: displayedLocations,
+                displayedLocations: sortedDisplayedLocations,
                 filteredLocationsByAverage: filteredLocationsByAverage,
                 currentMinRatingAverage: newMinRating,
                 currentMaxRatingAverage: newMaxRating,
@@ -292,6 +324,28 @@ export default class App extends React.Component {
             console.log(error);
             this.setState({ googlePlacesButtonIsDisabled: false });
         });
+    }
+
+    // Filter 
+    handleSortLocationsByAverage() {
+        if (this.state.displayedLocationsAreSortedBy === 'name') {
+            const displayedLocations = [...this.state.displayedLocations];
+            let sortedDisplayedLocations = sortLocationsByAverage(displayedLocations);
+
+            this.setState({
+                displayedLocations: sortedDisplayedLocations,
+                displayedLocationsAreSortedBy: 'average'
+            });
+
+        } else if (this.state.displayedLocationsAreSortedBy === 'average') {
+            const displayedLocations = [...this.state.displayedLocations];
+            let sortedDisplayedLocations = sortLocationsByName(displayedLocations);
+
+            this.setState({
+                displayedLocations: sortedDisplayedLocations,
+                displayedLocationsAreSortedBy: 'name'
+            });
+        }
     }
 
     // Filter
@@ -349,7 +403,12 @@ export default class App extends React.Component {
         );
         correspondingLocation.properties.ratings_average = getRatingsAverage(correspondingLocation);
 
-        const allLocations = [...databaseLocations, ...this.state.googlePlacesLocations];
+        let allLocations;
+        if (this.state.googlePlacesLocations !== null) {
+            allLocations = [...databaseLocations, ...this.state.googlePlacesLocations];
+        } else if (this.state.googlePlacesLocations === null) {
+            allLocations = [...databaseLocations];
+        }
 
         this.setState({
             allLocations: allLocations,
@@ -398,10 +457,17 @@ export default class App extends React.Component {
         const databaseLocations = [...this.state.databaseLocations, newLocation];
         const displayedLocations = [...this.state.displayedLocations, newLocation];
 
+        let sortedDisplayedLocations;
+        if (this.state.displayedLocationsAreSortedBy === 'name') {
+            sortedDisplayedLocations = sortLocationsByName(displayedLocations);
+        } else if (this.state.displayedLocationsAreSortedBy === 'average') {
+            sortedDisplayedLocations = sortLocationsByAverage(displayedLocations);
+        }
+
         this.setState({
             allLocations: allLocations,
             databaseLocations: databaseLocations,
-            displayedLocations: displayedLocations,
+            displayedLocations: sortedDisplayedLocations,
             geocodedLocation: null,
             selectedLocation: newLocation
         });
@@ -428,11 +494,13 @@ export default class App extends React.Component {
                             currentMinRatingAverage={this.state.currentMinRatingAverage}
                             currentMaxRatingAverage={this.state.currentMaxRatingAverage}
                             displayedLocations={this.state.displayedLocations}
+                            displayedLocationsAreSortedBy={this.state.displayedLocationsAreSortedBy}
                             googlePlacesButtonIsDisabled={this.state.googlePlacesButtonIsDisabled}
                             handleChangeFilterInputs={(newMinValue, newMaxValue) => this.handleChangeFilterInputs(newMinValue, newMaxValue)}
                             handleGooglePlacesRefresh={this.handleGooglePlacesRefresh}
                             handleLocationCardClick={(location) => this.handleLocationCardClick(location)}
                             handleLocationCardHover={(location) => this.handleLocationCardHover(location)}
+                            handleSortLocationsByAverage={this.handleSortLocationsByAverage}
                             minRatingAverage={this.state.minRatingAverage}
                             maxRatingAverage={this.state.maxRatingAverage}
                         />
