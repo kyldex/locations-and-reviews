@@ -1,19 +1,27 @@
-// Reset user agent
+@import './styles/variables';
+
 * {
     box-sizing: border-box;
 }
 
 html {
-    height: 100%;
+    height: 100vh;
 }
 
 body {
     margin: 0;
     padding: 0;
-    height: 100%;
+    height: 100vh;
     font-family: "Lato", sans-serif;
-    color: #1f1f1f;
-    font-size: 1rem;
+    font-size: $base-font-size;
+    font-weight: 400;
+    color: $color-black;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -24,6 +32,10 @@ h1, h2, h3, h4, h5, h6 {
 p {
     margin-top: 0;
     margin-bottom: 0;
+}
+
+a {
+    text-decoration: none;
 }
 
 button {
@@ -49,6 +61,13 @@ select:focus {
 button::-moz-focus-inner {
     border: 0;
     padding: 0;
+}
+
+// Remove user agent style for Safari iOS
+input,
+textarea {
+    border-radius: 0;
+    box-shadow: none;
 }
 
 // Hide arrows from input number

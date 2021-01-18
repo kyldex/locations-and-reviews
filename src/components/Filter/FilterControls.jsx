@@ -408,7 +408,7 @@ class FilterControls extends React.Component {
         return (
             <div className="filter-controls">
                 <form action="">
-                    <div className="filter-title">Filtrer par notes</div>
+                    <h2 className="filter-title">Filtrer par notes</h2>
 
                     <div className="filter-labels">
                         <label htmlFor="filter-input-min">Min</label>

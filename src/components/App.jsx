@@ -22,6 +22,7 @@ export default class App extends React.Component {
             databaseLocations: null,
             googlePlacesLocations: null,
             displayedLocations: null,
+            displayedLocationsHaveGooglePlaces: false,
             displayedLocationsAreSortedBy: 'name',
             filteredLocationsByAverage: null,
             locationsInMapBounds: null,
@@ -74,7 +75,7 @@ export default class App extends React.Component {
             allLocations: sortedDatabaseLocations,
             databaseLocations: sortedDatabaseLocations,
             displayedLocations: sortedDatabaseLocations,
-            lastRatingId: lastRatingId
+            lastRatingId
         });
     }
 
@@ -82,6 +83,7 @@ export default class App extends React.Component {
     handleLocationsInMapBounds(locations) {
         const { filteredLocationsByAverage } = this.state;
         const displayedLocations = [];
+        let displayedLocationsHaveGooglePlaces = false;
 
         if (filteredLocationsByAverage !== null) {
             locations.forEach((location1) => {
@@ -95,6 +97,13 @@ export default class App extends React.Component {
             displayedLocations.push(...locations);
         }
 
+        displayedLocations.forEach((location) => {
+            if (location.properties.is_google_places) {
+                displayedLocationsHaveGooglePlaces = true;
+                return;
+            }
+        });
+
         let sortedDisplayedLocations;
         if (this.state.displayedLocationsAreSortedBy === 'name') {
             sortedDisplayedLocations = sortLocationsByName(displayedLocations);
@@ -104,17 +113,17 @@ export default class App extends React.Component {
 
         this.setState({
             displayedLocations: sortedDisplayedLocations,
+            displayedLocationsHaveGooglePlaces,
             locationsInMapBounds: locations
         });
     }
 
     // Map
     handleGooglePlacesLocations(locations) {
-        const parsedNewFetchedLocations = [];
-        const parsedAlreadyFetchedLocations = [];
-
         // Successful API call (at least one new location has been fetched)
         if (locations.newFetchedLocations !== undefined && locations.newFetchedLocations.length !== 0) {
+            const parsedNewFetchedLocations = [];
+            const parsedAlreadyFetchedLocations = [];
 
             locations.newFetchedLocations.forEach((location) => {
                 parsedNewFetchedLocations.push(parseLocationRequest(location));
@@ -139,6 +148,7 @@ export default class App extends React.Component {
             const locationsInMapBounds = [];
             const filteredLocationsByAverage = [];
             const displayedLocations = [];
+            let displayedLocationsHaveGooglePlaces = false;
         
             // Get locations in map bounds
             allLocations.forEach((location) => {
@@ -168,6 +178,13 @@ export default class App extends React.Component {
                 displayedLocations.push(...locationsInMapBounds);
             }
 
+            displayedLocations.forEach((location) => {
+                if (location.properties.is_google_places) {
+                    displayedLocationsHaveGooglePlaces = true;
+                    return;
+                }
+            });
+
             let sortedDisplayedLocations;
             if (this.state.displayedLocationsAreSortedBy === 'name') {
                 sortedDisplayedLocations = sortLocationsByName(displayedLocations);
@@ -176,12 +193,16 @@ export default class App extends React.Component {
             }
 
             this.setState({
-                allLocations: allLocations,
-                googlePlacesLocations: googlePlacesLocation,
+                allLocations,
+                googlePlacesLocation,
                 displayedLocations: sortedDisplayedLocations,
-                filteredLocationsByAverage: filteredLocationsByAverage,
-                locationsInMapBounds: locationsInMapBounds
+                displayedLocationsHaveGooglePlaces,
+                filteredLocationsByAverage,
+                locationsInMapBounds
             });
+
+        } else {
+            return;
         }
     }
 
@@ -265,6 +286,7 @@ export default class App extends React.Component {
         const { allLocations, locationsInMapBounds } = this.state;
         const filteredLocationsByAverage = [];
         const displayedLocations = [];
+        let displayedLocationsHaveGooglePlaces = false;
 
         if (newMinRating === '' || newMaxRating === '') {
             this.setState({
@@ -295,6 +317,13 @@ export default class App extends React.Component {
                 displayedLocations.push(...filteredLocationsByAverage);
             }
 
+            displayedLocations.forEach((location) => {
+                if (location.properties.is_google_places) {
+                    displayedLocationsHaveGooglePlaces = true;
+                    return;
+                }
+            });
+
             let sortedDisplayedLocations;
             if (this.state.displayedLocationsAreSortedBy === 'name') {
                 sortedDisplayedLocations = sortLocationsByName(displayedLocations);
@@ -304,7 +333,8 @@ export default class App extends React.Component {
 
             this.setState({
                 displayedLocations: sortedDisplayedLocations,
-                filteredLocationsByAverage: filteredLocationsByAverage,
+                displayedLocationsHaveGooglePlaces,
+                filteredLocationsByAverage,
                 currentMinRatingAverage: newMinRating,
                 currentMaxRatingAverage: newMaxRating,
             });
@@ -487,71 +517,82 @@ export default class App extends React.Component {
 
     render() {
         return (
-            <div className="container">
-                <div id="sidebar">
-                    {this.state.displayFilterInSidebar && (
-                        <Filter
-                            currentMinRatingAverage={this.state.currentMinRatingAverage}
-                            currentMaxRatingAverage={this.state.currentMaxRatingAverage}
-                            displayedLocations={this.state.displayedLocations}
-                            displayedLocationsAreSortedBy={this.state.displayedLocationsAreSortedBy}
-                            googlePlacesButtonIsDisabled={this.state.googlePlacesButtonIsDisabled}
-                            handleChangeFilterInputs={(newMinValue, newMaxValue) => this.handleChangeFilterInputs(newMinValue, newMaxValue)}
-                            handleGooglePlacesRefresh={this.handleGooglePlacesRefresh}
-                            handleLocationCardClick={(location) => this.handleLocationCardClick(location)}
-                            handleLocationCardHover={(location) => this.handleLocationCardHover(location)}
-                            handleSortLocationsByAverage={this.handleSortLocationsByAverage}
-                            minRatingAverage={this.state.minRatingAverage}
-                            maxRatingAverage={this.state.maxRatingAverage}
-                        />
-                    )}
+            <>
+                <div className="main-container">
+                    <div className="sidebar-map">
+                        <div id="sidebar">
+                            {this.state.displayFilterInSidebar && (
+                                <Filter
+                                    currentMinRatingAverage={this.state.currentMinRatingAverage}
+                                    currentMaxRatingAverage={this.state.currentMaxRatingAverage}
+                                    displayedLocations={this.state.displayedLocations}
+                                    displayedLocationsHaveGooglePlaces={this.state.displayedLocationsHaveGooglePlaces}
+                                    displayedLocationsAreSortedBy={this.state.displayedLocationsAreSortedBy}
+                                    googlePlacesButtonIsDisabled={this.state.googlePlacesButtonIsDisabled}
+                                    handleChangeFilterInputs={(newMinValue, newMaxValue) => this.handleChangeFilterInputs(newMinValue, newMaxValue)}
+                                    handleGooglePlacesRefresh={this.handleGooglePlacesRefresh}
+                                    handleLocationCardClick={(location) => this.handleLocationCardClick(location)}
+                                    handleLocationCardHover={(location) => this.handleLocationCardHover(location)}
+                                    handleSortLocationsByAverage={this.handleSortLocationsByAverage}
+                                    minRatingAverage={this.state.minRatingAverage}
+                                    maxRatingAverage={this.state.maxRatingAverage}
+                                />
+                            )}
 
-                    {this.state.displaySingleLocationInSidebar && (
-                        <SingleLocation
-                            handleAddRatingButtonClick={this.handleDisplayRatingForm}
-                            handleReturnToLocationsList={this.handleReturnToLocationsList}
-                            maxRatingAverage={this.state.maxRatingAverage}
-                            currentMinRatingAverage={this.state.currentMinRatingAverage}
-                            currentMaxRatingAverage={this.state.currentMaxRatingAverage}
-                            selectedLocation={this.state.selectedLocation}
-                        />
-                    )}
+                            {this.state.displaySingleLocationInSidebar && (
+                                <SingleLocation
+                                    handleAddRatingButtonClick={this.handleDisplayRatingForm}
+                                    handleReturnToLocationsList={this.handleReturnToLocationsList}
+                                    maxRatingAverage={this.state.maxRatingAverage}
+                                    currentMinRatingAverage={this.state.currentMinRatingAverage}
+                                    currentMaxRatingAverage={this.state.currentMaxRatingAverage}
+                                    selectedLocation={this.state.selectedLocation}
+                                />
+                            )}
 
-                    {this.state.displayRatingFormInSidebar && (
-                        <RatingForm
-                            handleSubmitNewRating={(newRating) => this.handleSubmitNewRating(newRating)}
-                            handleCloseRatingForm={this.handleCloseRatingForm}
-                            minRatingAverage={this.state.minRatingAverage}
-                            maxRatingAverage={this.state.maxRatingAverage}
-                            selectedLocation={this.state.selectedLocation}
-                        />
-                    )}
+                            {this.state.displayRatingFormInSidebar && (
+                                <RatingForm
+                                    handleSubmitNewRating={(newRating) => this.handleSubmitNewRating(newRating)}
+                                    handleCloseRatingForm={this.handleCloseRatingForm}
+                                    minRatingAverage={this.state.minRatingAverage}
+                                    maxRatingAverage={this.state.maxRatingAverage}
+                                    selectedLocation={this.state.selectedLocation}
+                                />
+                            )}
 
-                    {this.state.displayLocationFormInSidebar && (
-                        <LocationForm
-                            geocodedLocation={this.state.geocodedLocation}
-                            handleSubmitNewLocation={(newLocation) => this.handleSubmitNewLocation(newLocation)}
-                            handleCloseLocationForm={this.handleCloseLocationForm}
-                        />
-                    )}
+                            {this.state.displayLocationFormInSidebar && (
+                                <LocationForm
+                                    geocodedLocation={this.state.geocodedLocation}
+                                    handleSubmitNewLocation={(newLocation) => this.handleSubmitNewLocation(newLocation)}
+                                    handleCloseLocationForm={this.handleCloseLocationForm}
+                                />
+                            )}
+                        </div>
+
+                        <div id="map">
+                            <Map
+                                allLocations={this.state.allLocations}
+                                displayedLocations={this.state.displayedLocations}
+                                geocodedLocation={this.state.geocodedLocation}
+                                googlePlacesLocations={this.state.googlePlacesLocations}
+                                handleLocationsInMapBounds={(locations) => this.handleLocationsInMapBounds(locations)}
+                                handleGooglePlacesLocations={(googlePlacesLocations) => this.handleGooglePlacesLocations(googlePlacesLocations)}
+                                handleMapMarkerClick={(location) => this.handleMapMarkerClick(location)}
+                                handleMapDoubleClick ={(reverseGeocodingData) => this.handleMapDoubleClick(reverseGeocodingData)}
+                                hoveredLocation={this.state.hoveredLocation}
+                                ref={this.mapComponentRef}
+                                selectedLocation={this.state.selectedLocation}
+                            />
+                        </div>
+                    </div>
                 </div>
 
-                <div id="map">
-                    <Map
-                        allLocations={this.state.allLocations}
-                        displayedLocations={this.state.displayedLocations}
-                        geocodedLocation={this.state.geocodedLocation}
-                        googlePlacesLocations={this.state.googlePlacesLocations}
-                        handleLocationsInMapBounds={(locations) => this.handleLocationsInMapBounds(locations)}
-                        handleGooglePlacesLocations={(googlePlacesLocations) => this.handleGooglePlacesLocations(googlePlacesLocations)}
-                        handleMapMarkerClick={(location) => this.handleMapMarkerClick(location)}
-                        handleMapDoubleClick ={(reverseGeocodingData) => this.handleMapDoubleClick(reverseGeocodingData)}
-                        hoveredLocation={this.state.hoveredLocation}
-                        ref={this.mapComponentRef}
-                        selectedLocation={this.state.selectedLocation}
-                    />
-                </div>
-            </div>
+                <footer className="footer">
+                    <div className="footer-inner">
+                        Icons made by <a href="https://www.flaticon.com/authors/freepik" className="footer-link" title="Freepik">Freepik</a> and <a href="https://www.flaticon.com/authors/icongeek26" className="footer-link" title="Icongeek26">Icongeek26</a> from <a href="https://www.flaticon.com/" className="footer-link" title="Flaticon">www.flaticon.com</a>
+                    </div>
+                </footer>
+            </>
         );
     }
 }

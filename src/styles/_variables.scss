@@ -1,0 +1,19 @@
+$base-font-size: 1rem !default;
+
+$color-red-primary: #fa494a;
+$color-yellow: #fee379;
+$color-light-gray: #e2e1e1;
+$color-white: #fff;
+$color-black: #1f1f1f;
+
+$padding-left-edge: 2rem;
+
+// Desktop-first, base is desktop-xl which starts at 1800px
+$breakpoints: (
+    mobile-xs-max: 359px,
+    mobile-max: 567px,
+    mobile-xl-max: 749px,
+    tablet-max: 1023px,
+    desktop-xs-max: 1199px,
+    desktop-max: 1799px
+);

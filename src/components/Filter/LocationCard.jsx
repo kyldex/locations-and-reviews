@@ -11,8 +11,9 @@ const LocationCard = ({ handleLocationCardClick, handleLocationCardHover, locati
             onMouseEnter={() => handleLocationCardHover(location)}
             onMouseLeave={() => handleLocationCardHover(null)}
         >
-            <h2>{location.properties.name}</h2>
-            <p>Moyenne : {location.properties.ratings_average}</p>
+            <h3>{location.properties.name}</h3>
+            <p className="address">{location.properties.address.street_number} {location.properties.address.street}, {location.properties.address.postal_code} {location.properties.address.city}</p>
+            <p className="average">Moyenne : {location.properties.ratings_average}</p>
         </div>
     )
 }

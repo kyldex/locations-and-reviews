@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import delay from '../../helpers/delay';
+import getRadius from '../../helpers/getRadius';
 
 import { Autocomplete, GoogleMap, InfoWindow, LoadScript, Marker } from '@react-google-maps/api';
 
@@ -211,20 +212,7 @@ class Map extends React.Component {
         }
 
         const currentMapZoom = this.state.zoom;
-        let radius;
-        if (currentMapZoom <= 15) {
-            radius = '1000';
-        } else if (currentMapZoom === 16) {
-            radius = '700';
-        } else if (currentMapZoom === 17) {
-            radius = '300';
-        } else if (currentMapZoom === 18) {
-            radius = '150';
-        } else if (currentMapZoom === 19) {
-            radius = '75';
-        } else if (currentMapZoom >= 20) {
-            radius = '40';
-        }
+        const radius = getRadius(currentMapZoom);
         const nearbySearchRequest = {
             location: centerRef,
             radius: radius,

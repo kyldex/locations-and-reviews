@@ -1,11 +1,18 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
 .filter-controls form {
     padding: 1.2rem 1.5rem 2rem;
-    border-bottom: solid 1px #b4b2b2;
-}
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    padding-left: $padding-left-edge;
+    border-bottom: solid 1px #{$color-light-gray};
 
-.filter-title {
-    font-size: 1.2rem;
-    font-weight: 700;
+    h2.filter-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+    }
+
 }
 
 .filter-labels {

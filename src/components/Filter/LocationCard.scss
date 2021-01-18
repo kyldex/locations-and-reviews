@@ -1,22 +1,32 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
 .location-card {
-    padding: 1.2rem 1.5rem 2rem;
-    width: 100%;
-    height: 95px;
-    background-color: #fff;
-    border-bottom: solid 1px #b4b2b2;
+    padding-top: 1rem;
+    padding-right: 1.5rem;
+    padding-bottom: 1.5rem;
+    padding-left: $padding-left-edge;
+    border-bottom: solid 1px #{$color-light-gray};
     transition: background-color 200ms ease-in;
-}
+    &:last-child {
+        border-bottom: none;
+    }
+    &:hover {
+        background-color: #e4e4e4;
+        cursor: pointer;
+    }
 
-.location-card:last-child {
-    border-bottom: none;
-}
+    h3 {
+        font-size: 1rem;
+        font-weight: 700;
+    }
 
-.location-card:hover {
-    background-color: #e4e4e4;
-    cursor: pointer;
-}
+    p.address {
+        font-size: 0.9rem;
+    }
 
-.location-card h2 {
-    font-size: 1.4rem;
-    font-weight: 400;
+    p.average {
+        font-size: 0.9rem;
+        color: darken($color-yellow, 25%);
+    }
 }

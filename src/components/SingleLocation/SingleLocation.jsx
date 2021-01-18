@@ -37,7 +37,7 @@ const SingleLocation = ({ handleAddRatingButtonClick, handleReturnToLocationsLis
                 {selectedLocation.properties.ratings.length === 0 && selectedLocation.properties.is_google_places && (
                     <p className="no-ratings">Nous n'avons pas pu récupérer les avis fournis par Google.</p>
                 )}
-                {/* Google places have an empty string as id, so array index is used as key to map */}
+                {/* Google places have an empty string as id, so array's indexes are used as key to map */}
                 {selectedLocation.properties.ratings.length !== 0 && (
                     selectedLocation.properties.ratings.map((rating, index) => (
                         <div className="single-location-review" key={index}>
