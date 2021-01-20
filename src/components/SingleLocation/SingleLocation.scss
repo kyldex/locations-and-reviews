@@ -1,3 +1,6 @@
+@import '../../styles/variables';
+@import '../../styles/mixins';
+
 .single-location {
 
     img {
@@ -6,6 +9,8 @@
     }
 
     button.back-to-filter {
+        margin-top: 0.75rem;
+        margin-left: 1rem;
         cursor: pointer;
     }
 
@@ -20,18 +25,29 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        margin-top: 0.5rem;
 
         button img {
             width: 25px;
             height: 25px;
             cursor: pointer;
         }
+
+        p {
+            margin-left: 4px;
+        }
     }
 
     .single-location-reviews {
         margin-top: 1rem;
+        padding-right: 2.5rem;
+        padding-left: 2.5rem;
         max-height: 400px;
         overflow: auto;
+        @include mobile-xl {
+            padding-right: 2rem;
+            padding-left: 2rem;
+        }
 
         .no-ratings {
             text-align: center;
