@@ -397,13 +397,13 @@ class Map extends React.Component {
                         >
                             <>
                                 {this.state.userLocationInfowindowError === "permission denied" && (
-                                    <p className="">
+                                    <p>
                                         Géolocalisation refusée.<br />
                                         Nous utilisons la localisation par défaut.
                                     </p>
                                 )}
                                 {this.state.userLocationInfowindowError === "browser doesn't support geolocation" && (
-                                    <p className="">
+                                    <p>
                                         Votre navigateur ne semble pas supporter la géolocalisation.<br />
                                         Nous utilisons la localisation par défaut.
                                     </p>
@@ -441,7 +441,11 @@ class Map extends React.Component {
                                     <div className="infowindow-displayed-locations">
                                         <div className="title">{this.props.selectedLocation.properties.name}</div>
                                         <p>{this.props.selectedLocation.properties.hours}</p>
-                                        <p>{this.props.selectedLocation.properties.address.street_number} {this.props.selectedLocation.properties.address.street}, {this.props.selectedLocation.properties.address.postal_code} {this.props.selectedLocation.properties.address.city}</p>
+                                        {location.properties.address.street !== '' ? (
+                                            <p>{this.props.selectedLocation.properties.address.street_number} {this.props.selectedLocation.properties.address.street}, {this.props.selectedLocation.properties.address.postal_code} {this.props.selectedLocation.properties.address.city}</p>
+                                        ) : (
+                                            <p>Adresse non obtenue</p>
+                                        )}
                                         <p>{this.props.selectedLocation.properties.phone}</p>
                                     </div>
                                 </InfoWindow>

@@ -12,7 +12,11 @@ const LocationCard = ({ handleLocationCardClick, handleLocationCardHover, locati
             onMouseLeave={() => handleLocationCardHover(null)}
         >
             <h3>{location.properties.name}</h3>
-            <p className="address">{location.properties.address.street_number} {location.properties.address.street}, {location.properties.address.postal_code} {location.properties.address.city}</p>
+            {location.properties.address.street !== '' ? (
+                <p className="address">{location.properties.address.street_number} {location.properties.address.street}, {location.properties.address.postal_code} {location.properties.address.city}</p>
+            ) : (
+                <p className="address">Adresse non obtenue</p>
+            )}
             <p className="average">Moyenne : {location.properties.ratings_average}</p>
         </div>
     )

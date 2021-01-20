@@ -410,49 +410,51 @@ class FilterControls extends React.Component {
                 <form action="">
                     <h2 className="filter-title">Filtrer par notes</h2>
 
-                    <div className="filter-labels">
-                        <label htmlFor="filter-input-min">Min</label>
-                        <label htmlFor="filter-input-max">Max</label>
-                    </div>
-
-                    <div className="filter-selectors">
-                        <RatingInput
-                            inputName="filter-input-min"
-                            inputValue={this.props.currentMinRatingAverage}
-                            buttonUpName="button-min-up"
-                            buttonDownName="button-min-down"
-                            handleInputBlur={this.handleInputBlur}
-                            handleInputChange={(e) => this.handleInputChange(e)}
-                            handleButtonClick={this.handleButtonClick}
-                        />
-
-                        <div className="filter-selector-line">
-                            <div className="filter-selector-line-inner">
-                                <div
-                                    className="resizable"
-                                    ref={this.resizable}
-                                >
-                                    <div
-                                        className="resizer left"
-                                        onMouseDown={this.handleMouseDown}
-                                    />
-                                    <div
-                                        className="resizer right"
-                                        onMouseDown={this.handleMouseDown}
-                                    />
-                                </div>
-                            </div>
+                    <div className="filter-controls-inner">
+                        <div className="filter-labels">
+                            <label htmlFor="filter-input-min">Min</label>
+                            <label htmlFor="filter-input-max">Max</label>
                         </div>
 
-                        <RatingInput
-                            inputName="filter-input-max"
-                            inputValue={this.props.currentMaxRatingAverage}
-                            buttonUpName="button-max-up"
-                            buttonDownName="button-max-down"
-                            handleInputBlur={this.handleInputBlur}
-                            handleInputChange={(e) => this.handleInputChange(e)}
-                            handleButtonClick={this.handleButtonClick}
-                        />
+                        <div className="filter-selectors">
+                            <RatingInput
+                                inputName="filter-input-min"
+                                inputValue={this.props.currentMinRatingAverage}
+                                buttonUpName="button-min-up"
+                                buttonDownName="button-min-down"
+                                handleInputBlur={this.handleInputBlur}
+                                handleInputChange={(e) => this.handleInputChange(e)}
+                                handleButtonClick={this.handleButtonClick}
+                            />
+
+                            <div className="filter-selector-line">
+                                <div className="filter-selector-line-inner">
+                                    <div
+                                        className="resizable"
+                                        ref={this.resizable}
+                                    >
+                                        <div
+                                            className="resizer left"
+                                            onMouseDown={this.handleMouseDown}
+                                        />
+                                        <div
+                                            className="resizer right"
+                                            onMouseDown={this.handleMouseDown}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <RatingInput
+                                inputName="filter-input-max"
+                                inputValue={this.props.currentMaxRatingAverage}
+                                buttonUpName="button-max-up"
+                                buttonDownName="button-max-down"
+                                handleInputBlur={this.handleInputBlur}
+                                handleInputChange={(e) => this.handleInputChange(e)}
+                                handleButtonClick={this.handleButtonClick}
+                            />
+                        </div>
                     </div>
                 </form>
             </div>
