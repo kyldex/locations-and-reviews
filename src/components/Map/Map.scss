@@ -3,43 +3,43 @@
 
 // Autocomplete
 .pac-target-input {
-    position: absolute;
-    left: calc(50% - 200px);
-    padding: 0.5rem 0.75rem;
-    width: 400px;
-    font-family: "Lato", "Arial", sans-serif;
-    font-size: 14px;
-    outline: none;
-    text-overflow: ellipses;
-    border: 1px solid transparent;
-    border-radius: 3px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    @include mobile-xl {
-        left: calc(50% - 100px);
-        width: 200px;
-    }
+  position: absolute;
+  left: calc(50% - 200px);
+  padding: 0.5rem 0.75rem;
+  width: 400px;
+  font-family: 'Lato', 'Arial', sans-serif;
+  font-size: 14px;
+  outline: none;
+  text-overflow: ellipses;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  @include mobile-xl {
+    left: calc(50% - 100px);
+    width: 200px;
+  }
 }
 
 .pac-item {
-    font-family: "Lato", "Arial", sans-serif;
+  font-family: 'Lato', 'Arial', sans-serif;
 }
 
 // Infowindows
 .infowindow-displayed-locations {
-    max-width: 300px;
+  max-width: 300px;
 
-    .title {
-        font-weight: 400;
-        font-size: 1.5rem;
-    }
+  .title {
+    font-weight: 400;
+    font-size: 1.5rem;
+  }
 }
 
 .infowindow-geocoding-location {
-    max-width: 300px;
-    text-align: center;
+  max-width: 300px;
+  text-align: center;
 
-    .title {
-        font-weight: 400;
-        font-size: 1.3rem;
-    }
+  .title {
+    font-weight: 400;
+    font-size: 1.3rem;
+  }
 }

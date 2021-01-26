@@ -1,55 +1,55 @@
 .rating-form-inner {
-    display: flex;
-    justify-content: center;
-    margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
 }
 
 .rating-form-inner h2 {
-    text-align: center;
-    font-size: 1.5rem;
+  text-align: center;
+  font-size: 1.5rem;
 }
 
 .rating-form-content {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 .rating-form-content-inner {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .rating-input-block {
-    display: flex;
-    align-items: center;
-    margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  margin-top: 2rem;
 }
 
 .rating-input-block label {
-    margin-right: 5px;
+  margin-right: 5px;
 }
 
 .rating-form-inner textarea {
-    margin-top: 1rem;
+  margin-top: 1rem;
 }
 
 .rating-form-inner button {
-    margin-top: 1rem;
-    text-align: center;
-    cursor: pointer;
+  margin-top: 1rem;
+  text-align: center;
+  cursor: pointer;
 }
 
 .rating-form .thank-you {
-    text-align: center;
-    margin-top: 5rem;
+  text-align: center;
+  margin-top: 5rem;
 }
 
 .rating-form .thank-you p {
-    font-size: 1.5rem;
+  font-size: 1.5rem;
 }
 
 .rating-form .thank-you button {
-    margin-top: 2rem;
-    text-align: center;
-    cursor: pointer;
+  margin-top: 2rem;
+  text-align: center;
+  cursor: pointer;
 }

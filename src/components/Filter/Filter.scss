@@ -2,121 +2,119 @@
 @import '../../styles/mixins';
 
 .filter-buttons {
-    padding-top: 1rem;
-    padding-right: 1rem;
-    padding-bottom: 1rem;
-    padding-left: $padding-left-edge;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    border-bottom: solid 1px #{$color-light-gray};
-    @include mobile-xl {
-        align-items: center;
-        padding-right: 0.5rem;
-        padding-left: 0.5rem;
+  padding-top: 1rem;
+  padding-right: 1rem;
+  padding-bottom: 1rem;
+  padding-left: $padding-left-edge;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  border-bottom: solid 1px #{$color-light-gray};
+  @include mobile-xl {
+    align-items: center;
+    padding-right: 0.5rem;
+    padding-left: 0.5rem;
+  }
+
+  .filter-buttons-inner {
+    text-align: center;
+  }
+
+  .google-places-refresh {
+    position: relative;
+
+    .google-places-button {
+      padding: 0.7rem 1.4rem 0.8rem;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      color: #fff;
+      border-radius: 3px;
+      transition: all 0.3s ease;
+      &--red {
+        background-color: $color-red-primary;
+      }
+      &--gray {
+        background-color: #6b6b6b;
+      }
     }
 
-    .filter-buttons-inner {
-        text-align: center;
+    .google-places-loading {
+      position: absolute;
+      top: calc(50% - 13px);
+      right: -34px;
+      visibility: hidden;
+      opacity: 0;
+      margin-left: 0.5rem;
+      width: 26px;
+      height: 26px;
+      transition: visibility 0.3s ease, opacity 0.3s ease;
+      &--show {
+        visibility: visible;
+        opacity: 1;
+      }
     }
+  }
 
-    .google-places-refresh {
-        position: relative;
-
-        .google-places-button {
-            padding: 0.7rem 1.4rem 0.8rem;
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            letter-spacing: 1px;
-            color: #fff;
-            border-radius: 3px;
-            transition: all 0.3s ease;
-            &--red {
-                background-color: $color-red-primary;
-            }
-            &--gray {
-                background-color: #6b6b6b;
-            }
-        }
-    
-        .google-places-loading {
-            position: absolute;
-            top: calc(50% - 13px);
-            right: -34px;
-            visibility: hidden;
-            opacity: 0;
-            margin-left: 0.5rem;
-            width: 26px;
-            height: 26px;
-            transition: visibility 0.3s ease, opacity 0.3s ease;
-            &--show {
-                visibility: visible;
-                opacity: 1;
-            }
-        }
+  .dislayed-locations-sorting {
+    .sort-by-average-button {
+      margin-top: 1rem;
+      padding: 0.7rem 1.4rem 0.8rem;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      color: #fff;
+      border-radius: 3px;
+      transition: all 0.3s ease;
+      &--red {
+        background-color: $color-red-primary;
+      }
+      &--gray {
+        background-color: #6b6b6b;
+      }
     }
-
-    .dislayed-locations-sorting {
-        
-        .sort-by-average-button {
-            margin-top: 1rem;
-            padding: 0.7rem 1.4rem 0.8rem;
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            letter-spacing: 1px;
-            color: #fff;
-            border-radius: 3px;
-            transition: all 0.3s ease;
-            &--red {
-                background-color: $color-red-primary;
-            }
-            &--gray {
-                background-color: #6b6b6b;
-            }
-        }
-    }
+  }
 }
 
 .locations-cards {
+  h2.app-location-cards__title {
+    padding-top: 1.5rem;
+    padding-right: 1.5rem;
+    padding-bottom: 0.8rem;
+    padding-left: $padding-left-edge;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-bottom: solid 1px #{$color-light-gray};
+  }
 
-    h2.app-location-cards__title {
-        padding-top: 1.5rem;
-        padding-right: 1.5rem;
-        padding-bottom: 0.8rem;
-        padding-left: $padding-left-edge;
-        font-size: 1.2rem;
-        font-weight: 700;
-        border-bottom: solid 1px #{$color-light-gray};
-    }
+  .app-location-cards {
+    min-height: 10px;
+    max-height: 200px;
+    overflow: auto;
+    border-bottom: solid 1px #{$color-light-gray};
+  }
 
-    .app-location-cards {
-        min-height: 10px;
-        max-height: 200px;
-        overflow: auto;
-        border-bottom: solid 1px #{$color-light-gray};
-    }
-    
-    h2.google-places-locations-cards__title {
-        padding-top: 1.5rem;
-        padding-right: 1.5rem;
-        padding-bottom: 0.8rem;
-        padding-left: $padding-left-edge;
-        font-size: 1.2rem;
-        font-weight: 700;
-        border-bottom: solid 1px #{$color-light-gray};
-    }
-    
-    .google-places-locations-cards {
-        min-height: 10px;
-        max-height: 200px;
-        overflow: auto;
-        border-bottom: solid 1px #{$color-light-gray};
-    }
+  h2.google-places-locations-cards__title {
+    padding-top: 1.5rem;
+    padding-right: 1.5rem;
+    padding-bottom: 0.8rem;
+    padding-left: $padding-left-edge;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-bottom: solid 1px #{$color-light-gray};
+  }
 
-    .no-displayed-restaurants {
-        padding-top: 1rem;
-        padding-right: 1.5rem;
-        padding-bottom: 1.5rem;
-        padding-left: $padding-left-edge;
-    }
+  .google-places-locations-cards {
+    min-height: 10px;
+    max-height: 200px;
+    overflow: auto;
+    border-bottom: solid 1px #{$color-light-gray};
+  }
+
+  .no-displayed-restaurants {
+    padding-top: 1rem;
+    padding-right: 1.5rem;
+    padding-bottom: 1.5rem;
+    padding-left: $padding-left-edge;
+  }
 }

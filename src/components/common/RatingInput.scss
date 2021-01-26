@@ -1,31 +1,32 @@
 .rating-input {
-    padding-left: 5px;
-    padding-right: 5px;
-    width: 50px;
-    border: solid 1px rgba(92, 92, 92, 0.25);
-    border-radius: 4px;
-}
+  padding-left: 5px;
+  padding-right: 5px;
+  width: 50px;
+  border: solid 1px rgba(92, 92, 92, 0.25);
+  border-radius: 4px;
 
-.rating-input-inner {
+  .rating-input-inner {
     display: flex;
     align-items: center;
     height: 40px;
-}
+  }
 
-.rating-input-inner input {
+  .rating-input-inner input {
     width: 20px;
     height: 30px;
     font-size: 13px;
     border: none;
-}
+  }
 
-.rating-input .button {
+  .button {
     width: 15px;
     height: 15px;
-}
+  }
 
-.rating-input .button img {
+  .button img {
     width: 15px;
     height: 15px;
     cursor: pointer;
+  }
+
 }

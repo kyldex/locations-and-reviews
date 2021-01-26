@@ -2,31 +2,31 @@
 @import '../../styles/mixins';
 
 .location-card {
-    padding-top: 1rem;
-    padding-right: 1.5rem;
-    padding-bottom: 1.5rem;
-    padding-left: $padding-left-edge;
-    border-bottom: solid 1px #{$color-light-gray};
-    transition: background-color 200ms ease-in;
-    &:last-child {
-        border-bottom: none;
-    }
-    &:hover {
-        background-color: #e4e4e4;
-        cursor: pointer;
-    }
+  padding-top: 1rem;
+  padding-right: 1.5rem;
+  padding-bottom: 1.5rem;
+  padding-left: $padding-left-edge;
+  border-bottom: solid 1px #{$color-light-gray};
+  transition: background-color 200ms ease-in;
+  &:last-child {
+    border-bottom: none;
+  }
+  &:hover {
+    background-color: #e4e4e4;
+    cursor: pointer;
+  }
 
-    h3 {
-        font-size: 1rem;
-        font-weight: 700;
-    }
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+  }
 
-    p.address {
-        font-size: 0.9rem;
-    }
+  p.address {
+    font-size: 0.9rem;
+  }
 
-    p.average {
-        font-size: 0.9rem;
-        color: darken($color-yellow, 25%);
-    }
+  p.average {
+    font-size: 0.9rem;
+    color: darken($color-yellow, 25%);
+  }
 }

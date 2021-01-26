@@ -1,13 +1,13 @@
 export default function getRatingsAverage(location) {
-    let ratingsTotal = 0;
-    let numberOfRatings = 0;
+  let ratingsTotal = 0;
+  let numberOfRatings = 0;
 
-    location.properties.ratings.forEach((rating) => {
-        ratingsTotal += rating.stars;
-        numberOfRatings++;
-    });
+  location.properties.ratings.forEach((rating) => {
+    ratingsTotal += rating.stars;
+    numberOfRatings++;
+  });
 
-    const ratingsAverage = ratingsTotal / numberOfRatings;
+  const ratingsAverage = ratingsTotal / numberOfRatings;
 
-    return Math.round(ratingsAverage * 10) / 10;
+  return Math.round(ratingsAverage * 10) / 10;
 }
