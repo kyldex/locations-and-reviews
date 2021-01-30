@@ -79,7 +79,7 @@ class LocationForm extends React.Component {
                   required
                 />
 
-                <label htmlFor="hours">Horaires d&#39ouverture :</label>
+                <label htmlFor="hours">Horaires d&#39;ouverture :</label>
                 <input
                   type="text"
                   name="hours"
@@ -88,7 +88,7 @@ class LocationForm extends React.Component {
                   id="hours"
                   required
                 />
-                <p className="hours-description">De préférence sous la forme : &#3411am - 11pm&#34</p>
+                <p className="hours-description">De préférence sous la forme : &#34;11am - 11pm&#34;</p>
 
                 <button type="submit">Valider</button>
               </div>

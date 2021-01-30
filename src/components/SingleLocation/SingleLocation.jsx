@@ -33,11 +33,12 @@ const SingleLocation = ({
     <div className="single-location">
       <img
         src={imgURL}
+        className="single-location__photo"
         alt={`Restaurant ${selectedLocation.properties.name}`}
       />
 
       {/* Test */}
-      {/* <img src={selectedLocation.properties.photo[0]} alt="" />
+      {/* <img className="single-location__photo" src={selectedLocation.properties.photo[0]} alt="" />
       <img src={selectedLocation.properties.photo[1]} alt="" />
       <img src={selectedLocation.properties.photo[2]} alt="" /> */}
 
@@ -70,14 +71,14 @@ const SingleLocation = ({
         {selectedLocation.properties.ratings.length === 0 && (
           !selectedLocation.properties.is_google_places && (
             <p className="no-ratings">
-              Ce restaurant n&#39a aucun avis pour l&#39instant
+              Ce restaurant n&#39;a aucun avis pour l&#39;instant
             </p>
           )
         )}
         {selectedLocation.properties.ratings.length === 0 && (
           selectedLocation.properties.is_google_places && (
             <p className="no-ratings">
-              Nous n&#39avons pas pu récupérer les avis fournis par Google.
+              Nous n&#39;avons pas pu récupérer les avis fournis par Google.
             </p>
           )
         )}
