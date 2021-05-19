@@ -61,21 +61,21 @@ class Map extends React.Component {
   }
 
   handleDoubleClick(e) {
-    const thisMapComponent = this;
+    const handleMapDoubleClick = this.props.handleMapDoubleClick;
     const lat = e.latLng.lat();
     const lng = e.latLng.lng();
     let reverseGeocodingData;
 
-    const request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-      if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-        const response = JSON.parse(this.responseText);
-        reverseGeocodingData = response.results[0];
-        thisMapComponent.props.handleMapDoubleClick(reverseGeocodingData);
-      }
-    };
-    request.open('GET', `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&location_type=ROOFTOP&result_type=street_address&key=${REACT_APP_GMAP_API_KEY}`);
-    request.send();
+    fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&location_type=ROOFTOP&result_type=street_address&key=${REACT_APP_GMAP_API_KEY}`)
+      .then((response) => {
+        if (response.status >= 400) {
+          console.log(`Error while fetching reverse geocoding data, status : ${response.status}.`);
+        }
+        response.json().then((jsonResponse) => {
+          reverseGeocodingData = jsonResponse.results[0];
+          handleMapDoubleClick(reverseGeocodingData);
+        });
+      });
   }
 
   async handleDragEndAndZoomChanged() {
@@ -165,7 +165,7 @@ class Map extends React.Component {
   }
 
   /**
-     * Returns an object with new fetched locations (with Place Details requests) and already fetched locations (without Place Details requests)
+     * Returns an object with new fetched locations (Place Details requests) and already fetched locations (no Place Details request)
      * @param {Object} centerRef - latitude and longitude to be used for the circle's center of the Nearby Search
      * @returns {Object}
      */
@@ -173,7 +173,7 @@ class Map extends React.Component {
     /* global google */
     const currentMapZoom = this.state.zoom;
     const radius = getRadius(currentMapZoom);
-    const nearbySearchRequest = {
+    const nearbySearchRequestParams = {
       location: centerRef,
       radius,
       type: ['restaurant']
@@ -240,7 +240,7 @@ class Map extends React.Component {
     const getLocations = (request) => {
       return getNearbySearch(request).then((nearbySearchResults) => {
         // Limited number of requests per second with the Place Details API, slice response to 11 locations
-        const slicedNearbySearchResults = nearbySearchResults.slice(0, 1);
+        const slicedNearbySearchResults = nearbySearchResults.slice(0, 11);
 
         // Cache system to avoid requesting location details if they've been already fetched and stored into the application state
         const newFetchedLocationsBeforeDetails = [];
@@ -270,7 +270,6 @@ class Map extends React.Component {
 
         if (newFetchedLocationsBeforeDetails.length !== 0) {
           return getPlacesDetails(newFetchedLocationsBeforeDetails).then((newFetchedLocations) => {
-            console.log('getPlacesDetails', { newFetchedLocations, alreadyFetchedLocations });
             return { newFetchedLocations, alreadyFetchedLocations };
           }).catch(async (error) => {
             console.log(error);
@@ -298,7 +297,7 @@ class Map extends React.Component {
       });
     };
 
-    return getLocations(nearbySearchRequest);
+    return getLocations(nearbySearchRequestParams);
   }
 
   showCurrentLocation() {

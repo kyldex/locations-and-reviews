@@ -71,7 +71,7 @@ const SingleLocation = ({
         {selectedLocation.properties.ratings.length === 0 && (
           !selectedLocation.properties.is_google_places && (
             <p className="no-ratings">
-              Ce restaurant n&#39;a aucun avis pour l&#39;instant
+              Ce restaurant n&#39;a aucun avis pour l&#39;instant.
             </p>
           )
         )}

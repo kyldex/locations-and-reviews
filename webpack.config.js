@@ -55,9 +55,9 @@ module.exports = {
   },
   plugins: [
     new Dotenv(),
-    new MiniCssExtractPlugin({filename: 'style.css'}),
+    new MiniCssExtractPlugin({ filename: 'style.css' }),
     new OptimizeCssAssetsPlugin(),
-    new HtmlWebpackPlugin({template: 'src/index.html'}),
+    new HtmlWebpackPlugin({ template: 'src/index.html' }),
     new FaviconsWebpackPlugin({
       logo: './src/assets/favicons/favicon.png',
       outputPath: 'assets/favicons/',
