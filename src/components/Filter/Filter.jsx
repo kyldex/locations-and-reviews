@@ -17,15 +17,11 @@ const Filter = ({
   handleGooglePlacesRefresh,
   handleLocationCardClick,
   handleLocationCardHover,
-  handleSortLocationsByAverage,
-  minRatingAverage,
-  maxRatingAverage
+  handleSortLocationsByAverage
 }) => {
   return (
     <>
       <FilterControls
-        minRatingAverage={minRatingAverage}
-        maxRatingAverage={maxRatingAverage}
         currentMinRatingAverage={currentMinRatingAverage}
         currentMaxRatingAverage={currentMaxRatingAverage}
         handleChangeFilterInputs={(newMinValue, newMaxValue) => handleChangeFilterInputs(newMinValue, newMaxValue)}
@@ -116,9 +112,7 @@ Filter.propTypes = {
   handleGooglePlacesRefresh: PropTypes.func.isRequired,
   handleLocationCardClick: PropTypes.func.isRequired,
   handleLocationCardHover: PropTypes.func.isRequired,
-  handleSortLocationsByAverage: PropTypes.func.isRequired,
-  minRatingAverage: PropTypes.number.isRequired,
-  maxRatingAverage: PropTypes.number.isRequired
+  handleSortLocationsByAverage: PropTypes.func.isRequired
 };
 
 export default Filter;

@@ -5,6 +5,8 @@ import RatingInput from '../common/RatingInput.jsx';
 
 import './RatingForm.scss';
 
+import { MIN_RATING_AVERAGE, MAX_RATING_AVERAGE } from '../../config';
+
 class RatingForm extends React.Component {
   constructor(props) {
     super(props);
@@ -31,9 +33,7 @@ class RatingForm extends React.Component {
   }
 
   handleInputChange(e) {
-    const { minRatingAverage, maxRatingAverage } = this.props;
-
-    const regex = new RegExp(`[^${minRatingAverage}-${maxRatingAverage}]`, 'g');
+    const regex = new RegExp(`[^${MIN_RATING_AVERAGE}-${MAX_RATING_AVERAGE}]`, 'g');
     const value = e.target.value
       .replace(regex, '')
     // Stick to first number, ignore later digits
@@ -48,13 +48,11 @@ class RatingForm extends React.Component {
   }
 
   handleButtonsInputClick(e) {
-    const { minRatingAverage, maxRatingAverage } = this.props;
-
-    if (e.target.classList.contains('button-up') && parseInt(this.state.ratingStars, 10) < maxRatingAverage) {
+    if (e.target.classList.contains('button-up') && parseInt(this.state.ratingStars, 10) < MAX_RATING_AVERAGE) {
       this.setState((prevState) => ({ ratingStars: prevState.ratingStars + 1 }));
     } else if (e.target.classList.contains('button-up') && this.state.ratingStars === '') {
       this.setState({ ratingStars: 5 });
-    } else if (e.target.classList.contains('button-down') && parseInt(this.state.ratingStars, 10) > minRatingAverage) {
+    } else if (e.target.classList.contains('button-down') && parseInt(this.state.ratingStars, 10) > MIN_RATING_AVERAGE) {
       this.setState((prevState) => ({ ratingStars: prevState.ratingStars - 1 }));
     } else if (e.target.classList.contains('button-down') && this.state.ratingStars === '') {
       this.setState({ ratingStars: 5 });
@@ -121,8 +119,6 @@ class RatingForm extends React.Component {
 RatingForm.propTypes = {
   handleSubmitNewRating: PropTypes.func.isRequired,
   handleCloseRatingForm: PropTypes.func.isRequired,
-  minRatingAverage: PropTypes.number.isRequired,
-  maxRatingAverage: PropTypes.number.isRequired,
   selectedLocation: PropTypes.object
 };
 

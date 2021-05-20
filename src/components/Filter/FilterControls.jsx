@@ -5,6 +5,8 @@ import RatingInput from '../common/RatingInput.jsx';
 
 import './FilterControls.scss';
 
+import { MIN_RATING_AVERAGE, MAX_RATING_AVERAGE } from '../../config';
+
 class FilterControls extends React.Component {
   constructor(props) {
     super(props);
@@ -31,8 +33,6 @@ class FilterControls extends React.Component {
 
   handleInput(value, input) {
     const {
-      minRatingAverage,
-      maxRatingAverage,
       currentMinRatingAverage,
       currentMaxRatingAverage
     } = this.props;
@@ -81,7 +81,7 @@ class FilterControls extends React.Component {
           resizable.style.left = '0px';
           resizable.style.width = newResizableWidth + 'px';
 
-          newMinValue = minRatingAverage;
+          newMinValue = MIN_RATING_AVERAGE;
           newMaxValue = currentMaxRatingAverage;
         }
       } else {
@@ -113,7 +113,7 @@ class FilterControls extends React.Component {
           resizable.style.width = newResizableWidth + 'px';
 
           newMinValue = currentMinRatingAverage;
-          newMaxValue = maxRatingAverage;
+          newMaxValue = MAX_RATING_AVERAGE;
         }
       } else {
         newMinValue = currentMinRatingAverage;
@@ -125,14 +125,10 @@ class FilterControls extends React.Component {
   }
 
   handleInputChange(e) {
-    const {
-      handleChangeFilterInputs,
-      minRatingAverage,
-      maxRatingAverage
-    } = this.props;
+    const { handleChangeFilterInputs } = this.props;
 
-    // Only numbers between minRatingAverage and maxRatingAverage
-    const regex = new RegExp(`[^${minRatingAverage}-${maxRatingAverage}]`, 'g');
+    // Only numbers between minimum and maximum rating average
+    const regex = new RegExp(`[^${MIN_RATING_AVERAGE}-${MAX_RATING_AVERAGE}]`, 'g');
     const value = e.target.value
       .replace(regex, '')
     // Stick to first number, ignore later digits
@@ -145,20 +141,16 @@ class FilterControls extends React.Component {
   }
 
   handleInputBlur(e) {
-    const {
-      handleChangeFilterInputs,
-      minRatingAverage,
-      maxRatingAverage
-    } = this.props;
+    const { handleChangeFilterInputs } = this.props;
     let value = e.target.value;
     const input = e.target.id;
     let newFilterValues;
 
     if (value === '' && input === 'filter-input-min') {
-      value = minRatingAverage;
+      value = MIN_RATING_AVERAGE;
       newFilterValues = this.handleInput(value, input);
     } else if (value === '' && input === 'filter-input-max') {
-      value = maxRatingAverage;
+      value = MAX_RATING_AVERAGE;
       newFilterValues = this.handleInput(value, input);
     }
 
@@ -170,25 +162,23 @@ class FilterControls extends React.Component {
   handleButtonClick(e) {
     const {
       handleChangeFilterInputs,
-      minRatingAverage,
-      maxRatingAverage,
       currentMinRatingAverage,
       currentMaxRatingAverage
     } = this.props;
     let newFilterValues;
 
-    if (e.target.classList.contains('button-min-up') && currentMinRatingAverage < maxRatingAverage) {
+    if (e.target.classList.contains('button-min-up') && currentMinRatingAverage < MAX_RATING_AVERAGE) {
       const newMinValue = currentMinRatingAverage + 1;
       if (newMinValue <= currentMaxRatingAverage) {
         newFilterValues = this.handleInput(newMinValue, 'filter-input-min');
       }
-    } else if (e.target.classList.contains('button-min-down') && currentMinRatingAverage > minRatingAverage) {
+    } else if (e.target.classList.contains('button-min-down') && currentMinRatingAverage > MIN_RATING_AVERAGE) {
       const newMinValue = currentMinRatingAverage - 1;
       newFilterValues = this.handleInput(newMinValue, 'filter-input-min');
-    } else if (e.target.classList.contains('button-max-up') && currentMaxRatingAverage < maxRatingAverage) {
+    } else if (e.target.classList.contains('button-max-up') && currentMaxRatingAverage < MAX_RATING_AVERAGE) {
       const newMaxValue = currentMaxRatingAverage + 1;
       newFilterValues = this.handleInput(newMaxValue, 'filter-input-max');
-    } else if (e.target.classList.contains('button-max-down') && currentMaxRatingAverage > minRatingAverage) {
+    } else if (e.target.classList.contains('button-max-down') && currentMaxRatingAverage > MIN_RATING_AVERAGE) {
       const newMaxValue = currentMaxRatingAverage - 1;
       if (newMaxValue >= currentMinRatingAverage) {
         newFilterValues = this.handleInput(newMaxValue, 'filter-input-max');
@@ -396,16 +386,14 @@ class FilterControls extends React.Component {
   checkInputValues() {
     const {
       currentMinRatingAverage,
-      currentMaxRatingAverage,
-      minRatingAverage,
-      maxRatingAverage
+      currentMaxRatingAverage
     } = this.props;
 
-    if (currentMinRatingAverage !== minRatingAverage) {
+    if (currentMinRatingAverage !== MIN_RATING_AVERAGE) {
       this.handleInput(currentMinRatingAverage, 'filter-input-min');
     }
 
-    if (currentMaxRatingAverage !== maxRatingAverage) {
+    if (currentMaxRatingAverage !== MAX_RATING_AVERAGE) {
       this.handleInput(currentMaxRatingAverage, 'filter-input-max');
     }
   }
@@ -475,8 +463,6 @@ class FilterControls extends React.Component {
 }
 
 FilterControls.propTypes = {
-  minRatingAverage: PropTypes.number.isRequired,
-  maxRatingAverage: PropTypes.number.isRequired,
   // String type when filter input is empty
   currentMinRatingAverage: PropTypes.oneOfType([
     PropTypes.string,

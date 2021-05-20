@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 
 import './SingleLocation.scss';
 
+import { MAX_RATING_AVERAGE } from '../../config';
+
 const { REACT_APP_GMAP_API_KEY } = process.env;
 
 const SingleLocation = ({
   handleAddRatingButtonClick,
   handleReturnToLocationsList,
-  maxRatingAverage,
   selectedLocation
 }) => {
   const streetNumber = selectedLocation.properties.address.street_number;
@@ -86,7 +87,7 @@ const SingleLocation = ({
         {selectedLocation.properties.ratings.length !== 0 && (
           selectedLocation.properties.ratings.map((rating, index) => (
             <div className="single-location-review" key={index}>
-              <p>{`${rating.stars}/${maxRatingAverage}`}</p>
+              <p>{`${rating.stars}/${MAX_RATING_AVERAGE}`}</p>
               <p>{rating.comment}</p>
             </div>
           ))
@@ -99,7 +100,6 @@ const SingleLocation = ({
 SingleLocation.propTypes = {
   handleAddRatingButtonClick: PropTypes.func.isRequired,
   handleReturnToLocationsList: PropTypes.func.isRequired,
-  maxRatingAverage: PropTypes.number.isRequired,
   selectedLocation: PropTypes.object.isRequired
 };
 
