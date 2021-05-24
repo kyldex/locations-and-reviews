@@ -538,8 +538,6 @@ export default class App extends React.Component {
                 <SingleLocation
                   handleAddRatingButtonClick={this.handleDisplayRatingForm}
                   handleReturnToLocationsList={this.handleReturnToLocationsList}
-                  currentMinRatingAverage={this.state.currentMinRatingAverage}
-                  currentMaxRatingAverage={this.state.currentMaxRatingAverage}
                   selectedLocation={this.state.selectedLocation}
                 />
               )}
