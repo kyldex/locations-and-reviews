@@ -14,6 +14,8 @@ import LocationForm from './LocationForm/LocationForm.jsx';
 
 import './App.scss';
 
+import getLocationsFromGooglePlacesAPI from '../helpers/getLocationsFromGooglePlacesAPI';
+
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -26,8 +28,6 @@ export default class App extends React.Component {
       displayedLocationsAreSortedBy: 'name',
       filteredLocationsByAverage: null,
       locationsInMapBounds: null,
-      minRatingAverage: 0,
-      maxRatingAverage: 5,
       currentMinRatingAverage: 0,
       currentMaxRatingAverage: 5,
       lastRatingId: null,
@@ -322,10 +322,13 @@ export default class App extends React.Component {
   // Filter
   handleGooglePlacesRefresh() {
     const mapComponentRef = this.mapComponentRef.current;
-    const mapCenter = mapComponentRef.mapRef.current.getCenter().toJSON();
+    const map = mapComponentRef.mapRef.current;
+    const mapCenter = mapComponentRef.getMapCenter();
+    const mapZoom = mapComponentRef.getMapZoom();
+    const googlePlacesLocations = this.state.googlePlacesLocations;
     this.setState({ googlePlacesButtonIsDisabled: true });
 
-    mapComponentRef.getLocationsFromGooglePlacesAPI(mapCenter).then((locations) => {
+    getLocationsFromGooglePlacesAPI(map, mapCenter, mapZoom, googlePlacesLocations).then((locations) => {
       this.handleGooglePlacesLocations(locations);
       this.setState({ googlePlacesButtonIsDisabled: false });
     }).catch((error) => {
@@ -499,12 +502,7 @@ export default class App extends React.Component {
     const lastRatingIndex = databaseLocations[lastLocationIndex].properties.ratings.length - 1;
     const lastRatingId = parseInt(databaseLocations[lastLocationIndex].properties.ratings[lastRatingIndex].rating_id, 10);
 
-    let sortedDatabaseLocations;
-    if (this.state.displayedLocationsAreSortedBy === 'name') {
-      sortedDatabaseLocations = sortLocationsByName(databaseLocations);
-    } else if (this.state.displayedLocationsAreSortedBy === 'average') {
-      sortedDatabaseLocations = sortLocationsByName(databaseLocations);
-    }
+    const sortedDatabaseLocations = sortLocationsByName(databaseLocations);
 
     this.setState({
       allLocations: sortedDatabaseLocations,
@@ -533,8 +531,6 @@ export default class App extends React.Component {
                   handleLocationCardClick={(location) => this.handleLocationCardClick(location)}
                   handleLocationCardHover={(location) => this.handleLocationCardHover(location)}
                   handleSortLocationsByAverage={this.handleSortLocationsByAverage}
-                  minRatingAverage={this.state.minRatingAverage}
-                  maxRatingAverage={this.state.maxRatingAverage}
                 />
               )}
 
@@ -542,9 +538,6 @@ export default class App extends React.Component {
                 <SingleLocation
                   handleAddRatingButtonClick={this.handleDisplayRatingForm}
                   handleReturnToLocationsList={this.handleReturnToLocationsList}
-                  maxRatingAverage={this.state.maxRatingAverage}
-                  currentMinRatingAverage={this.state.currentMinRatingAverage}
-                  currentMaxRatingAverage={this.state.currentMaxRatingAverage}
                   selectedLocation={this.state.selectedLocation}
                 />
               )}
@@ -553,8 +546,6 @@ export default class App extends React.Component {
                 <RatingForm
                   handleSubmitNewRating={(newRating) => this.handleSubmitNewRating(newRating)}
                   handleCloseRatingForm={this.handleCloseRatingForm}
-                  minRatingAverage={this.state.minRatingAverage}
-                  maxRatingAverage={this.state.maxRatingAverage}
                   selectedLocation={this.state.selectedLocation}
                 />
               )}

@@ -33,6 +33,7 @@
     "no-useless-return": "off",
     "object-curly-newline": "off",
     "operator-linebreak": "off",
+    "padded-blocks": "off",
     "prefer-destructuring": "off",
     "prefer-object-spread": "warn",
     "prefer-promise-reject-errors": "warn",

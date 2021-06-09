@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Autocomplete, GoogleMap, InfoWindow, LoadScript, Marker } from '@react-google-maps/api';
 
-import delay from '../../helpers/delay';
-import getRadius from '../../helpers/getRadius';
+import getLocationsFromGooglePlacesAPI from '../../helpers/getLocationsFromGooglePlacesAPI';
 
 import './Map.scss';
 import mapStyles from '../../map-styles';
@@ -52,8 +51,9 @@ class Map extends React.Component {
     this.showCurrentLocation();
   }
 
-  handleMapLoad(mapLibraryInstance) {
-    this.mapRef.current = mapLibraryInstance;
+  handleMapLoad(mapInstance) {
+    // An instance of the google.maps.Map class
+    this.mapRef.current = mapInstance;
   }
 
   handleAutocompleteLoad(autocompleteInstance) {
@@ -115,6 +115,10 @@ class Map extends React.Component {
 
   async handleAutocompleteOnPlaceChanged() {
     if (this.autocompleteRef.current !== null) {
+      const map = this.mapRef.current;
+      const currentMapZoom = this.state.zoom;
+      const googlePlacesLocations = this.props.googlePlacesLocations;
+      const handleGooglePlacesLocations = this.props.handleGooglePlacesLocations;
       const place = await this.autocompleteRef.current.getPlace();
 
       if (place.geometry !== undefined && place.formatted_address !== undefined) {
@@ -139,8 +143,9 @@ class Map extends React.Component {
           lat: placeLocationLat,
           lng: placeLocationLng
         };
-        this.getLocationsFromGooglePlacesAPI(centerRef).then((locations) => {
-          this.props.handleGooglePlacesLocations(locations);
+
+        getLocationsFromGooglePlacesAPI(map, centerRef, currentMapZoom, googlePlacesLocations).then((locations) => {
+          handleGooglePlacesLocations(locations);
         });
       }
     } else {
@@ -148,10 +153,19 @@ class Map extends React.Component {
     }
   }
 
+  getMapCenter() {
+    return this.state.center;
+  }
+
+  getMapZoom() {
+    return this.state.zoom;
+  }
+
   getLocationsInMapBounds() {
+    const allLocations = this.props.allLocations;
     const locationsInMapBounds = [];
 
-    this.props.allLocations.forEach((location) => {
+    allLocations.forEach((location) => {
       const locationCoords = {
         lat: location.geometry.coordinates[1],
         lng: location.geometry.coordinates[0]
@@ -162,142 +176,6 @@ class Map extends React.Component {
     });
 
     return locationsInMapBounds;
-  }
-
-  /**
-     * Returns an object with new fetched locations (Place Details requests) and already fetched locations (no Place Details request)
-     * @param {Object} centerRef - latitude and longitude to be used for the circle's center of the Nearby Search
-     * @returns {Object}
-     */
-  async getLocationsFromGooglePlacesAPI(centerRef) {
-    /* global google */
-    const currentMapZoom = this.state.zoom;
-    const radius = getRadius(currentMapZoom);
-    const nearbySearchRequestParams = {
-      location: centerRef,
-      radius,
-      type: ['restaurant']
-    };
-    let nearbySearchRequestAttempts = 1;
-    let placeDetailsRequestAttempts = 0;
-
-    // Nearby Search request
-    // https://developers.google.com/maps/documentation/javascript/places#place_search_requests
-    const getNearbySearch = async (request) => {
-      return new Promise((resolve, reject) => {
-        const service = new google.maps.places.PlacesService(this.mapRef.current);
-        service.nearbySearch(request, (results, status) => {
-          if (status === google.maps.places.PlacesServiceStatus.OK) {
-            resolve(results);
-          } else {
-            reject('Error during Nearby Search request (Google Places API). Status : ' + status);
-          }
-        });
-      });
-    };
-
-    // Place Details request
-    // https://developers.google.com/maps/documentation/javascript/places#place_details
-    const getPlacesDetails = async (nearbySearchResults) => {
-      const getPlaceDetails = (placeDetailsRequest) => {
-        return new Promise((resolve, reject) => {
-          const service = new google.maps.places.PlacesService(this.mapRef.current);
-          service.getDetails(placeDetailsRequest, (location, status) => {
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
-              resolve(location);
-            } else {
-              reject('Error during Place Details request (Google Places API). Status : ' + status);
-            }
-          });
-        });
-      };
-
-      const promises = [];
-
-      for (let i = 0; i < nearbySearchResults.length; i++) {
-        const placeDetailsRequest = {
-          placeId: nearbySearchResults[i].place_id,
-          language: 'fr',
-          fields: [
-            'geometry',
-            'name',
-            'place_id',
-            'address_component',
-            'international_phone_number',
-            'photos',
-            'reviews',
-            'rating'
-          ]
-        };
-
-        await delay(100); // eslint-disable-line no-await-in-loop
-        promises.push(getPlaceDetails(placeDetailsRequest));
-      }
-
-      return Promise.all(promises);
-    };
-
-    const getLocations = (request) => {
-      return getNearbySearch(request).then((nearbySearchResults) => {
-        // Limited number of requests per second with the Place Details API, slice response to 11 locations
-        const slicedNearbySearchResults = nearbySearchResults.slice(0, 11);
-
-        // Cache system to avoid requesting location details if they've been already fetched and stored into the application state
-        const newFetchedLocationsBeforeDetails = [];
-        const alreadyFetchedLocations = [];
-
-        if (this.props.googlePlacesLocations !== null) {
-          slicedNearbySearchResults.forEach((fetchedLocation) => {
-            let isAlreadyCached = false;
-
-            this.props.googlePlacesLocations.forEach((cachedLocation) => {
-              if (fetchedLocation.place_id === cachedLocation.properties.place_id) {
-                isAlreadyCached = true;
-                return;
-              }
-            });
-
-            if (!isAlreadyCached) {
-              newFetchedLocationsBeforeDetails.push(fetchedLocation);
-            } else if (isAlreadyCached) {
-              alreadyFetchedLocations.push(fetchedLocation);
-            }
-          });
-          // First call to the API
-        } else if (this.props.googlePlacesLocations === null) {
-          newFetchedLocationsBeforeDetails.push(...slicedNearbySearchResults);
-        }
-
-        if (newFetchedLocationsBeforeDetails.length !== 0) {
-          return getPlacesDetails(newFetchedLocationsBeforeDetails).then((newFetchedLocations) => {
-            return { newFetchedLocations, alreadyFetchedLocations };
-          }).catch(async (error) => {
-            console.log(error);
-            if (placeDetailsRequestAttempts <= 2) {
-              placeDetailsRequestAttempts++;
-              const slicedNewFetchedLocationsBeforeDetails = newFetchedLocationsBeforeDetails.slice(0, 2);
-              await delay(1000);
-              return getPlacesDetails(slicedNewFetchedLocationsBeforeDetails).then((newFetchedLocations) => {
-                return { newFetchedLocations, alreadyFetchedLocations };
-              }).catch((newError) => {
-                console.log(newError);
-              });
-            }
-          });
-        }
-
-        return { newFetchedLocations: newFetchedLocationsBeforeDetails, alreadyFetchedLocations };
-      }).catch(async (error) => {
-        console.log(error);
-        if (nearbySearchRequestAttempts <= 3) {
-          nearbySearchRequestAttempts++;
-          await delay(1000);
-          return getLocations(request);
-        }
-      });
-    };
-
-    return getLocations(nearbySearchRequestParams);
   }
 
   showCurrentLocation() {

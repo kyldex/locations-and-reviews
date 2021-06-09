@@ -1,4 +1,4 @@
-const mapStyles = [
+export default [
   {
     featureType: 'all',
     elementType: 'labels',
@@ -171,5 +171,3 @@ const mapStyles = [
     ]
   }
 ];
-
-export default mapStyles;
